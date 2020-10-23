@@ -1,0 +1,837 @@
+\documentclass[12pt,a4paper,openright,twoside]{report}
+\usepackage[italian]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\oddsidemargin=30pt \evensidemargin=20pt%impostano i margini
+
+\usepackage[italian]{babel}
+
+\usepackage{pdfpages}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{color}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\green}[1]{{\color{green} #1}}
+\newcommand{\blue}[1]{{\color{black} #1}}  %%%%% black !!
+\newcommand{\brown}[1]{{\color{brown} #1}}
+\newcommand{\purple}[1]{{\color{purple} #1}}
+\newcommand{\gray}[1]{{\color{gray} #1}}
+
+% for program texts:
+\makeatletter
+\newenvironment{prog}{\vspace{0.7ex}\par
+	\setlength{\parindent}{0.7cm}
+	\obeylines\@vobeyspaces\tt}{\vspace{0.7ex}\noindent
+}
+\makeatother
+\newcommand{\startprog}{\begin{prog}}
+	\newcommand{\stopprog}{\end{prog}\noindent}
+\newcommand{\fpr}[1]{\mbox{\footnotesize\tt #1}} % program text in subscripts
+
+\newcommand{\snorm}{||\!\cdot\!||} 
+\newcommand{\depth}{\mathit{depth}} 
+\newcommand{\conc}{\bullet}
+
+\newcommand{\id}{id}
+
+% Letters
+
+\def\defemb#1#2{\expandafter\def\csname #1\endcsname
+	{\relax\ifmmode #2\else\hbox{$#2$}\fi}}
+\defemb{cA}{{\cal A}}
+\defemb{cB}{{\cal B}}
+\defemb{cC}{{\cal C}}
+\defemb{cD}{{\cal D}}
+\defemb{cE}{{\cal E}}
+\defemb{cF}{{\cal F}}
+\defemb{cG}{{\cal G}}
+\defemb{cH}{{\cal H}}
+\defemb{cI}{{\cal I}}
+\defemb{cJ}{{\cal J}}
+\defemb{cL}{{\cal L}}
+\defemb{cM}{{\cal M}}
+\defemb{cN}{{\cal N}}
+\defemb{cO}{{\cal O}}
+\defemb{cP}{{\cal P}}
+\defemb{cQ}{{\cal Q}}
+\defemb{cR}{{\cal R}}
+\defemb{cS}{{\cal S}}
+\defemb{cT}{{\cal T}}
+\defemb{cU}{{\cal U}}
+\defemb{cV}{{\cal V}}
+\defemb{cX}{{\cal X}}
+\defemb{cZ}{{\cal Z}}
+
+% Terms
+
+\newcommand{\pos}{{\cP}os}
+\newcommand{\fpos}{{\cN}{\cV}{\cP}os}
+\newcommand{\var}{{\cV}ar}
+\newcommand{\fvar}{{\cF}{\cV}ar}
+\newcommand{\head}{hd}
+\newcommand{\dom}{{\cD}om}
+\newcommand{\nat}{\mbox{$I\!\!N$}}
+\newcommand{\mas}{+}
+\newcommand{\nil}{[\:]}
+
+\newcommand{\Cc}{{\cal{C}}} % constructors
+\newcommand{\Fc}{{\cal{F}}} % defined functions
+\newcommand{\Var}{{\cal V}ar} % variables in an object
+\newcommand{\Rc}{{\cal{R}}} % rewrite system
+\newcommand{\Tc}{{\cal{T}}} % algebra of terms
+\newcommand{\Xc}{{\cal{X}}} % set of all variables
+\renewcommand{\phi}{\varphi}
+\newcommand{\equ}{\approx}
+\newcommand{\dt}{{\cal P}} % definitional tree
+\newcommand{\nns}{{\lambda_{needed}}} % needed narrowing strategy
+\newcommand{\lns}{\lambda_{lazy}} % lazy narrowing strategy
+\newcommand{\toppos}{\epsilon} % top position
+\newcommand{\ol}[1]{\overline{#1}}  % sequence of objects
+\newcommand{\pr}[1]{\mbox{$\tt #1$}}   % program text in normal text
+\newcommand{\prm}[1]{\mbox{\tt #1}}   % program text in normal text
+\newcommand{\todo}[1]{\fbox{\sc To do: #1}}
+\newcommand{\To}{\Rightarrow}
+\newcommand{\foo}[1]{\tt #1}
+
+
+\newcommand{\pred}{\mathit{pred}}
+\newcommand{\opred}{\textsc{pred}}
+\newcommand{\cfg}{\textsc{cfg}}
+\newcommand{\srg}{\textsc{srg}}
+\newcommand{\start}{\textsc{start}}
+\newcommand{\terminals}{\textsc{t}}
+
+\newcommand{\acalls}{Ancestors}
+\newcommand{\unfq}{{Unf}}
+
+\def\ri{<\!\!\!<}   % renamed instance
+
+\newcommand{\sql}{\mbox{$[\![$}}
+\newcommand{\sqr}{\mbox{$]\!]$}}
+
+% New symbols:
+\newcommand{\cons}{\!:\!}
+
+
+% Arrows
+
+\newcommand{\lto}{\longrightarrow}
+\newcommand{\hto}{~\hookrightarrow}
+\newcommand{\gn}{\rightsquigarrow}
+
+
+\newcommand{\h}{\mathit{h}}
+\renewcommand{\k}{\lambda}
+\newcommand{\init}{\mathsf{init}}
+\newcommand{\final}{\mathsf{final}}
+\newcommand{\rlh}{\rightleftharpoons}
+\newcommand{\lh}{\leftharpoondown}
+\newcommand{\rh}{\rightharpoonup}
+\newcommand{\lhh}{\leftharpoondown\hspace{-1.8ex}\leftharpoondown}
+\newcommand{\rlhh}{\rightleftharpoons\hspace{-1.8ex}\rightleftharpoons}
+\newcommand{\M}{\mathsf{M}}
+
+\newcommand{\remark}[1]{\mbox{}\\\fbox{\begin{minipage}{.95\linewidth}
+			Remark: \textsf{#1} \end{minipage}}\\}
+
+\def\res{\mathrel{\vert\grave{ }}}
+\let\l=\langle
+\let\r=\rangle
+\def \tuple#1{\langle #1 \rangle}
+
+\long\def\comment#1{}
+\usepackage{xcolor}
+\newcommand{\mathcolorbox}[2]{\colorbox{#1}{$\displaystyle #2$}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+\renewcommand{\chaptermark}[1]{%
+	\markboth{ #1}{}}
+
+\renewcommand{\sectionmark}[1]{
+	\markright{\thesection\ #1}}
+
+
+\newcommand{\ignore}[1]{} 
+\newcommand{\too}{\longrightarrow}
+\newcommand{\arro}[1]{\xrightarrow{#1}} 
+\newcommand{\hoo}{\hookrightarrow} 
+\newcommand{\del}{\mathsf{del}}
+\newcommand{\rolldel}{\mathsf{rolldel}} 
+\newcommand{\comp}{\:|\:} 
+
+
+\usepackage{thmtools}
+
+\declaretheoremstyle[headfont=\normalfont]{normalhead}
+
+
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Esempio}
+
+\newtheoremstyle{theoremdd}
+  {\topsep}% measure of space to leave above the theorem. E.g.: 3pt
+{\topsep}% measure of space to leave below the theorem. E.g.: 3pt
+{}% name of font to use in the body of the theorem
+{0pt}% measure of space to indent
+{\bfseries}% name of head font
+{. }% punctuation between head and body
+{ }% space after theorem head; " " = normal interword space
+{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+\theoremstyle{theoremdd}
+\newtheorem{definition}[theorem]{Definizione}
+
+\renewcommand{\ttdefault}{cmtt}
+\usepackage{url}
+
+
+\begin{document}
+
+\tableofcontents
+\thispagestyle{empty}                   %elimina il numero della pagina
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\chapter{Introduzione}
+Erlang è un linguaggio di programmazione funzionale e concorrente basato sul paradigma ad attori (concorrenza basata sul \textit{message-passing}). \\
+BEAM è la macchina virtuale al centro di Erlang, fa parte dell'Erlang Run-Time System (ERTS), che compila il codice sorgente di Erlang in bytecode, che viene quindi eseguito su BEAM.
+Core Erlang \cite{CoreErlang} è uno dei linguaggi intermedi in cui Erlang viene compilato.
+
+In questa tesi si mostra un estensione della semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} con delle feature imperative.
+
+Nella Sezione \ref{sect:linguaggio} viene modificato il linguaggio presentato nell'articolo~\cite{Lanese} aggiungendo le operazione di registrazione di atomi e pid, deregistrazione di pid e di lookup. Inoltre viene aggiunto un non terminale \textit{end} per poter identificare quando un processo è arrivato in uno stato finale. 
+
+Nella Sezione \ref{sect:semantica} viene modificata la nozione di sistema in cui viene introdotta la mappa formata dalle coppie di atomi, pid che sono stati registrati data nell'articolo \cite{Lanese}. Inoltre sono state introdotte le regole per la semantica del linguaggio, in questo caso sono state aggiunte le regole per la valutazione delle nuove espressioni e inoltre sono state aggiunte le regole per descrivere il fallimento di un espressione, che nell'articolo \cite{Lanese} non erano presenti. Inoltre sono state aggiunte le regole di sistema per le nuove espressioni e per i casi di fallimento.
+
+Nella Sezione \ref{sect:semreversibile} viene descritta la semantica reversibile divisa in semantica \textit{forward} e \textit{backward}. La prima è un'estensione delle regole introdotte precedentemente in cui nell'articolo \cite{Lanese} viene aggiunta una storia dei processi mentre in questo lavoro è stata l'aggiunta di una storia della mappa. La semantica \textit{backward} invece descrive come viene fatto un passo all'indietro. In questo caso viene introdotta una nozione di operazione in lettura e scrittura per generalizzare le \textit{side-condition} delle regole inserite e per dare una nozione di operazione concorrente più generale. 
+
+Nella Sezione \ref{sect:semrollback} è stato esteso l'operatore di reversibilità che può essere utilizzato per annullare le azioni di un dato processo fino a raggiungere un determinato punto di controllo, introdotto dal programmatore. Per garantire la coerenza causale, l'azione di rollback potrebbe essere propagata ad altri processi dipendenti. 
+
+\section{Reversibilità}
+Normalmente la computazione avviene in una direzione, in un programma le istruzioni vengono eseguite in un determinato ordine, per computazione reversibile ci si riferisce alla possibilità di eseguire un programma sia in avanti (o anche computazione \textit{forward}) che indietro (o anche computazione \textit{backward}).
+
+Dato un programma non è ovvio che sia possibile eseguire una computazione backward, infatti tutti i linguaggi di programmazione tradizionali consentono operazioni con perdita di informazione. \\
+Durante l'esecuzione di un programma, a meno che non sia reversibile o senza perdita di informazioni, i dati intermedi vengono persi mentre viene calcolato l'output finale.
+
+\begin{example}
+	L'assegnamento \texttt{$\mathtt{x}$ = 96}  elimina il vecchio valore di $\mathtt{x}$ che deve essere memorizzato se si vuole annullare questa assegnazione.
+\end{example}
+
+Landauer \cite{Landauer} notò anche che ogni computazione irreversibile può essere trasformata in una computazione reversibile, includendola in una computazione più ampia nella quale nessuna informazione viene persa, salvando ogni volta gli stati intermedi della computazione così da non avere perdita di informazione.\\
+L'idea alla base di questo lavoro \cite{Landauer} è che qualsiasi linguaggio di programmazione o formalismo può essere reso reversibile aggiungendo la cronologia del calcolo a ogni stato, questo metodo è di solito chiamato incorporamento di Landauer.
+
+Questa idea fu ulteriormente migliorata da Bennett \cite{Bennett} al fine di evitare la generazione di dati ``spazzatura'', applicando una serie di analisi al fine di limitare il più possibile le informazioni richieste nella storia.
+
+La reversibilità in un contesto sequenziale è facile da capire, per invertire l'esecuzione di un programma sequenziale è sufficiente annullare ricorsivamente l'ultima azione eseguita dal programma. La definizione di reversibilità in un contesto in cui vengono considerati anche i sistemi distribuiti è più complicata, poiché non esiste il concetto di ``ultima azione''. Poiché, molte azioni vengono eseguite contemporaneamente.
+
+Una definizione adeguata di reversibilità in uno scenario concorrente è stata proposta da Danos e Krivine nel loro articolo \cite{Danos}. Intuitivamente, la definizione afferma che qualsiasi azione può essere annullata a condizione che tutte le sue eventuali conseguenze siano annullate preventivamente.
+
+Il calcolo reversibile potrebbe essere applicato per migliorare il modo in cui alcune attività vengono risolte, per esempio nel debug.
+
+\section{Debugger reversibile}
+
+I Debugger non sono altro che programmi, che consento di analizzare se un programma è sintatticamente corretto, in modo tale da effettuare una ricerca del bug in modo più veloce e accurato possibile. Grazie ai Debugger si ha la possibilità di scovare errori o malfunzionamenti all'interno del programma sfruttando funzioni specifiche per il debugging: l'attività che consiste proprio nell'individuazione della porzione di software affetta da bug.
+
+Generalmente il tipo di debugger più utilizzato è il debugger a runtime che consente la ricerca dei bug tramite funzionalità standard come \textit{breackpoint}, \textit{controlpoint} e \textit{viste da watch}, che consentono al programmatore di analizzare più accuratamente determinate parti di codice per identificare gli errori con una scansione in avanti del codice.
+
+Di contro però, la maggior parte dei debugger fornisce infatti, un'assistenza limitata all'esecuzione in avanti del codice per la navigazione temporale, per cui i programmatori devono spesso ricorrere alla simulazione dell'esecuzione del programma mentalmente per cercare di immaginare i flussi di istruzioni che vengono eseguiti. Infatti, con un debugger a \textit{runtime}, il programmatore può cercare il bug inserendo dei breackpoint all'interno dei thread e sperare di scovare il bug facendo dei tentativi, magari entrando in watch per osservare come vengono modificate le variabili durante l'esecuzione del programma. A tal proposito sono nati anche debug più complessi i cosidetti: debugger reversibili che a differenza dei debugger tradizionali, quest'ultimi consentono agli sviluppatori di registrare le attività del programma in esecuzione, per poi riavvolgere e riprodurre tali istruzioni, compresi eventuali errori, per ispezionare lo stato del programma, questi debugger sono molto utili negli scenari concorrenti \cite{Engblom}.\\
+Riavvolgere le azioni di un particolare processo significa anche annullare ogni conseguenza dell'operazione (cioè  tutte le azioni ``collegate'' a quell'operazione) che si vuole annullare. Questa nozione è chiamata \textit{consistenza causale} \cite{Danos}.
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\chapter{Estensione con feature imperative}
+
+Nel seguito di questo capitolo, verrà presentata la sintassi del linguaggio esteso supportato, seguita dalla semantica (reversibile).
+In contrasto con la semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} quella che verrà presentata qui includerà funzioni imperative integrate.
+Le modifiche effettuate all'articolo \cite{Lanese} sono evidenziate in giallo.
+
+\section{Sintassi del linguaggio}\label{sect:linguaggio}
+In questa sezione, verrà mostrata la sintassi di un linguaggio funzionale di prim'ordine, concorrente e distribuito basato sul paradigma ad attori utilizzato. Questo linguaggio è un sotto insieme di Core Erlang \cite{CoreErlang}, che è uno dei linguaggi intermedi in cui un programma Erlang viene compilato.
+\begin{figure}[ht]
+	\begin{center}
+		$
+		\begin{array}{rcl@{~~~~~~}l}
+			
+			\mathit{module} & ::= & \mathsf{module} ~ Atom = %%[fname_1,\ldots,fname_n] =
+			\mathit{fun}_1~\ldots~\mathit{fun}_n\\
+			{\mathit{fun}} & ::= & \mathit{fname} = \mathsf{fun}~(\mathit{Var}_1,\ldots,\mathit{Var}_n) \to expr \\
+			{\mathit{fname}} & ::= & Atom/\mathit{Integer} \\
+			lit & ::= & Atom \mid \mathit{Integer} \mid \mathit{Float} \mid
+			\mathit{Pid} \mid \nil \\
+			expr & ::= & \mathit{Var}  \mid \mathit{fname} \mid [expr_1|expr_2]
+			\mid   \{expr_1,\ldots,expr_n\} \\
+			& \mid & \mathsf{call}~Op~(expr_1,\ldots,expr_n) 
+			\mid \mathsf{apply}~\mathit{fname}~(expr_1,\ldots,expr_n) \\
+			& \mid &
+			\mathsf{case}~expr~\mathsf{of}~clause_1;\ldots;clause_m~\mathsf{end}\\
+			& \mid & \mathsf{let}~\mathit{Var}=expr_1~\mathsf{in}~expr_2 
+			\mid \mathsf{receive}~clause_1;\ldots;clause_n~\mathsf{end}\\
+			& \mid & \mathsf{spawn}(\mathit{fname},[expr_1,\ldots,expr_n])  
+			\mid expr \:!\: expr \mid \mathsf{self}()\\
+			& \mid &   \mathcolorbox{yellow}{ \mathsf{register}(expr, expr)} \mid    \mathcolorbox{yellow}{ \mathsf{unregister}(expr)}  \mid \mathcolorbox{yellow}{end} \\
+			clause & ::= & pat ~\mathsf{when}~expr_1 \to expr_2
+			\\
+			pat & ::= & \mathit{Var} \mid lit \mid [pat_1|pat_2] \mid
+			\{pat_1,\ldots,pat_n\} \\
+			Op & ::= & \dots \mid \mathcolorbox{yellow} { \mathsf{whereis}} \mid \mathcolorbox{yellow} {\mathsf{registered}}\\
+			\mathcolorbox{yellow}{end} & ::= & lit \mid [end_1|end_2] \mid
+			\{end_1,\ldots,end_n\} 
+		\end{array}
+		$
+	\end{center}
+	\caption{Regole di sintassi del linguaggio} \label{ErlangSyntax}
+\end{figure}
+\newline
+\newline
+Nella Figura~\ref{ErlangSyntax} viene presentata la sintassi del linguaggio, si può notare che vengono considerate solo espressioni di prim'ordine quindi il primo argomento delle applicazioni di funzioni e della spawn è un nome di funzione (invece che un'espressione o chiusura arbitraria) e il primo argomento nelle chiamate è un'operazione built-in $Op$. Rispetto alla sintassi precedente sono state aggiunte le funzioni built-in: 
+\begin{itemize}
+	\item $\mathsf{whereis}$ che dato in input un atomo restituisce il pid associato, se non è registrato l'atomo \textbf{undefined},
+	\item $\mathsf{registered}$ che restituisce una lista di tutti gli atomi nella mappa, se non sono presenti atomi registrati restituisce una lista vuota,
+\end{itemize}
+sono anche state aggiunte le funzioni:
+\begin{itemize}
+	\item $\mathsf{register}$ che dati in input un atomo e un pid inserisce la in una mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo o il pid sono già presenti nella mappa il processo fallisce.
+	\item $\mathsf{unregister}$ che dato in input un atomo toglie dalla mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo non è presente nella mappa il processo fallisce.
+\end{itemize}
+Inoltre è stato creato il non terminale \textit{end} che per riuscire a determinare quando un processo è in uno stato finale, così è possibile determinare se un processo è fallito e in questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. Nelle regole che verranno descritte successivamente il simbolo $\epsilon$ rappresenterà un non terminale \textit{end}. 
+
+\section{Semantica del linguaggio}\label{sect:semantica}
+In questa sezione descriveremo formalmente la semantica del linguaggio presentato nella sezione \ref{sect:linguaggio}.
+
+\begin{definition} [Processo]
+	Un processo è indicato da una tupla $\tuple {p, (\theta, e), q}$ dove $p$ è il pid del processo (ed è unico), $(\theta, e)$ è il controllo, che consiste di un ambiente (una sostituzione) e di un'espressione da valutare, e $q$ è la casella di posta del processo, una coda FIFO con la sequenza di messaggi che sono stati inviati al processo.
+	
+	Consideriamo le seguenti operazioni sulle cassette postali locali. Dato un messaggio $v$ e una casella di posta locale $q$, $v:q$ denota una nuova casella di posta con il messaggio $v$ sopra (cioè $v$ è il messaggio più recente). Indichiamo anche con $q \backslash\! \! \backslash v$ una nuova coda che risulta da $q$ rimuovendo l'occorrenza più vecchia del messaggio $v$ (che non è necessariamente il messaggio più vecchio nel
+	coda). \qed
+\end{definition}
+%
+Un \emph{sistema} in esecuzione può quindi essere visto come un insieme di processi, che definiamo formalmente come segue:
+
+\begin{definition} [Sistema] \label{sistema}
+	Un sistema è indicato da $\Gamma;\Pi;\M$, dove $\Gamma$, la \emph{casella di posta globale}, è un insieme di coppie nella forma $(destinazione,$ $messaggio)$ e $\Pi$ è un insieme di processi, indicato da un'espressione della forma
+	\[
+	\tuple{p_1, (\theta_1, e_1), q_1} ~ \comp \cdots
+	\comp ~ \tuple {p_n, (\theta_n, e_n), q_n}
+	\]
+	dove `` $\comp$ '' denota un operatore associativo e commutativo.
+	%
+	Data una casella di posta globale $\Gamma $, $\Gamma \cup \{(p, v) \} $ denota una nuova casella di posta che include anche la coppia $(p, v)$, usiamo ``$\cup$'' come unione multiset.
+	Spesso denotiamo un sistema con un'espressione nella forma $\Gamma;\tuple{p,(\theta, e),q}\comp \Pi;\M$ per far notare che $ \tuple {p, (\theta, e), q} $ è un processo arbitrario del pool (grazie al fatto che `` $\comp $ '' è associativo e commutativo).
+	Infine $\M$ rappresenta l'insieme delle coppie $(atomo,pid)$ registrate, indicheremo con ``$\cup$'' l'aggiunta di una coppia alla mappa e con ``$\backslash\! \! \backslash$'' la rimozione di una coppia dalla mappa.\qed 
+\end{definition}
+%
+Intuitivamente, $\Gamma$ memorizza i messaggi dopo che sono stati inviati e prima che vengano inseriti nella casella di destinazione, quindi rappresenta i messaggi che si trovano nella rete.
+\newline
+
+La semantica è definita tramite due relazione di transizione: $\too$ per le espressioni e $\hoo$ per il sistema. Mostreremo prima la relazione di transizione etichettata 
+\[
+\too\; : (Env,Exp)\times Label\times(Env,Exp)
+\]
+dove $Env$ e $Exp$ rappresentano rispettivamente l'ambiente (cioè le sostituzioni) e le espressioni mentre $Label$ denota un elemento dell'insieme
+\[
+\begin{array}{l}
+	\hspace{-11ex}
+	\{\tau, \mathsf{send}(v_1,v_2),
+	\mathsf{rec}(\kappa,\ol{cl_n}), \mathsf{spawn}(\kappa,a/n,[\ol{v_n}]),
+	\mathsf{self}(\kappa),
+	\mathsf{register}(\kappa,a,p),
+	\mathsf{unregister}(\kappa,a),
+	\tau \M\M',
+	\bot
+	\}
+\end{array}
+\]
+Verrà utilizzato $\ell$ per indicare un'etichetta fra quelle appena indicate.\\ Per chiarezza le regole di transizione della semantica verranno divise in quattro insiemi: quelle per le espressioni sequenziali sono raffigurate nella Figura~\ref{fig:seq-rules}, quelle per i fallimenti delle espressioni sequenziali che si trovano nella Figura~\ref{fig:seq-rules-fail}, quelle per le espressioni concorrenti sono nella Figura~\ref{fig:concurrent-rules} e infine quelle per i fallimenti delle espressioni concorrenti che sono nella Figura~\ref{fig:concurrent-rules-fail}.
+
+\begin{figure}[h]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		(\mathit{Var}) ~ {\displaystyle \frac{}{\theta,X
+				\arro{\tau} \theta,\theta(X)}} 
+		
+		\hspace{2ex}
+		
+		(\mathit{Tuple}) ~ {\displaystyle 
+			\frac{\theta,e_i \arro{\ell}
+				\theta',e'_i}{\theta,\{\ol{v_{1,{i-1}}},e_i,\ol{e_{{i+1},n}}\}
+				\arro{\ell} \theta',
+				\{\ol{v_{1,{i-1}}},e'_i,\ol{e_{{i+1},n}}\}}}\\[4ex] 
+		
+		(\mathit{List1})  ~{\displaystyle 
+			\frac{\theta,e_1 \arro{\ell}
+				\theta',e'_1}{\theta,[e_1|e_2]
+				\arro{\ell} \theta',
+				[e'_1|e_2]}} 
+		
+		\hspace{2ex}
+		
+		(\mathit{List2}) ~ {\displaystyle 
+			\frac{\theta,e_2 \arro{\ell}
+				\theta',e'_2}{\theta,[v_1|e_2]
+				\arro{\ell} \theta',
+				[v_1|e'_2]}} \\[4ex]
+		
+		(\mathit{Let1}) ~ {\displaystyle \frac{\theta,e_1
+				\arro{\ell} \theta',e'_1 }{\theta,\mathsf{let}~ 
+				X=e_1~\mathsf{in}~e_2
+				\arro{\ell} \theta',\mathsf{let}~ 
+				X=e'_1~\mathsf{in}~e_2}}
+		
+		\hspace{1ex}
+		
+		(\mathit{Let2}) ~ {\displaystyle \frac{}{\theta,\mathsf{let}~ 
+				X=v~\mathsf{in}~e
+				\arro{\tau} \theta[X\mapsto v],e}} \\[4ex]
+		
+		(\mathit{Case1}) ~ {\displaystyle
+			\frac{\theta,e\arro{\ell}
+				\theta',e'}{\begin{array}{l}
+					\theta,\mathsf{case}~e~\mathsf{of}~cl_1;\ldots;cl_n~\mathsf{end}
+					\arro{\ell}
+					\theta',\mathsf{case}~e'~\mathsf{of}~cl_1;\ldots;cl_n~\mathsf{end}\\
+		\end{array}}}\\[4ex]
+		
+		(\mathit{Case2}) ~ {\displaystyle
+			\frac{\mathsf{match}(\theta,v,cl_1,\ldots,cl_n) = \tuple{\theta_i,e_i}}{\theta,\mathsf{case}~v~\mathsf{of}~cl_1;\ldots;cl_n~\mathsf{end}
+				\arro{\tau} \theta\theta_i,e_i}} \\[4ex]
+		
+		(\mathit{Call1}) ~ {\displaystyle
+			\frac{\theta,e_i\arro{\ell}
+				\theta',e'_i~~~i\in\{1,\ldots,n\}}{\theta,\mathsf{call}~op~(\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}})
+				\arro{\ell}
+				\theta',\mathsf{call}~op~(\ol{v_{1,i-1}},e'_i,\ol{e_{i+1,n}})}} \\[5ex]
+		
+		(\mathit{Call2}) ~ {\displaystyle
+			\frac{\mathsf{eval}(op,v_1,\ldots,v_n)=v}{\theta,\mathsf{call}~op~(v_1,\ldots,v_n)
+				\arro{\tau} \theta,v}} \\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Call3}) ~ {\displaystyle
+				\frac{\mathsf{evalM}(\M,op,v_1,\ldots,v_n)= (v,\M') }{\theta,\mathsf{call}~op~(v_1,\ldots,v_n)
+					\arro{\tau\M\M'} \theta,v}} }\\[4ex]
+		
+		(\mathit{Apply1}) ~ {\displaystyle
+			\frac{\theta,e_i\arro{\ell}
+				\theta',e'_i~~~i\in\{1,\ldots,n\}}{\theta,\mathsf{apply}~a/n~(\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}}) 
+				\arro{\ell}
+				\theta',\mathsf{apply}~a/n~(\ol{v_{1,i-1}},e'_i,\ol{e_{i+1,n}})}}\\[5ex] 
+		
+		(\mathit{Apply2}) ~ {\displaystyle
+			\frac{\mu(a/n) = \mathsf{fun}~(X_1,\ldots,X_n)\to e}{\theta,\mathsf{apply}~a/n~(v_1,\ldots,v_n)
+				\arro{\tau} \theta\cup\{X_1\mapsto v_1,\ldots,X_n\mapsto v_n\},e}} %\{\ol{X_n\mapsto v_n}\},e}} 
+	\end{array}
+	\]
+	\caption{Semantica standard: valutazione espressioni sequenziali} \label{fig:seq-rules}
+\end{figure}
+
+Le transizioni sono etichettate con $ \tau$ (una riduzione sequenziale senza side-effects) o con $\tau\M\M'$ che indica una riduzione che accede alla mappa senza side-effects o con l'etichetta $\bot$ che indica la propagazione di un fallimento o con un'etichetta che identifica la riduzione di un'azione con alcuni side-effects. Le etichette sono usate nelle regole di sistema (Figure~\ref {fig:system-rules}, \ref{fig:system-rules-map}) per determinare gli effetti collaterali associati e/o le informazioni da recuperare.
+\newline
+Nella Figura~\ref{fig:seq-rules} sono presenti le regole di transizione per la valutazione delle espressioni sequenziali.
+\newline
+Come in Erlang, consideriamo che l'ordine di valutazione degli argomenti in una tupla, lista, ecc. È fisso da sinistra a destra.
+\newline
+Per la valutazione dei case, si assume una funzione ausiliaria $\mathsf{match}$ che seleziona la prima clausola, $cl_i = (pat_i ~\mathsf{when} ~ e'_i \to e_i)$, in modo tale che $v$ corrisponda a $pat_i$, ovvero $ v = \theta_i (pat_i)$, e che la guardia sia soddisfatta, cioè, $\theta \theta_i, e'_i \too^\ast \theta ', true$. Come in Core Erlang, assumiamo che i patterns possano solo contenere nuove variabili (ma le guardie potrebbero avere variabili legate, quindi passiamo l'ambiente corrente $ \theta $ alla funzione $ \mathsf {match} $).
+\newline
+Le funzioni possono essere definite nel programma (in questo caso sono invocate da $\mathsf {apply}$) o essere un built-in (invocate da $\mathsf{call}$). In quest'ultimo caso vengono valutati utilizzando la funzione ausiliaria $\mathsf {eval}$.
+\newline
+Nella regola $\mathit {Apply2}$, si considera che la mappatura $\mu$ memorizza tutte le definizioni di funzione nel programma, cioè, mappa ogni nome di funzione $ a/n $ in una copia della sua definizione $\mathsf{fun} ~ (X_1, \ldots, X_n) \to e$, dove $ X_1, \ldots, X_n $ sono nuove variabili (distinte) e sono le uniche variabili che possono essere libere in $e$.
+%
+Per quanto riguarda le applicazioni, si noti che consideriamo solo il primo ordine funzioni. Per estendere la nostra semantica a considerare anche funzioni di ordine superiore, si dovrebbe ridurre il nome della funzione a \emph {chiusura} della forma $ (\theta ', \mathsf {fun} ~ (X_1, \ldots, X_n) \to e) $. 
+\newline
+Alle regole della semantica standard delle espressi sequenziali è stata aggiunta la regola $Call3$ utilizzata per la valutazione delle funzioni built-in che devono accedere alla mappa. Le funzioni built-in come si può vedere dalla regola $Call2$ vengono valutate tramite la funzione ausiliaria $\mathsf{eval}$, per questo motivo si è scelto di utilizzare la funzione ausiliaria $\mathsf{evalM}$ per valutare le funzioni built-in che utilizzano una mappa. Infatti per la valutazione $\mathsf{evalM}$ oltre a prendere in input i parametri prende in input pure la mappa, indicata con $\mathsf{M}$.
+La funzione $\mathsf{evalM}$ e la funzione $\mathsf{eval}$ sono quindi sono due funzioni parziali visto che non è definito l'output per ogni input. $\mathsf{M'}$ corrisponde alla parte della mappa acceduta dalla funzione $\mathsf{evalM}$.
+\newpage
+\begin{figure}[h]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		\mathcolorbox{yellow}{ (\mathit{TupleF}) ~ {\displaystyle 
+				\frac{\theta,e_i \arro{\bot} fail
+				}{\theta,\{\ol{v_{1,{i-1}}},e_i,\ol{e_{{i+1},n}}\}
+					\arro{\bot} fail
+		}}}\\[4ex] 
+		
+		\mathcolorbox{yellow}{(\mathit{List1F})  ~{\displaystyle 
+				\frac{\theta,e_1 \arro{\bot} fail}
+				{\theta,[e_1|e_2] \arro{\bot} fail}} 
+			
+			\hspace{2ex}
+			
+			(\mathit{List2F}) ~ {\displaystyle 
+				\frac{\theta,e_2 \arro{\bot} fail }
+				{\theta,[v_1|e_2]\arro{\bot} fail }} }\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Let1F}) ~ {\displaystyle \frac{\theta,e_1
+					\arro{\bot} fail }{\theta,\mathsf{let}~ 
+					X=e_1~\mathsf{in}~e_2
+					\arro{\bot} fail}}} \\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Case1F}) ~ {\displaystyle
+				\frac{\theta,e\arro{\bot} fail
+				}{\begin{array}{l}
+						\theta,\mathsf{case}~e~\mathsf{of}~cl_1;\ldots;cl_n~\mathsf{end}
+						\arro{\bot} fail
+						
+		\end{array}}}}\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Case2F}) ~ {\displaystyle
+				\frac{\mathsf{match}(\theta,v,cl_1,\ldots,cl_n) = \emptyset }{\theta,\mathsf{case}~v~\mathsf{of}~cl_1;\ldots;cl_n~\mathsf{end}
+					\arro{\bot} caseFail}}} \\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Call1F}) ~ {\displaystyle
+				\frac{\theta,e_i\arro{\bot} fail}
+				{\theta,\mathsf{call}~op~(\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}})
+					\arro{\bot } fail
+		}}} \\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Call2F}) ~ {\displaystyle
+				\frac{\mathsf{eval}(op,v_1,\ldots,v_n) = \emptyset ~\land~ \mathsf{evalM}(\M,op,v_1,\ldots,v_n) = \emptyset  }{\theta,\mathsf{call }~ op (v_1,\dots,v_n)
+					\arro{\bot} callFail}} }\\[4ex]
+
+		\mathcolorbox{yellow}{ (\mathit{Apply1F}) ~ {\displaystyle
+				\frac{\theta,e_i\arro{\bot} fail }
+				{\theta,\mathsf{apply}~a/n~(\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}}) 
+					\arro{\bot} fail
+		}} }\\[5ex] 
+		
+		\mathcolorbox{yellow}{(\mathit{Apply2F}) ~ {\displaystyle
+				\frac{\mu(a/n) = \emptyset }{\theta,\mathsf{apply}~a/n~(v_1,\ldots,v_n)
+					\arro{\bot} applyFail}} }
+		\end{array}
+	\]
+	\caption{Semantica standard: valutazione del fallimento delle espressioni sequenziali} \label{fig:seq-rules-fail}
+\end{figure}
+Nella Figura~\ref{fig:seq-rules-fail} sono presenti le regole di transizione che gestiscono i fallimenti.
+La propagazione dell'errore è indicata dall'etichetta $\bot$, quindi se una valutazione di un'espressione fallisce allora il fallimento viene propagato. \\
+Con il simbolo $\emptyset$ si intende: 
+\begin{itemize}
+	\item nel caso dei match che l'argomento $v$ non corrisponde a nessuna clausola\footnote {Più precisamente un programma Erlang quando è tradotto nella rappresentazione intermedia Core Erlang, viene aggiunta una clausola catch-all quindi il simbolo $\emptyset$ corrisponde al match della clausola aggiunta.}
+	\item Nei casi di eval, evalM e $\mu$ significa che le funzioni non sono definite sull'input dato.
+\end{itemize}
+\begin{figure}[h]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		(\mathit{Send1}) ~ {\displaystyle 
+			\frac{\theta,e_1 \arro{\ell} \theta',e'_1}{\theta,e_1\:!\: e_2 \arro{\ell}
+				\theta',e'_1\:!\: e_2} ~~~~(\mathit{Send2}) ~\frac{\theta,e_2 \arro{\ell} \theta',e'_2}{\theta,v_1\:!\: e_2 \arro{\ell}
+				\theta',v_1\:!\: e'_2} 
+		}\\[4ex]
+		
+		(\mathit{Send3}) ~ {\displaystyle
+			\frac{  }{\theta,v_1\:!\: v_2 \arro{\mathsf{send}(v_1,v_2)} \theta,v_2}
+		}\\[4ex]
+		
+		(\mathit{Receive}) ~ {\displaystyle
+			\frac{~}{\theta,\mathsf{receive}~cl_1;\ldots;cl_n~\mathsf{end}
+				\arro{\mathsf{rec}(\kappa,\ol{cl_n})}
+				\theta,\kappa
+			}
+		}\\[4ex]
+		
+		(\mathit{Spawn1}) ~ {\displaystyle
+			\frac{\theta,e_i\arro{\ell}
+				\theta',e'_i~~~i\in\{1,\ldots,n\}}{\theta,\mathsf{spawn}(a/n,[\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}}])
+				\arro{\ell} \theta',\mathsf{spawn}(a/n,[\ol{v_{1,i-1}},e'_i,\ol{e_{i+1,n}}])       
+		}}\\[4ex]
+		
+		(\mathit{Spawn2}) ~ {\displaystyle
+			\frac{}{\theta,\mathsf{spawn}(a/n,[\ol{v_n}])
+				\arro{\mathsf{spawn}(\kappa,a/n,[\ol{v_n}])} \theta,\kappa         
+		}}\\[4ex]
+		
+		(\mathit{Self}) ~ {\displaystyle
+			\frac{}{\theta,\mathsf{self}() \arro{\mathsf{self}(\kappa)} \theta,\kappa}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Register1}) ~ {\displaystyle 
+				\frac{\theta, e_1 \arro{\ell} \theta',e'_1}{\theta, \mathsf{register}(e_1, e_2) \arro{\ell}
+					\theta',\mathsf{register}(e'_1, e_2)} ~~~~
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{  (\mathit{Register2}) ~{\displaystyle
+				\frac{\theta,e_2 \arro{\ell} \theta',e'_2}{\theta,\mathsf{register}(v_1, e_2) \arro{\ell}
+					\theta',\mathsf{register}(v_1, e'_2)} 
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Register3}) ~ {\displaystyle
+				\frac{~}{\theta,\mathsf{register}(v_1, v_2) \arro{\mathsf{register}(\kappa,v_1,v_2)} \theta,\kappa}}
+		}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Unregister1}) ~ {\displaystyle 
+				\frac{\theta, e \arro{\ell} \theta',e'}{\theta, \mathsf{unregister}(e) \arro{\ell}
+					\theta',\mathsf{unregister}(e')}}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Unregister2}) ~ {\displaystyle
+				\frac{~}{\theta,\mathsf{unregister}(v) \arro{\mathsf{unregister}(\kappa,v)} \theta,\kappa}}
+		}
+	\end{array}
+	\]
+	\caption{Semantica standard: valutazione delle espressioni concorrenti} \label{fig:concurrent-rules}
+\end{figure}
+
+Consideriamo ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Abbiamo le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per `` $! $ ''. In questo caso, sappiamo \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole, questo non è noto localmente e, quindi, restituiamo un nuovo simbolo distinto, $\kappa $,  viene trattato come una variabile, in modo che nelle regole di sistema nella figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Ricevive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} ci permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}), in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
+Nelle regole di valutazione delle espressioni concorrenti della semantica standard sono state aggiunte le regole per la valutazione della $\mathsf{register}$ e dell'$\mathsf{unregister}$.
+
+\begin{figure}[h]
+	\footnotesize
+	\[
+	\begin{array}{c}	
+		\mathcolorbox{yellow}{ (\mathit{Send1F}) ~ {\displaystyle 
+				\frac{\theta,e_1 \arro{\bot} fail}
+				{\theta,e_1\:!\: e_2 \arro{\bot} fail} ~~~~
+				
+				(\mathit{Send2F}) ~\frac{\theta,e_2 \arro{\bot} fail}
+				{\theta,v_1\:!\: e_2 \arro{\bot} fail} 
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Spawn1F}) ~ {\displaystyle
+				\frac{\theta,e_i\arro{\bot} fail}
+				{\theta,\mathsf{spawn}(a/n,[\ol{v_{1,i-1}},e_i,\ol{e_{i+1,n}}])
+					\arro{\bot} fail         
+		}}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Register1F}) ~ {\displaystyle 
+				\frac{\theta, e_1 \arro{\bot} fail}
+				{\theta, \mathsf{register}(e_1, e_2) \arro{\bot} fail} ~~~~
+			
+				(\mathit{Register2F}) ~\frac{\theta,e_2 \arro{\bot} fail}
+				{\theta,\mathsf{register}(v_1, e_2) \arro{\bot } fail} 
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{Unregister1F}) ~ {\displaystyle 
+				\frac{\theta, e \arro{\bot} fail}
+				{\theta, \mathsf{unregister}(e) \arro{\bot} fail }}}
+	\end{array}
+	\]
+	\caption{Semantica standard: valutazione del fallimento delle espressioni concorrenti} \label{fig:concurrent-rules-fail}
+\end{figure}
+~\newline
+Anche nelle regole della valutazione delle espressioni concorrenti sono state aggiunte le regole che gestiscono il fallimento di un processo e che propagano il fallimento della valutazione di un'espressione.
+\newline
+Ora si possono presentare le regole di sistema che sono rappresentate nelle figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} e , in tutte le regole vengono considerato un sistema generale nella forma $\Gamma;\tuple{p,(\theta,e),q}\:\comp\: \Pi;\M$ dove $\Gamma$ è la casella di posta globale, $\tuple{p,(\theta,e),q}\:\comp\: \Pi$ è l'insieme dei processi che contiene almeno un processo e $\M$ è la mappa dei pid registrati. Rispetto all'articolo \cite{Lanese} in tutte le regole è stata aggiunta $\M$ visto che la definizione di sistema (Definizione~\ref{sistema}) è cambiata.\\
+Ora verranno descritte brevemente tutte le regole di transizione del sistema. 
+\begin{figure}[th]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		(\mathit{Seq}) ~ {\displaystyle
+			\frac{\theta,e\arro{\tau} \theta',e'
+			}{\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \mathcolorbox{yellow}{\M} \hoo
+				\Gamma;\tuple{p,(\theta',e'),q}\comp \Pi; \mathcolorbox{yellow}{\M}}
+		}\\[4ex]
+		
+		\mathcolorbox{yellow}{\mathit{(Call3)} ~ {\displaystyle
+				\frac{\theta,e\arro{\tau\M\M'} \theta',e'
+				}{\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta',e'),q}\comp \Pi; \M}
+		}}\\[4ex]
+		
+		(\mathit{Send}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{send}(p'',v)}
+				\theta',e'  ~~~ \mathcolorbox{yellow}{\mathsf{isAtom}(p'')=false }
+			}{\Gamma;\tuple{p,(\theta,e),q} 
+				\comp \Pi; \mathcolorbox{yellow}{\M} \hoo \Gamma\cup (p'',v);\tuple{p,(\theta',e'),q}\comp \Pi; \mathcolorbox{yellow}{\M}}
+		}\\[4ex]
+		
+		\mathcolorbox{yellow}{  (\mathit{SendA}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{send}(a,v)}
+					\theta',e'  ~~~ \mathsf{isAtom}(a)=true ~~ \mathsf{matchPid}(\M, a) = p''
+				}{\Gamma;\tuple{p,(\theta,e),q} 
+					\comp \Pi;\M \hoo \Gamma\cup (p'',v);\tuple{p,(\theta',e'),q}\comp \Pi;\M}
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{SendF}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{send}(a,v)}
+					\theta',e'  ~~~ \mathsf{isAtom}(a)=true ~~\mathsf{matchPid}(\M, a) = false
+				}{\Gamma;\tuple{p,(\theta,e),q} 
+					\comp \Pi; \mathcolorbox{yellow}{\M} \hoo \Gamma;\tuple{p,(\theta,sendFail),q}\comp \Pi; {\M}}
+		}}\\[4ex]
+		
+		(\mathit{Receive}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{rec}(\kappa,\ol{cl_n})}
+				\theta',e'~~~ \mathsf{matchrec}(\theta,\ol{cl_n},q) =
+				(\theta_i,e_i,v)} {\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \mathcolorbox{yellow}{\M} \hoo
+				\Gamma;\tuple{p,(\theta'\theta_i,e'\{\kappa\mapsto
+					e_i\}),q\backslash\!\!\backslash v}\comp \Pi; \mathcolorbox{yellow}{\M}}
+		}\\[4ex]
+		
+		(\mathit{Spawn}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{spawn}(\kappa,a/n,[\ol{v_n}])}
+				\theta',e'~~~ p'~\mbox{is a fresh pid}}{\Gamma;\tuple{p,(\theta,e),q} 
+				\comp \Pi; \mathcolorbox{yellow}{\M} \hoo \Gamma;\tuple{p,(\theta',e'\{\kappa\mapsto p'\}),q}\comp \tuple{p',(\id,\mathsf{apply}~a/n~(\ol{v_n})),\nil} 
+				\comp \Pi; \mathcolorbox{yellow}{\M}}
+		}\\[4ex]
+		
+		(\mathit{Self}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{self}(\kappa)} \theta',e'}{\Gamma;\tuple{p,(\theta,e),q} 
+				\comp \Pi; \mathcolorbox{yellow}{\M} \hoo \Gamma;\tuple{p,(\theta',e'\{\kappa\mapsto p\}),q} 
+				\comp \Pi; \mathcolorbox{yellow}{\M} }
+		}\\[4ex]
+		
+		(\mathit{Sched}) ~ {\displaystyle
+			\frac{~}{\Gamma\cup\{(p,v)\};\tuple{p,(\theta,e),q}\comp\Pi; \mathcolorbox{yellow}{\M} 
+				\hoo \Gamma;\tuple{p,(\theta,e),v\cons q}\comp\Pi; \mathcolorbox{yellow}{\M}}
+		}
+	\end{array}
+	\]
+	\caption{Regole standard della semantica del sistema} \label{fig:system-rules}
+\end{figure}
+
+La regola $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione.
+
+Le regole $\mathit{Send} $ e $\mathit{SendA} $ aggiungono la coppia $(p '', v)$ alla casella di posta globale $\Gamma$ invece di aggiungerla alla coda del processo $p ''$. Ciò è necessario per garantire che tutti i possibili intrecci di messaggi siano modellati correttamente.
+È stato introdotta la funzione ausiliaria $\mathsf{isAtom}$ che viene utilizzata per capire se la regola debba accedere alla mappa, l'unica differenza fra le due regole è che la $\mathit{SendA}$ utilizza un atomo come destinatario. 
+Si noti che $e '$ è solitamente diverso da $v$ poiché $e$ può avere operatori annidati diversi. Ad esempio, se $e$ ha la forma `` $\mathsf{case} ~ \mathrm{p} \:! \: V ~ \mathsf {of} ~ \{\ldots \} $,'' allora $ e '$ sarà ``$ \mathsf {case} ~ v ~ \mathsf {of} ~ \{\ldots \} $'' con etichetta $ \mathsf {send} (\mathrm {p}, v) $.
+
+La regola $\mathit{SendF}$ introduce un fallimento, infatti l'espressione da valutare successivamente nel processo sarà $sendFail$ un atomo che corrisponde ad un fallimento perché all'atomo che si utilizza per inviare un messaggio non è associato nessun pid che si capisce grazie alla funzione $\mathsf{matchPid}$.
+	
+Nella regola $ \mathit {Receive} $, usiamo la funzione ausiliaria $ \mathsf {matchrec} $ per valutare un'espressione di ricezione. La differenza principale con $\mathsf {match}$ è che $\mathsf{matchrec}$ prende anche una coda $q$ e restituisce il messaggio selezionato $v$. Più precisamente, la funzione $ \mathsf {matchrec} $ esegue la scansione della coda $ q $ cercando il \emph {primo} messaggio $ v $ che corrisponde a un modello dell'istruzione di ricezione. Quindi, $ \kappa $ viene associato all'espressione nella clausola selezionata, $ e_i $, e l'ambiente viene esteso con la sostituzione corrispondente.
+		
+Se nessun messaggio nella coda $ q $ corrisponde ad alcuna clausola, la regola non è applicabile e il processo selezionato non può essere ridotto (cioè viene sospeso). Come nelle espressioni case, assumiamo che i pattern possano contenere solo nuove variabili.
+		
+Le regole presentate finora consentono di memorizzare i messaggi nella casella di posta globale, ma non di rimuoverne i messaggi. Questo è esattamente il compito dello scheduler, modellato dalla regola $ \mathit{Sched} $. Questa regola sceglie in modo non deterministico una coppia $ (p, v) $ nella cassetta postale globale $ \Gamma $ e consegna il messaggio $ v $ al processo di destinazione $ p $. Qui, ignoriamo deliberatamente la restrizione: `` i messaggi inviati, direttamente, tra due processi dati arrivano nello stesso ordine in cui sono stati inviati ", poiché le attuali implementazioni lo garantiscono solo all'interno dello stesso nodo. In pratica, ignorare questa restrizione equivale a considerare che ogni processo è potenzialmente eseguito in un nodo diverso. Una definizione alternativa che garantisce questa restrizione può essere trovata in \cite{NPV16b}.
+
+      \begin{figure}[th]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		
+		\mathcolorbox{yellow}{(\mathit{Register T}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{register}(\mathsf{true},a,p')}
+					\theta',e' ~ \mathsf{matchMapReg}(\M, a,p') = true} {\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta',e'),q}\comp \Pi; \M\cup(a,p')  }
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Register F}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{register}(\mathsf{false},a,p')}
+					\theta',e' ~ \mathsf{matchMapReg}(\M, a,p') = false} {\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta,regFail),q}\comp \Pi; \M}
+		}}\\[4ex]      
+		
+		\mathcolorbox{yellow}{(\mathit{UnregisterT}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{unregister}(\mathsf{true},a)}
+					\theta',e' ~ \mathsf{matchMapUnreg}(\M, a) = p'} {\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta',e'),q}\comp \Pi; \M\backslash\!\!\backslash(a,p')  }
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{UnregisterF}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{unregister}(\mathsf{false},a)}
+					\theta',e' ~ \mathsf{matchMapUnreg}(\M,a) = false} {\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta,unregFail),q}\comp \Pi; \M  }
+		}}\\[4ex]
+	
+		\mathcolorbox{yellow}{(\mathit{Catch}) ~ {\displaystyle
+				\frac{ \theta,e \arro{\bot}  fail  }{\Gamma;\tuple{p,(\theta,e),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta,fail),q}\comp \Pi; \M}
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{End}) ~ {\displaystyle
+				\frac{ \mathsf{matchEnd}(\M,p)=a'  ~~  }{\Gamma;\tuple{p,(\theta,\epsilon),q}\comp \Pi; \M \hoo
+					\Gamma;\tuple{p,(\theta,\epsilon),q}\comp \Pi; \M\backslash\!\!\backslash (a' ,p)}
+		}}
+		\end{array}
+	\]
+	\caption{Regole standard della semantica del sistema che utilizzano la mappa} \label{fig:system-rules-map}
+\end{figure}
+
+Nella figura \ref{fig:system-rules-map} si può notare che sono state aggiunte anche le regole per la $\mathsf{register}$ e per l'$\mathsf{unregister}$.
+Queste regole sono divise in 2 casi:
+\begin{itemize}
+	\item il caso di successo, 
+	\item il caso di fallimento (che introduce come prossima espressione da valutare un atomo che descrive un fallimento).
+\end{itemize}
+La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. 
+
+La regola $\mathsf{Catch}$ serve per gestire il caso di fallimento di un processo. In questo caso il fallimento viene catturato al top-level.
+
+Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang, visto che nel linguaggio utilizzato non sono presenti le eccezioni.
+
+
+\section{Semantica reversibile}\label{sect:semreversibile}
+
+\section{Semantica rollback}\label{sect:semrollback}
+
+
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\chapter{Conclusione}
+
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+\begin{thebibliography}{}
+		
+	\bibitem{CoreErlang}
+	Richard Carlsson.
+	\newblock An introduction to core {E}rlang.
+	\newblock In {\em In Proceedings of the PLI'01 Erlang Workshop}, 2001.
+	
+	\bibitem{Lanese}
+	Ivan Lanese, Naoki Nishida, Adri{\'{a}}n Palacios, and Germ{\'{a}}n Vidal.
+	\newblock A theory of reversibility for {E}rlang.
+	\newblock {\em Journal of Logical and Algebraic Methods in Programming},
+	100:71--97, November 2018.
+	
+	\bibitem{Landauer}
+	R.~Landauer.
+	\newblock Irreversibility and heat generation in the computing process.
+	\newblock {\em {IBM} Journal of Research and Development}, 5(3):183--191, July
+	1961.
+	
+	\bibitem{Bennett}
+	C.~H. Bennett.
+	\newblock Logical reversibility of computation.
+	\newblock {\em {IBM} Journal of Research and Development}, 17(6):525--532,
+	November 1973.
+	
+	\bibitem{Danos}
+	Vincent Danos and Jean Krivine.
+	\newblock Reversible communicating systems.
+	\newblock In {\em {CONCUR} 2004 - Concurrency Theory}, pages 292--307. Springer
+	Berlin Heidelberg, 2004.
+	
+	\bibitem{CMRT13tr}
+	R.~Caballero, E.~Mart{\'{\i}}n-Mart{\'{\i}}n, A.~Riesco, and S.~Tamarit.
+	\newblock A declarative debugger for concurrent erlang programs (extended
+	version).
+	\newblock Technical Report SIC-15/13, Dpto.\ Sistemas Inform\'aticos y
+	Computaci\'on, Universidad Complutense de Madrid, 2013.
+	
+	
+	\bibitem{Engblom}
+	Engblom, J. (2012, September). 
+	\newblock A review of reverse debugging.
+	\newblock In System, Software, SoC and Silicon Debug Conference (S4D), 2012 (pp. 1-6). IEEE.
+	
+	\bibitem{NPV16b}
+	N.~Nishida, A.~Palacios, and G.~Vidal.
+	\newblock A reversible semantics for {E}rlang.
+	\newblock In M.~Hermenegildo and P.~L\'opez-Garc\'{\i}a, editors, {\em Proc.\
+		of the 26th International Symposium on Logic-Based Program Synthesis and
+		Transformation, LOPSTR 2016}, volume 10184 of {\em LNCS}, pages 259--274.
+	Springer, 2017.
+	\newblock Preliminary version available from
+	\texttt{https://arxiv.org/abs/1608.05521}.
+	
+	
+\end{thebibliography}
+
+
+
+%\bibliography{bibliografia}
+%\bibliographystyle{unsrt}
+
+
+\end{document}
