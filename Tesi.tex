@@ -692,6 +692,8 @@ Ora verranno descritte brevemente tutte le regole di transizione del sistema.
 
 La regola $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione.
 
+La regola $\mathit{Call3}$ come $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione, però accede alla mappa, quindi utilizza l'etichetta $\tau\M\M'$ invece di $\tau$.
+
 Le regole $\mathit{Send} $ e $\mathit{SendA} $ aggiungono la coppia $(p '', v)$ alla casella di posta globale $\Gamma$ invece di aggiungerla alla coda del processo $p ''$. Ciò è necessario per garantire che tutti i possibili intrecci di messaggi siano modellati correttamente.
 È stato introdotta la funzione ausiliaria $\mathsf{isAtom}$ che viene utilizzata per capire se la regola debba accedere alla mappa, l'unica differenza fra le due regole è che la $\mathit{SendA}$ utilizza un atomo come destinatario. 
 Si noti che $e '$ è solitamente diverso da $v$ poiché $e$ può avere operatori annidati diversi. Ad esempio, se $e$ ha la forma `` $\mathsf{case} ~ \mathrm{p} \:! \: V ~ \mathsf {of} ~ \{\ldots \} $,'' allora $ e '$ sarà ``$ \mathsf {case} ~ v ~ \mathsf {of} ~ \{\ldots \} $'' con etichetta $ \mathsf {send} (\mathrm {p}, v) $.
