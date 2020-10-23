@@ -758,9 +758,11 @@ Queste regole sono divise in 2 casi:
 Il caso di successo corrisponde alle regole $\mathit{RegisterT}$ e $\mathit{UnregisterT}$ che rispettivamente aggiungo la coppia $(a,p')$ alla mappa e tolgono la coppia $(a,p')$ dalla mappa.
 Mentre il caso di fallimento corrisponde alle regole $\mathit{RegisterF}$ e $\mathit{UnregisterF}$. 
 
-La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. 
 
 La regola $\mathit{Catch}$ serve per gestire il caso di fallimento di un processo. In questo caso il fallimento viene catturato al top-level.
+
+La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. 
+
 
 Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang, visto che nel linguaggio utilizzato non sono presenti le eccezioni.
 
