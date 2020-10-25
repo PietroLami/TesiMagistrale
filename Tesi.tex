@@ -213,9 +213,9 @@ Core Erlang \cite{CoreErlang} è uno dei linguaggi intermedi in cui Erlang viene 
 
 In questa tesi si mostra un estensione della semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} con delle feature imperative.
 
-Nella Sezione \ref{sect:linguaggio} viene modificato il linguaggio presentato nell'articolo~\cite{Lanese} aggiungendo le operazione di registrazione di atomi e pid, deregistrazione di pid e di lookup. Inoltre viene aggiunto un non terminale \textit{end} per poter identificare quando un processo è arrivato in uno stato finale. 
+Nella Sezione \ref{sect:linguaggio} viene modificato il linguaggio presentato nell'articolo~\cite{Lanese} aggiungendo le operazione di registrazione di atomi e pid, deregistrazione di pid e di lookup, inoltre viene aggiunto un non terminale \textit{end} per poter identificare quando un processo è arrivato in uno stato finale. 
 
-Nella Sezione \ref{sect:semantica} viene modificata la nozione di sistema in cui viene introdotta la mappa formata dalle coppie di atomi, pid che sono stati registrati data nell'articolo \cite{Lanese}. Inoltre sono state introdotte le regole per la semantica del linguaggio, in questo caso sono state aggiunte le regole per la valutazione delle nuove espressioni e inoltre sono state aggiunte le regole per descrivere il fallimento di un espressione, che nell'articolo \cite{Lanese} non erano presenti. Inoltre sono state aggiunte le regole di sistema per le nuove espressioni e per i casi di fallimento.
+Nella Sezione \ref{sect:semantica} viene modificata la nozione di sistema data nell'articolo \cite{Lanese} in cui viene introdotta una mappa formata dalle coppie di atomi-pid che sono stati registrati. Inoltre sono state introdotte le regole per la semantica del linguaggio, in questo caso sono state aggiunte le regole per la valutazione delle nuove espressioni e inoltre sono state aggiunte le regole per descrivere il fallimento di un'espressione, che nell'articolo \cite{Lanese} non erano presenti. Inoltre sono state aggiunte le regole di sistema per le nuove espressioni e per i casi di fallimento.
 
 Nella Sezione \ref{sect:semreversibile} viene descritta la semantica reversibile divisa in semantica \textit{forward} e \textit{backward}. La prima è un'estensione delle regole introdotte precedentemente in cui nell'articolo \cite{Lanese} viene aggiunta una storia dei processi mentre in questo lavoro è stata l'aggiunta di una storia della mappa. La semantica \textit{backward} invece descrive come viene fatto un passo all'indietro. In questo caso viene introdotta una nozione di operazione in lettura e scrittura per generalizzare le \textit{side-condition} delle regole inserite e per dare una nozione di operazione concorrente più generale. 
 
@@ -236,7 +236,7 @@ L'idea alla base di questo lavoro \cite{Landauer} è che qualsiasi linguaggio di 
 
 Questa idea fu ulteriormente migliorata da Bennett \cite{Bennett} al fine di evitare la generazione di dati ``spazzatura'', applicando una serie di analisi al fine di limitare il più possibile le informazioni richieste nella storia.
 
-La reversibilità in un contesto sequenziale è facile da capire, per invertire l'esecuzione di un programma sequenziale è sufficiente annullare ricorsivamente l'ultima azione eseguita dal programma. La definizione di reversibilità in un contesto in cui vengono considerati anche i sistemi distribuiti è più complicata, poiché non esiste il concetto di ``ultima azione''. Poiché, molte azioni vengono eseguite contemporaneamente.
+La reversibilità in un contesto sequenziale è facile da capire, per invertire l'esecuzione di un programma sequenziale è sufficiente annullare ricorsivamente l'ultima azione eseguita dal programma. La definizione di reversibilità in un contesto in cui vengono considerati anche i sistemi distribuiti è più complicata, poiché non esiste il concetto di ``ultima azione'', dato che, molte azioni vengono eseguite contemporaneamente.
 
 Una definizione adeguata di reversibilità in uno scenario concorrente è stata proposta da Danos e Krivine nel loro articolo \cite{Danos}. Intuitivamente, la definizione afferma che qualsiasi azione può essere annullata a condizione che tutte le sue eventuali conseguenze siano annullate preventivamente.
 
@@ -248,7 +248,7 @@ I Debugger non sono altro che programmi, che consento di analizzare se un progra
 
 Generalmente il tipo di debugger più utilizzato è il debugger a runtime che consente la ricerca dei bug tramite funzionalità standard come \textit{breackpoint}, \textit{controlpoint} e \textit{viste da watch}, che consentono al programmatore di analizzare più accuratamente determinate parti di codice per identificare gli errori con una scansione in avanti del codice.
 
-Di contro però, la maggior parte dei debugger fornisce infatti, un'assistenza limitata all'esecuzione in avanti del codice per la navigazione temporale, per cui i programmatori devono spesso ricorrere alla simulazione dell'esecuzione del programma mentalmente per cercare di immaginare i flussi di istruzioni che vengono eseguiti. Infatti, con un debugger a \textit{runtime}, il programmatore può cercare il bug inserendo dei breackpoint all'interno dei thread e sperare di scovare il bug facendo dei tentativi, magari entrando in watch per osservare come vengono modificate le variabili durante l'esecuzione del programma. A tal proposito sono nati anche debug più complessi i cosidetti: debugger reversibili che a differenza dei debugger tradizionali, quest'ultimi consentono agli sviluppatori di registrare le attività del programma in esecuzione, per poi riavvolgere e riprodurre tali istruzioni, compresi eventuali errori, per ispezionare lo stato del programma, questi debugger sono molto utili negli scenari concorrenti \cite{Engblom}.\\
+Di contro però, la maggior parte dei debugger fornisce (infatti), un'assistenza limitata all'esecuzione in avanti del codice per la navigazione temporale, per cui i programmatori devono spesso ricorrere alla simulazione dell'esecuzione del programma mentalmente per cercare di immaginare i flussi di istruzioni che vengono eseguiti. Infatti, con un debugger a \textit{runtime}, il programmatore può cercare il bug inserendo dei breackpoint all'interno dei thread e sperare di scovare il bug facendo dei tentativi, magari entrando in watch per osservare come vengono modificate le variabili durante l'esecuzione del programma. A tal proposito sono nati anche debug più complessi i cosidetti: debugger reversibili che a differenza dei debugger tradizionali, consentono agli sviluppatori di registrare le attività del programma in esecuzione, per poi riavvolgere e riprodurre tali istruzioni, compresi eventuali errori, per ispezionare lo stato del programma, questi debugger sono molto utili negli scenari concorrenti \cite{Engblom}.\\
 Riavvolgere le azioni di un particolare processo significa anche annullare ogni conseguenza dell'operazione (cioè  tutte le azioni ``collegate'' a quell'operazione) che si vuole annullare. Questa nozione è chiamata \textit{consistenza causale} \cite{Danos}.
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
@@ -298,15 +298,15 @@ In questa sezione, verrà mostrata la sintassi di un linguaggio funzionale di pri
 \newline
 Nella Figura~\ref{ErlangSyntax} viene presentata la sintassi del linguaggio, si può notare che vengono considerate solo espressioni di prim'ordine quindi il primo argomento delle applicazioni di funzioni e della spawn è un nome di funzione (invece che un'espressione o chiusura arbitraria) e il primo argomento nelle chiamate è un'operazione built-in $Op$. Rispetto alla sintassi precedente sono state aggiunte le funzioni built-in: 
 \begin{itemize}
-	\item $\mathsf{whereis}$ che dato in input un atomo restituisce il pid associato, se non è registrato l'atomo \textbf{undefined},
-	\item $\mathsf{registered}$ che restituisce una lista di tutti gli atomi nella mappa, se non sono presenti atomi registrati restituisce una lista vuota,
+	\item $\mathsf{whereis}$ che dato in input un atomo restituisce il pid associato, se non è registrato l'atomo \textbf{undefined};
+	\item $\mathsf{registered}$ che restituisce una lista di tutti gli atomi nella mappa, se non sono presenti atomi registrati restituisce una lista vuota;
 \end{itemize}
 sono anche state aggiunte le funzioni:
 \begin{itemize}
-	\item $\mathsf{register}$ che dati in input un atomo e un pid inserisce la in una mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo o il pid sono già presenti nella mappa il processo fallisce.
+	\item $\mathsf{register}$ che dati in input un atomo e un pid inserisce la in una mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo o il pid sono già presenti nella mappa il processo fallisce;
 	\item $\mathsf{unregister}$ che dato in input un atomo toglie dalla mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo non è presente nella mappa il processo fallisce.
 \end{itemize}
-Inoltre è stato creato il non terminale \textit{end} che per riuscire a determinare quando un processo è in uno stato finale, così è possibile determinare se un processo è fallito e in questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. Nelle regole che verranno descritte successivamente il simbolo $\epsilon$ rappresenterà un non terminale \textit{end}. 
+Inoltre è stato creato il non terminale \textit{end} per riuscire a determinare quando un processo è in uno stato finale, così è possibile determinare se un processo è fallito. In questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. Nelle regole che verranno descritte successivamente il simbolo $\epsilon$ rappresenterà un non terminale \textit{end}. 
 
 \section{Semantica del linguaggio}\label{sect:semantica}
 In questa sezione descriveremo formalmente la semantica del linguaggio presentato nella sezione \ref{sect:linguaggio}.
@@ -437,7 +437,7 @@ Verrà utilizzato $\ell$ per indicare un'etichetta fra quelle appena indicate.\\ 
 	\caption{Semantica standard: valutazione espressioni sequenziali} \label{fig:seq-rules}
 \end{figure}
 
-Le transizioni sono etichettate con $ \tau$ (una riduzione sequenziale senza side-effects) o con $\tau\M\M'$ che indica una riduzione che accede alla mappa senza side-effects o con l'etichetta $\bot$ che indica la propagazione di un fallimento o con un'etichetta che identifica la riduzione di un'azione con alcuni side-effects. Le etichette sono usate nelle regole di sistema (Figure~\ref {fig:system-rules}, \ref{fig:system-rules-map}) per determinare gli effetti collaterali associati e/o le informazioni da recuperare.
+Le transizioni sono etichettate con $ \tau$ (una riduzione sequenziale senza side-effects), o con $\tau\M\M'$ che indica una riduzione che accede alla mappa senza side-effects, o con l'etichetta $\bot$ che indica la propagazione di un fallimento, o con un'etichetta che identifica la riduzione di un'azione con alcuni side-effects. Le etichette sono usate nelle regole di sistema (Figure~\ref {fig:system-rules}, \ref{fig:system-rules-map}) per determinare gli effetti collaterali associati e/o le informazioni da recuperare.
 \newline
 Nella Figura~\ref{fig:seq-rules} sono presenti le regole di transizione per la valutazione delle espressioni sequenziali.
 \newline
@@ -518,7 +518,7 @@ Nella Figura~\ref{fig:seq-rules-fail} sono presenti le regole di transizione che
 La propagazione dell'errore è indicata dall'etichetta $\bot$, quindi se una valutazione di un'espressione fallisce allora il fallimento viene propagato. \\
 Con il simbolo $\emptyset$ si intende: 
 \begin{itemize}
-	\item nel caso dei match che l'argomento $v$ non corrisponde a nessuna clausola\footnote {Più precisamente un programma Erlang quando è tradotto nella rappresentazione intermedia Core Erlang, viene aggiunta una clausola catch-all quindi il simbolo $\emptyset$ corrisponde al match della clausola aggiunta.}
+	\item nel caso dei match, che l'argomento $v$ non corrisponde a nessuna clausola\footnote {Più precisamente in un programma Erlang quando è tradotto nella rappresentazione intermedia Core Erlang, viene aggiunta una clausola catch-all quindi il simbolo $\emptyset$ corrisponde al match della clausola aggiunta.};
 	\item Nei casi di eval, evalM e $\mu$ significa che le funzioni non sono definite sull'input dato.
 \end{itemize}
 \begin{figure}[h]
@@ -582,7 +582,7 @@ Con il simbolo $\emptyset$ si intende:
 	\caption{Semantica standard: valutazione delle espressioni concorrenti} \label{fig:concurrent-rules}
 \end{figure}
 
-Consideriamo ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Abbiamo le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per `` $! $ ''. In questo caso, sappiamo \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole, questo non è noto localmente e, quindi, restituiamo un nuovo simbolo distinto, $\kappa $,  viene trattato come una variabile, in modo che nelle regole di sistema nella figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Ricevive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} ci permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}), in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
+Consideriamo ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Abbiamo le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per `` $! $ ''. In questo caso sappiamo \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole, questo non è noto localmente e, quindi, restituiamo un nuovo simbolo distinto, $\kappa $,  che viene trattato come una variabile, in modo che nelle regole di sistema nella figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Ricevive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} ci permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}), in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
 Nelle regole di valutazione delle espressioni concorrenti della semantica standard sono state aggiunte le regole per la valutazione della $\mathsf{register}$ e dell'$\mathsf{unregister}$.
 
 \begin{figure}[h]
@@ -621,7 +621,7 @@ Nelle regole di valutazione delle espressioni concorrenti della semantica standa
 ~\newline
 Anche nelle regole della valutazione delle espressioni concorrenti sono state aggiunte le regole che gestiscono il fallimento di un processo e che propagano il fallimento della valutazione di un'espressione.
 \newline
-Ora si possono presentare le regole di sistema che sono rappresentate nelle figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} e , in tutte le regole vengono considerato un sistema generale nella forma $\Gamma;\tuple{p,(\theta,e),q}\:\comp\: \Pi;\M$ dove $\Gamma$ è la casella di posta globale, $\tuple{p,(\theta,e),q}\:\comp\: \Pi$ è l'insieme dei processi che contiene almeno un processo e $\M$ è la mappa dei pid registrati. Rispetto all'articolo \cite{Lanese} in tutte le regole è stata aggiunta $\M$ visto che la definizione di sistema (Definizione~\ref{sistema}) è cambiata.\\
+Ora si possono presentare le regole di sistema che sono rappresentate nelle figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}, in tutte le regole viene considerato un sistema generale nella forma $\Gamma;\tuple{p,(\theta,e),q}\:\comp\: \Pi;\M$ dove $\Gamma$ è la casella di posta globale, $\tuple{p,(\theta,e),q}\:\comp\: \Pi$ è l'insieme dei processi che contiene almeno un processo e $\M$ è la mappa dei pid registrati. Rispetto all'articolo \cite{Lanese} in tutte le regole è stata aggiunta $\M$ visto che la definizione di sistema (Definizione~\ref{sistema}) è cambiata.\\
 Ora verranno descritte brevemente tutte le regole di transizione del sistema. 
 \begin{figure}[th]
 	\footnotesize
@@ -695,7 +695,7 @@ La regola $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del p
 La regola $\mathit{Call3}$ come $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione, però accede alla mappa, quindi utilizza l'etichetta $\tau\M\M'$ invece di $\tau$.
 
 Le regole $\mathit{Send} $ e $\mathit{SendA} $ aggiungono la coppia $(p '', v)$ alla casella di posta globale $\Gamma$ invece di aggiungerla alla coda del processo $p ''$. Ciò è necessario per garantire che tutti i possibili intrecci di messaggi siano modellati correttamente.
-È stato introdotta la funzione ausiliaria $\mathsf{isAtom}$ che viene utilizzata per capire se la regola debba accedere alla mappa, l'unica differenza fra le due regole è che la $\mathit{SendA}$ utilizza un atomo come destinatario. 
+È stata introdotta la funzione ausiliaria $\mathsf{isAtom}$ che viene utilizzata per capire se la regola debba accedere alla mappa, l'unica differenza fra le due regole è che la $\mathit{SendA}$ utilizza un atomo come destinatario. 
 Si noti che $e '$ è solitamente diverso da $v$ poiché $e$ può avere operatori annidati diversi. Ad esempio, se $e$ ha la forma `` $\mathsf{case} ~ \mathrm{p} \:! \: V ~ \mathsf {of} ~ \{\ldots \} $,'' allora $ e '$ sarà ``$ \mathsf {case} ~ v ~ \mathsf {of} ~ \{\ldots \} $'' con etichetta $ \mathsf {send} (\mathrm {p}, v) $.
 
 La regola $\mathit{SendF}$ introduce un fallimento, infatti l'espressione da valutare successivamente nel processo sarà $sendFail$ un atomo che corrisponde ad un fallimento perché all'atomo che si utilizza per inviare un messaggio non è associato nessun pid che si capisce grazie alla funzione $\mathsf{matchPid}$.
@@ -755,13 +755,13 @@ Queste regole sono divise in 2 casi:
 	\item il caso di successo, 
 	\item il caso di fallimento (che introduce come prossima espressione da valutare un atomo che descrive un fallimento).
 \end{itemize}
-Il caso di successo corrisponde alle regole $\mathit{RegisterT}$ e $\mathit{UnregisterT}$ che rispettivamente aggiungo la coppia $(a,p')$ alla mappa e tolgono la coppia $(a,p')$ dalla mappa.
+Il caso di successo corrisponde alle regole $\mathit{RegisterT}$ e $\mathit{UnregisterT}$ che rispettivamente aggiungono la coppia $(a,p')$ alla mappa e tolgono la coppia $(a,p')$ dalla mappa.
 Mentre il caso di fallimento corrisponde alle regole $\mathit{RegisterF}$ e $\mathit{UnregisterF}$. 
 
 
 La regola $\mathit{Catch}$ serve per gestire il caso di fallimento di un processo. In questo caso il fallimento viene catturato al top-level.
 
-La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. 
+La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrat. 
 
 
 Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang, visto che nel linguaggio utilizzato non sono presenti le eccezioni.
