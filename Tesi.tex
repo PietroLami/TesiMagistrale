@@ -10,8 +10,7 @@
 \usepackage{xcolor}
 \oddsidemargin=30pt \evensidemargin=20pt%impostano i margini
 
-\usepackage[italian]{babel}
-
+\usepackage[all]{xy}
 \usepackage{pdfpages}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -152,11 +151,6 @@
 \usepackage{xcolor}
 \newcommand{\mathcolorbox}[2]{\colorbox{#1}{$\displaystyle #2$}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
 \renewcommand{\chaptermark}[1]{%
 	\markboth{ #1}{}}
 
@@ -199,6 +193,16 @@
 
 \renewcommand{\ttdefault}{cmtt}
 \usepackage{url}
+\usepackage{tikz}
+\usepackage{diagbox}
+\usepackage{multirow}
+\newcommand{\reflect}[1]{\tikz[baseline=(h.base)]\node[xscale=-1](h){#1}; }
+\usepackage{centernot}
+\usepackage{ebproof}
+% \usepackage{tikz} % Useless, but might be handy to draw fancier lines.
+\usepackage{amssymb} % To provide the \varnothing symbol
+\newcommand{\nothing}{\varnothing} % different from \emptyset
+
 
 
 \begin{document}
@@ -758,19 +762,111 @@ Queste regole sono divise in 2 casi:
 Il caso di successo corrisponde alle regole $\mathit{RegisterT}$ e $\mathit{UnregisterT}$ che rispettivamente aggiungono la coppia $(a,p')$ alla mappa e tolgono la coppia $(a,p')$ dalla mappa.
 Mentre il caso di fallimento corrisponde alle regole $\mathit{RegisterF}$ e $\mathit{UnregisterF}$. 
 
-
 La regola $\mathit{Catch}$ serve per gestire il caso di fallimento di un processo. In questo caso il fallimento viene catturato al top-level.
 
 La regola $End$ serve per gestire il caso di fine di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. 
 
-
 Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang, visto che nel linguaggio utilizzato non sono presenti le eccezioni.
+
+\subsection*{Concorrenza in Erlang}
+
+Per definire una semantica reversibile per Erlang abbiamo bisogno non solo di una semantica come quella appena presentata, ma anche di una nozione di concorrenza (o, equivalentemente, della nozione opposta di conflitto). 
+
+Dati i sistemi $ s_1, s_2 $, chiamiamo $ s_1 \hoo ^ \ast s_2 $ una \emph {derivazione}.
+%
+Le derivazioni in un passaggio sono chiamate semplicemente \emph {transizioni}. Usiamo $ d, d ', d_1, \ldots $ per indicare le derivazioni e $ t, t', t_1, \ldots $ per le transizioni.
+
+Le transizioni vengono etichettate con: $s_1 \hoo_{p,r} s_2$ dove:
+\begin{itemize}
+	\item $p$ è il pid del processo selezionato nella transizione o del processo a cui viene consegnato un messaggio (se la regola applicata è  $\mathit{Sched})$;
+	\item $r$ è l'etichetta della regola di transizione applicata. 
+\end{itemize}
+Data una derivazione $ d = (s_1 \hoo ^\ast s_2) $, definiamo $ \init(d) = s_1 $ e $ \final(d) = s_2 $.
+Due derivazioni, $ d_1 $ e $ d_2 $, sono \emph{componibili} se $\final(d_1) = \init (d_2) $. In questo caso, $ d_1; d_2 $ corrisponde alla composizione $d_1; d_2=(s_1\hoo s_2\hoo\cdots\hoo s_n\hoo s_{n + 1}\hoo\cdots\hoo s_m)$ se $d_1 = (s_1 \hoo s_2 \hoo \cdots \hoo s_n) $ e $ d_2 = (s_n \hoo s_ {n + 1} \hoo \cdots \hoo s_m)$.
+Due derivazioni, $ d_1 $ e $ d_2 $, sono dette \emph{coiniziali} se $\init(d_1) = \init (d_2) $ e \emph {cofinali} se $\final(d_1) = \final( d_2)$.
+
+\begin{definition}[Transizioni concorrenti] \label{def:concurrent1}
+	Date due transizioni coiniziali, $t_1 = (s \hoo_{p_1,r_1} s_1)$
+	e $t_2 = (s \hoo_{p_2,r_2} s_2)$, si dice che sono
+	\emph{in conflitto} se:
+  \begin{itemize}
+	\item considerano lo stesso processo, i.e., $p_1 = p_2$, e anche $r_1 = r_2 = \mathit{Sched}$ o se una transizione applica la regola $\mathit{Sched}$ e l'altra applica la regola $\mathit{Receive}$ \cite{Lanese};
+	\item entrambe sono operazioni sulla mappa e una delle due regole accede in scrittura sulla mappa ($\mathsf{RegisterT}$, $\mathsf{UnregisterT}$, $\mathsf{End}$) e l'altra accede o in scrittura o in lettura ($\mathsf{SendA}$, $\mathsf{SendF}$, $\mathsf{RegisterF}$, $\mathsf{UnregisterF}$, $\mathsf{Call3}$) sulla mappa, in modo che una delle funzioni ($\mathsf{matchPid}$, $\mathsf{matchMapReg}$, $\mathsf{matchMapUnreg}$, $\mathsf{matchEnd}$, $\mathsf{evalM}$) utilizzate non abbia più lo stesso risultato. I casi in cui questo accade sono presenti nella tabella~\ref{tab:conflitti}.
+	\begin{table}[h]
+		\hspace{-15ex}
+		\begin{tabular}{|l|l|lllllll}
+			\hline
+			\backslashbox{$~r_1~~$} {$~~r_2~$} & $\mathsf{Call3}$ & \multicolumn{1}{l|}{$\mathsf{UnregisterF}$} & \multicolumn{1}{l|}{$\mathsf{RegisterF}$} & \multicolumn{1}{l|}{$\mathsf{SendF}$} & \multicolumn{1}{l|}{$\mathsf{SendA}$} & \multicolumn{1}{l|}{$\mathsf{End}$} & \multicolumn{1}{l|}{$\mathsf{UnregisterT}$} & \multicolumn{1}{l|}{$\mathsf{RegisterT}$} \\ \hline
+			$\mathsf{RegisterT}$   &    \begin{tabular}[c]{@{}l@{}}$a_1  \in \mathsf{M'} ~\lor$ \\ $ p' \in \mathsf{M'}$\end{tabular}   & \multicolumn{1}{l|}{$a_1=a_2$}            & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{$a_1=a_2$}      & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}$a_1=a_2 ~\lor$ \\ $ p'=p''$\end{tabular}}          \\ \hline
+			$\mathsf{UnregisterT}$ &  \begin{tabular}[c]{@{}l@{}}$a_1  \in \mathsf{M'} ~\lor$ \\ $ p' \in \mathsf{M'}$\end{tabular}      & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{$a_1=a_2$}          & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{$a_1=a_2$}& \multicolumn{1}{l|}{$a_1=a_2$}    & \multicolumn{1}{l|}{$a_1=a_2$}            &                                \\ \cline{1-8}
+			$\mathsf{End}$         &    \begin{tabular}[c]{@{}l@{}}$a_1  \in \mathsf{M'} ~\lor$ \\ $ p' \in \mathsf{M'}$\end{tabular}   & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{$a_1=a_2$}          & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{$a_1=a_2$}      & \multicolumn{1}{l|}{}    &                                  &                                \\ \cline{1-7}
+			$\mathsf{SendA}$       &       & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{}      & \multicolumn{1}{l|}{}      &                          &                                  &                                \\ \cline{1-6}
+			$\mathsf{SendF}$       &       & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{}          & \multicolumn{1}{l|}{}      &                            &                          &                                  &                                \\ \cline{1-5}
+			$\mathsf{RegisterF}$   &       & \multicolumn{1}{l|}{}            & \multicolumn{1}{l|}{}          &                            &                            &                          &                                  &                                \\ \cline{1-4}
+			$\mathsf{UnregisterF}$ &       & \multicolumn{1}{l|}{}            &                                &                            &                            &                          &                                  &                                \\ \cline{1-3}
+			$\mathsf{Call3}$       &       &                                  &                                &                            &                            &                          &                                  &                                \\ \cline{1-2}
+		\end{tabular}
+		\caption{\label{tab:conflitti} Tabella dei conflitti}
+	\end{table}
+
+	Nella Tabella~\ref{tab:conflitti} sono presenti i casi in cui si verificano i conflitti, $a_1$ e $p'$ rappresentano l'atomo e il pid coinvolti da $r_1$, mentre $a_2$ e $p''$ rappresentano l'atomo e il pid coinvolto da $r_2$. $\mathsf{M'}$ rappresenta gli elementi letti nella mappa dalla regola $\mathsf{Call3}$. Le celle vuote rappresentano transizioni coiniziali che non vanno in conflitto.\\
+	Da notare che non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
+\end{itemize}
+Due transizioni coiniziali sono \emph{concorrenti} se non sono in conflitto. \qed
+\end{definition}
+	\begin{example}
+	Nel caso $\mathsf{RegisterT}, ~ \mathsf{UnregisterT}$ non può essere presente un conflitto quando le due transizioni sono coiniziali perché si dovrebbe avere che $a_1$ non dovrebbe appartenere alla mappa di atomi e pid per applicare $\mathsf{RegisterT}$, $a_2$ dovrebbe appartenere alla mappa di atomi e pid per poter applicare $\mathsf{UnregisterT}$ e per essere in conflitto $a_1$ dovrebbe essere uguale ad $a_2$ il che è impossibile. 
+\end{example}
+
+Questa definizione è utile per la dimostrazione del prossimo lemma.
+
+\begin{lemma}[\textbf{Square lemma}] \label{lemma:square1} Date due transizioni coiniziali concorrentu $t_1 = (s \hoo_{p_1,r_1} s_1)$ e
+	$t_2 = (s \hoo_{p_2,r_2} s_2)$, allora esistono due transizioni cofinali $t_2/t_1 = (s_1 \hoo_{p_2,r_2} s')$ e
+	$t_1/t_2 = (s_2 \hoo_{p_1,r_1} s')$.  Graficamente,
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@{^{(}->}[r]^{p_1,r_1} \ar@<1pt>@{^{(}->}[d]_{p_2,r_2} & s_1\\
+			s_2 & 
+		}
+	\end{minipage}
+	~~
+	\Longrightarrow
+	~~
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@{^{(}->}[r]^{p_1,r_1} \ar@{^{(}->}[d]_{p_2,r_2} & s_1 \ar@{^{(}->}[d]^{p_2,r_2}\\
+			s_2 \ar@{^{(}->}[r]_{p_1,r_1} &  s'
+		}
+	\end{minipage}
+	\]
+\end{lemma}
+\begin{proof}
+	Abbiamo i seguenti casi:
+	\begin{itemize}
+		\item entrambe le transizioni non applicano regole sulla mappa:
+			\begin{itemize}
+		\item due transizioni $ t_1 $ e $ t_2 $ dove $r_1\neq\mathit{Sched}$ e $r_2\neq\mathit{Sched}$. Banalmente, si applicano a processi diversi, ad esempio $p_1\neq p_2$. Quindi, possiamo facilmente dimostrare che applicando la regola $r_2$ a $p_1$ in $s_1$ e la regola $r_1$ a $p_2$ in $s_2$ abbiamo due transizioni $t_1/t_2$ e $t_2/t_1$ che sono cofinali \cite{Lanese};
+		\item una transizione $t_1$ che applica la regola $r_1=\mathit{Sched}$ per consegnare il messaggio $v_1$ all'elaborazione $p_1=\mathrm{p}$, e un'altra transizione che applica una regola $r_2$ diversa da $\mathit{Sched}$. Tutti i casi tranne $r_2=\mathit{Ricevi}$ con $p_2=\mathrm{p}$ sono semplici. Quest'ultimo caso, tuttavia, non può accadere poiché le transizioni che utilizzano le regole $\mathit{Sched}$ e $\mathit{Ricevi}$ non sono simultanee \cite{Lanese};
+		\item due transizioni $ t_1 $ e $ t_2 $ con le regole $ r_1 = r_2 = \mathit {Sched} $ che consegnano rispettivamente i messaggi $ v_1 $ e $ v_2 $. Poiché le transizioni sono simultanee, dovrebbero consegnare i messaggi a processi differenti, cioè $ p_1 \neq p_2 $. Pertanto, possiamo vedere che consegnando $ v_2 $ da $ s_1 $ e $ v_1 $ da $ s_2 $ otteniamo due transizioni cofinali \cite{Lanese}; 
+				\end{itemize}
+		\item due transizioni $t_1$ e $t_2$ dove $r_1 = $ operazione sulla mappa e $r_2 \neq $ operazione sulla mappa. Quindi, possiamo facilmente dimostrare che applicando la regola $r_2$ a $p_1$ in $s_1$ e la regola $r_1$ a $p_2$ in $s_2$ abbiamo due transizioni $t_1 / t_2$ e $t_2 / t_1$ che sono cofinali;
+		\item vale anche se entrambe le operazioni $r$ sono eseguite sulla mappa, questo perché se andassero a modificare gli stessi elementi della mappa non potrebbero essere concorrenti per la definizione data: 
+		\begin{itemize}
+			\item se $r_1 = r_2 = \mathsf{UnregisterT}$ e deregistrano gli atomi $a_1$ e $a_2$ se le due operazioni sono concorrenti (quindi $a_1 \not= a_2$), deregistrare prima $a_1$ e poi $a_2$ o viceversa non cambia (in $s'$ la mappa sarà la stessa);
+			\item  questo ragionamento lo si può fare con tutte le regole sulla mappa.  
+		\end{itemize}
+
+	\end{itemize}
+\end{proof} 
+Notiamo qui che sono possibili altre definizioni di transizioni concorrenti. La modifica del modello di concorrenza richiederebbe la modifica delle informazioni memorizzate nella semantica reversibile al fine di preservare la coerenza causale. Abbiamo scelto la nozione sopra poiché è ragionevolmente semplice da definire e perché è facile lavorarci.
 
 
 \section{Semantica reversibile}\label{sect:semreversibile}
 
-\section{Semantica rollback}\label{sect:semrollback}
 
+
+\section{Semantica rollback}\label{sect:semrollback}
 
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
@@ -816,7 +912,6 @@ Questa scelta è stata fatta per essere il più possibili fedeli al comportamento 
 	\newblock Technical Report SIC-15/13, Dpto.\ Sistemas Inform\'aticos y
 	Computaci\'on, Universidad Complutense de Madrid, 2013.
 	
-	
 	\bibitem{Engblom}
 	Engblom, J. (2012, September). 
 	\newblock A review of reverse debugging.
@@ -832,13 +927,5 @@ Questa scelta è stata fatta per essere il più possibili fedeli al comportamento 
 	\newblock Preliminary version available from
 	\texttt{https://arxiv.org/abs/1608.05521}.
 	
-	
 \end{thebibliography}
-
-
-
-%\bibliography{bibliografia}
-%\bibliographystyle{unsrt}
-
-
 \end{document}
