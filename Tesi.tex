@@ -18,23 +18,6 @@
 
 \usepackage{color}
 
-\newcommand{\red}[1]{{\color{red} #1}}
-\newcommand{\green}[1]{{\color{green} #1}}
-\newcommand{\blue}[1]{{\color{black} #1}}  %%%%% black !!
-\newcommand{\brown}[1]{{\color{brown} #1}}
-\newcommand{\purple}[1]{{\color{purple} #1}}
-\newcommand{\gray}[1]{{\color{gray} #1}}
-
-% for program texts:
-\makeatletter
-\newenvironment{prog}{\vspace{0.7ex}\par
-	\setlength{\parindent}{0.7cm}
-	\obeylines\@vobeyspaces\tt}{\vspace{0.7ex}\noindent
-}
-\makeatother
-\newcommand{\startprog}{\begin{prog}}
-	\newcommand{\stopprog}{\end{prog}\noindent}
-\newcommand{\fpr}[1]{\mbox{\footnotesize\tt #1}} % program text in subscripts
 
 \newcommand{\snorm}{||\!\cdot\!||} 
 \newcommand{\depth}{\mathit{depth}} 
@@ -138,6 +121,8 @@
 \newcommand{\lhh}{\leftharpoondown\hspace{-1.8ex}\leftharpoondown}
 \newcommand{\rlhh}{\rightleftharpoons\hspace{-1.8ex}\rightleftharpoons}
 \newcommand{\M}{\mathsf{M}}
+\newcommand{\s}{\mathsf{S}}
+
 
 \newcommand{\remark}[1]{\mbox{}\\\fbox{\begin{minipage}{.95\linewidth}
 			Remark: \textsf{#1} \end{minipage}}\\}
@@ -197,11 +182,12 @@
 \usepackage{diagbox}
 \usepackage{multirow}
 \newcommand{\reflect}[1]{\tikz[baseline=(h.base)]\node[xscale=-1](h){#1}; }
-\usepackage{centernot}
+
 \usepackage{ebproof}
 % \usepackage{tikz} % Useless, but might be handy to draw fancier lines.
 \usepackage{amssymb} % To provide the \varnothing symbol
 \newcommand{\nothing}{\varnothing} % different from \emptyset
+\usepackage{cancel}
 
 
 
@@ -864,10 +850,263 @@ Notiamo qui che sono possibili altre definizioni di transizioni concorrenti. La 
 
 \section{Semantica reversibile}\label{sect:semreversibile}
 
+In questa sezione, introduciamo una semantica reversibile (non controllata) per il linguaggio considerato. Grazie al design modulare della semantica concreta, non è necessario modificare le regole di transizione per le espressioni del linguaggio per definire la semantica reversibile.
+
+Per essere precisi, in questa sezione introduciamo due relazioni di transizione: $ \rh $ e $ \lh $. La prima relazione, $ \rh $, è un'estensione conservativa della semantica standard $ \hoo $ (Figure~\ref {fig:system-rules} e \ref{fig:system-rules-map}) per includere anche alcune informazioni aggiuntive negli stati, seguendo un tipico incorporamento di Landauer. Ci riferiamo a $ \rh $ come alla semantica reversibile \emph{forward} (o semplicemente alla semantica forward). Al contrario, la seconda relazione, $ \lh $, procede nella direzione all'indietro, ``annullando'' le azioni passo dopo passo. Ci riferiamo a $ \lh $ come semantica \emph{backward} (reversibile). Indichiamo l'unione $ \rh \cup \lh $ con $ \rlh $.
+
+Per evitare di annullare tutte le azioni fino all'inizio del processo, lasceremo anche che il programmatore introduca \emph{checkpoints}. Sintatticamente, sono indicati con la funzione incorporata \textsf{check}, che accetta un identificatore $ \mathtt{t} $ come argomento. Tali identificatori dovrebbero essere univoci nel programma. Data un'espressione, $ expr $, possiamo introdurre un checkpoint sostituendo $ expr $ con `` $\mathsf {let} ~ X = \mathsf {check} (\mathtt {t}) ~ \mathsf {in} ~ expr $''. Una chiamata nella forma $ \mathsf {check} (\mathtt {t}) $ restituisce semplicemente $ \mathtt {t} $ (vedi sotto).
+Di seguito, consideriamo che le regole per valutare le espressioni del linguaggio (Figure~\ref {fig:seq-rules} e \ref{fig:concurrent-rules}) sono estese con la seguente regola:
+\[
+(\mathit{Check}) ~~ 
+{\displaystyle 
+   	\frac{}{\theta,\mathsf{check}(\mathtt{t}) \arro{\mathsf{check}(\mathtt{t})} \theta,\mathtt{t}}}
+\]
+
+Le principali modifiche effettuate sono state l'aggiunta di una storia al processo, di un identificatore per i messaggi (un timestamp $\lambda$)~\cite{Lanese} e di una storia della mappa. 
+L'aggiunta della storia del processo e della mappa è un tipico incorporamento di Laundered in cui viene aggiunta la cronologia delle operazioni eseguite dal processo (nel primo caso) e delle operazioni eseguite sulla mappa. Il sistema ora include una memoria (storia) che registra gli stati intermedi della mappa. Questo è stato fatto perché in questo modo è possibile tenere traccia delle operazioni che sono state eseguite sulla mappa e del loro ordine di esecuzione.
+
+Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un "ack" dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non possiamo distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
+
+\begin{figure}[hp]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		(\mathit{Seq}) ~ {\displaystyle
+			\frac{\theta,e\arro{\tau} \theta',e'
+			}{\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh
+				\Gamma;\tuple{p,\tau(\theta,e)\cons\h,(\theta',e'),q}\comp \Pi;\mathcolorbox{yellow}{\M;\s} }
+		}\\[4ex]
+		
+		(\mathit{Check}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{check}(\mathtt{t})} \theta',e'}{\Gamma;\tuple{p,\h,(\theta,e),q} 
+				\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh \Gamma;\tuple{p,\mathsf{check}(\theta,e,\mathtt{t})\cons\h,(\theta',e'),q} 
+				\comp \Pi;\mathcolorbox{yellow}{\M;\s} }
+		}\\[4ex]
+		
+		(\mathit{Send}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{send}(p'',v)}
+				\theta',e'~~~\k~\mbox{is a fresh identifier} ~\mathcolorbox{yellow}{\mathsf{isAtom}(p'')=false ~~ }}
+			{
+				\begin{split}
+					\Gamma;\tuple{p,\h,(\theta,e),q} 
+					\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh
+					\Gamma\cup (p'',\{v,\k\});\tuple{p,\mathsf{send}(\theta,e,p'',\{v,\k\})\cons
+						\h,(\theta',e'),q}\comp \Pi;
+					\mathcolorbox{yellow}{\M;\s}
+				\end{split}
+			}
+		}\\[8ex]
+		
+		\mathcolorbox{yellow}{(\mathit{SendA}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{send}(a,v)}
+					\theta',e'~~~\k~\mbox{is a fresh identifier} ~\mathcolorbox{yellow}{\mathsf{isAtom}(a)=true ~~ \mathsf{matchPid}(\M, a) = p''}}
+				{
+					\begin{split}
+						\Gamma;\tuple{p,\h,(\theta,e),q} 
+						\comp \Pi;\M;\s \rh
+						\Gamma\cup (p'',\{v,\k\});\tuple{p,\mathsf{sendA}(\theta,e,p'',\{v,\k\},a,p)\cons
+							\h,(\theta',e'),q}\comp \Pi;\\
+						\M;\mathsf{sendA}(\theta,e,p'',\{v,\k\},a,p)\cons\s
+					\end{split}
+				}
+		}}\\[8ex]
+		
+		\mathcolorbox{yellow}{(\mathit{SendF}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{send}(a,v)}
+					\theta',e'~~~\mathcolorbox{yellow}{\mathsf{isAtom}(a)=true ~~ \mathsf{matchPid}(\M, a) = false}}
+				{\begin{split}
+						\Gamma;\tuple{p,\h,(\theta,e),q} 
+						\comp \Pi;\M;\s \rh
+						\Gamma;\tuple{p,\mathsf{sendF}(\theta,e,a,p)\cons
+							\h,(\theta,sendFail),q}\comp \Pi;\\
+						\M;\mathsf{sendF}(\theta,e,a,p)\cons\s
+					\end{split}
+			}}
+		}\\[8ex]
+		
+		(\mathit{Receive}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{rec}(\kappa,\ol{cl_n})}
+				\theta',e'~~~ \mathsf{matchrec}(\theta,\ol{cl_n},q) = (\theta_i,e_i,\{v,\k\})}{\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh
+				\Gamma;\tuple{p,\mathsf{rec}(\theta,e,\{v,\k\},q)\cons\h,(\theta'\theta_i,e'\{\kappa\mapsto e_i\}),q\backslash\!\!\backslash\{v,\k\}}\comp \Pi;\mathcolorbox{yellow}{\M;\s}}
+		}\\[4ex]
+		
+		(\mathit{Spawn}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{spawn}(\kappa,a/n,[\ol{v_n}])}
+				\theta',e'~~~ p'~\mbox{is a fresh pid}}%%~~~\mbox{and $\mathtt{t}$ is fresh}}
+			{\begin{array}{ll}
+					\Gamma;\tuple{p,\h,(\theta,e),q} 
+					\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh &
+					\Gamma;\tuple{p,\mathsf{spawn}(\theta,e,p')\cons\h,(\theta',e'\{\kappa\mapsto
+						p'\}),q} \\
+					& \comp \tuple{p',\nil,(\id,\mathsf{apply}~a/n~(\ol{v_n})),\nil} 
+					\comp \Pi;\mathcolorbox{yellow}{\M;\s}
+			\end{array}}
+		}\\[6ex]
+		
+		(\mathit{Self}) ~ {\displaystyle
+			\frac{\theta,e \arro{\mathsf{self}(\kappa)} \theta',e'}
+			{\Gamma;\tuple{p,\h,(\theta,e),q} \comp \Pi;\mathcolorbox{yellow}{\M;\s} 
+				\rh 
+				\Gamma;\tuple{p,\mathsf{self}(\theta,e)\cons\h,(\theta',e'\{\kappa\mapsto p\}),q} 
+				\comp \Pi;\mathcolorbox{yellow}{\M;\s} }
+		}\\[4ex]
+		
+		(\mathit{Sched}) ~ {\displaystyle
+			\frac{~}
+			{\Gamma\cup\{(p,\{v,\k\})\};\tuple{p,\h,(\theta,e),q}\comp\Pi;\mathcolorbox{yellow}{\M;\s} 
+				\rh \Gamma;\tuple{p,\h,(\theta,e),\{v,\k\}\cons q}\comp\Pi;\mathcolorbox{yellow}{\M;\s}}
+		}
+	\end{array}
+	\]
+		\caption{Semantica reversibile forward} \label{fig:forwardsem}
+\end{figure}
+The transition rules of the forward reversible semantics can be found
+in Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1}. Processes now include a memory (or
+\emph{history}) $\h$ that records the intermediate states of a process,
+and messages have an associated unique identifier. In the memory, we use terms
+headed by constructors $\tau$, $\mathsf{check}$, $\mathsf{send}$,
+$\mathsf{rec}$, $\mathsf{spawn}$, and $\mathsf{self}$
+to record the steps performed by the forward semantics. Note that
+we could optimise the information stored in these terms by following a
+strategy similar to that in \cite{MHNHT07,NPV16,TA15} for the
+reversibility of functional expressions, but this is orthogonal to our
+purpose in this paper, so we focus mainly on the concurrent actions.
+%
+Note also that the auxiliary function $\mathsf{matchrec}$ now deals
+with messages of the form $\{v,\k\}$, which is a trivial
+extension of the original function in the standard semantics by just
+ignoring $\k$ when computing the first matching message.
+\begin{figure}[hp]
+	\footnotesize
+	\[
+	\begin{array}{c}
+		
+		\mathcolorbox{yellow}{(\mathit{Call3}) ~ {\displaystyle
+				\frac{\theta,e\arro{\tau\M\M'} \theta',e'}
+				{      \begin{split}
+						\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\M;\s 
+						\rh \Gamma;\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\comp \Pi;\\
+						\M;\tau\mathsf{MM'}(\theta,e,p)\cons\s
+					\end{split}
+				}
+		}}\\[7ex]
+	
+		\mathcolorbox{yellow}{(\mathit{RegisterT}) ~ {\displaystyle
+				\frac{\theta,e\arro{\mathsf{register}(\mathsf{true},a,p')} \theta',e'~ \mathsf{matchMapReg}(\M, a,p') = true}
+				{    
+					\begin{split}
+						\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\M;\s 
+						\rh \Gamma;\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi;\\
+						\M\cup(a,p'); \mathsf{regT}(\theta,e,a,p',p) \cons\s
+					\end{split}
+			}}
+		}\\[7ex]
+		
+		\mathcolorbox{yellow}{(\mathit{RegisterF}) ~ {\displaystyle
+				\frac{\theta,e\arro{\mathsf{register}(\mathsf{false},a,p')} \theta',e' ~ \mathsf{matchMapReg}(\M, a,p') = false}
+				{\begin{split}
+						\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\M;\s 
+						\rh \Gamma;\tuple{p,\mathsf{regF}(\theta,e,a,p',p)\cons\h,(\theta,regFail),q}\comp \Pi;\\
+						\M; \mathsf{regF}(\theta,e,a,p',p) \cons\s 
+			\end{split}}}
+		}\\[7ex]
+		
+		\mathcolorbox{yellow}{(\mathit{UnregisterT}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{unregister}(\mathsf{true},a)}
+					\theta',e' ~ \mathsf{matchMapUnreg}(\M, a,p) = p'} 
+				{      \begin{split}
+						\Gamma;\tuple{p,h,(\theta,e),q}\comp \Pi;\M;\s 
+						\rh \Gamma;\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h, (\theta',e'),q}\comp \Pi; \\
+						\M\backslash\!\!\backslash(a,p'); \mathsf{unregT}(\theta,e,a,p',p)\cons\s  
+				\end{split}}
+		}}\\[7ex]
+		
+		\mathcolorbox{yellow}{(\mathit{UnregisterF}) ~ {\displaystyle
+				\frac{\theta,e \arro{\mathsf{unregister}(\mathsf{false},a)}
+					\theta',e' ~ \mathsf{matchMapUnreg}(\M, a,p) = false} 
+				{
+					\begin{split}
+						\Gamma;\tuple{p,h,(\theta,e),q}\comp \Pi; \M;\s 
+						\rh \Gamma;\tuple{p,\mathsf{unregF}(\theta,e,a,p)\cons\h,(\theta,unregFail),q}\comp \Pi;\\
+						\M;\mathsf{unregF}(\theta,e,a,p) \cons\s  
+					\end{split}
+				}
+		}}\\[7ex]
+		
+		\mathcolorbox{yellow}{(\mathit{Catch}) ~ {\displaystyle
+				\frac{ \theta,e \arro{\bot}  fail  }{\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi; \M;\s \rh
+					\Gamma;\tuple{p,\mathsf{fail}(\theta,e)\cons\h,(\theta,fail),q}\comp \Pi; \M;\s}
+		}}\\[3ex]
+
+		\mathcolorbox{yellow}{(\mathit{End}) ~ {\displaystyle
+				\frac{\mathsf{matchEnd}(\M,p)=a'}{
+						\Gamma;\tuple{p,\h,(\theta,\epsilon),q}\comp \Pi;\M;\s \rh
+						\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
+						\M\backslash\!\!\backslash (a' ,p); \mathsf{end}(\theta,\epsilon,a',p)\cons\s
+				}
+		}}				
+	\end{array}
+	\]
+	\caption{Semantica reversibile forward} \label{fig:forwardsem1}
+\end{figure}
+
+
+In alcune delle regole di transizione della semantica backward, nelle side condition si richiederà che non siano presenti alcune delle regole di lettura o scrittura. 
+
+ \begin{definition}[$\varepsilon$ e $\cancel{\varepsilon}$]\label{def:coinvolgimento}
+	Per le operazioni sulla mappa diciamo che $x ~ \varepsilon ~op$ se l'operazione coinvolge l'elemento $x$ cioè se l'operazione aggiunge, rimuove o legge l'elemento $x$ dalla mappa. Si indica con $x~\cancel{\varepsilon}~op$ se l'operazione non coinvolge l'elemento $x$.
+	Di seguito verrà mostrato l'elenco di come nella storia della mappa le regole vengono rappresentate e di quali sono gli elementi coinvolti.
+	\begin{itemize}
+		\item se $op=\mathsf{regT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{regT}$, $p ~\varepsilon~ \mathsf{regT}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
+		\item se $op=\mathsf{unregT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{unregT}$, $p ~\varepsilon ~\mathsf{unregT}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
+		\item se $op=\mathsf{regF}(\theta,e,a,p,p')$ allora $a~ \varepsilon~ \mathsf{regF}$, $p~ \varepsilon~ \mathsf{regF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
+		\item se $op=\mathsf{unregF}(\theta,e,a,p')$ allora  $p~ \varepsilon~ \mathsf{unregF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
+		\item se $op=\mathsf{sendA}(\theta,e,p,\{v,\k\},a,p')$ allora $a ~\varepsilon~ \mathsf{sendA}$, $p~ \varepsilon~ \mathsf{sendA}$, $p'$ è il pid corrispondente al processo che esegue l'operazione e la coppia $\{v,\k\}$ rappresenta il messaggio inviato
+		\item se $op=\mathsf{sendF}(\theta,e,a,p')$ se e solo se $a ~\varepsilon~ \mathsf{sendF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
+		\item se $op=\mathsf{end}(\theta,e,p)$ allora $a~ \varepsilon~ \mathsf{end}$, $p ~\varepsilon ~\mathsf{end}$ e $p$ è il pid corrispondente al processo che esegue l'operazione, da notare che 
+		\item se $op=\tau\mathsf{MM'}(\theta,e,p')$ allora $\forall~ p,a\in \mathsf{M'}; ~ p~\varepsilon ~ \tau\mathsf{MM'} \land a~\varepsilon ~ \tau\mathsf{MM'},$ e $p'$ è il pid corrispondente al processo che esegue l'operazione \qed
+	\end{itemize}
+\end{definition}
+%Per queste regole $a$ e $p$ sono gli atomi e i pid coinvolti dalla regola (se presenti), $\mathsf{M'}$ sono gli atomi e i pid coinvolti dalla $\mathsf{Call3}$. L'ultimo elemento ($p'$) è il pid corrispondente a processo che esegue l'operazione. Nel caso della regola $\mathsf{End}$ i due pid coincidono ($p=p'$) negli altri casi possono essere diversi.\\ La coppia $\{v,\k\}$ nella regola $\mathsf{sendA}$ rappresenta il messaggio inviato. \\Mentre si può notare che l'unica regola che non coinvolge nessun pid è la $\mathsf{unregF}$.
+
+
+\begin{definition}[Operazioni lettura e scrittura]\label{def:lettura-scrittura}
+	
+	Per la semantica standard si era detto che:
+	\begin{itemize}
+		\item per operazioni in scrittura si intendono le operazioni che modificano la mappa (cioè quelle regole che aggiungono o tolgono coppie alla mappa) e sono $\mathsf{RegisterT}$, $\mathsf{UnregisterT}$, $\mathsf{End}$.
+		\item per operazioni in lettura si intendono le operazioni che  accedono alla mappa senza modificarla e sono $\mathsf{SendA}$, $\mathsf{SendF}$, $\mathsf{RegisterF}$, $\mathsf{UnregisterF}$, $\mathsf{Call3}$.
+	\end{itemize}
+	Questo vale anche per la semantica forward.
+	Per la semantica backward invece:
+	\begin{itemize}
+		\item le operazioni in scrittura sulla mappa sono $\ol{\mathsf{RegisterT}}$, $\ol{\mathsf{UnregisterT}}$ e $\ol{\mathsf{End}}$, da notare che anche queste operazioni vanno a modificare la mappa nel modo apposto alla regola forward corrispondente. 
+		\item Mentre le operazioni in lettura sulla mappa nel caso della semantica backward sono $\ol{\mathsf{SendA}}$, $\ol{\mathsf{SendF}}$, $\ol{\mathsf{RegisterF}}$, $\ol{\mathsf{UnregisterF}}$ e $\ol{\mathsf{Call3}}$. 
+		Le operazioni di backward in lettura vengono considerate come operazioni che leggono gli stessi elementi dell'operazione forward corrispondenti.\\\qed
+	\end{itemize}
+\end{definition}
+Scegliere di dire che un'operazione all'indietro sia un operazione in lettura è una scelta insolita ma è dovuta al fatto che si vuole evitare un ``annullamento'' di un'operazione di lettura sulla mappa quando la mappa è stata modificata.
+\begin{example}
+	Se si considera il caso in cui la storia ha una forma:
+	\begin{center}
+		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a)$
+	\end{center}
+	se fosse possibile fare un operazione di annullamento di call3 allora si otterrebbe
+	\begin{center}
+		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a);\ol{\mathsf{Call3}(a)}$\\ la storia sarebbe quindi \\ $\mathsf{RegT}(a,p);\mathsf{unregT}(a)$
+	\end{center}
+	Però in questo modo si sarebbe annullata un operazione di lettura sulla mappa dopo che la mappa è stata modificata e si potrebbe riapplicare l'operazione $\mathsf{Call3}(a)$ che fallirebbe (o darebbe un risultato diverso) ottenendo una storia 
+	\begin{center}
+		$\mathsf{RegT}(a,p);\mathsf{unregT}(a);\mathsf{Call3}(a)$
+	\end{center}
+	In questo modo non si potrebbe far vedere che facendo operazioni di \textit{undo-redo} si ritornerebbe in uno stato equivalente.
+\end{example}
+
 
 
 \section{Semantica rollback}\label{sect:semrollback}
 
+In questa sezione introdurremo un operatore di rollback che avvia un calcolo reversibile per un processo.
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
 \chapter{Conclusione}
@@ -926,6 +1165,6 @@ Notiamo qui che sono possibili altre definizioni di transizioni concorrenti. La 
 	Springer, 2017.
 	\newblock Preliminary version available from
 	\texttt{https://arxiv.org/abs/1608.05521}.
-	
+
 \end{thebibliography}
 \end{document}
