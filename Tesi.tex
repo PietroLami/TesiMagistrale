@@ -99,7 +99,7 @@
 % \usepackage{tikz} % Useless, but might be handy to draw fancier lines.
 \usepackage{amssymb} % To provide the \varnothing symbol
 \newcommand{\nothing}{\varnothing} % different from \emptyset
-\usepackage{centernot,cancel}
+\usepackage{cancel}
 
 
 
@@ -1075,7 +1075,7 @@ Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le reg
 					\hspace{20ex}
 					\lh \Gamma;\tuple{p,\h,(\theta,e),q} 
 					\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op ~ \mathsf{o} ~ p'' \centernot\varepsilon  op
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon} ~op ~ \mathsf{o} ~ p''~\cancel{\varepsilon} ~op
 				\end{array}
 		}}\\[6ex]
 		
@@ -1086,7 +1086,7 @@ Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le reg
 					\hspace{20ex}
 					\lh \Gamma;\tuple{p,\h,(\theta,e),q} 
 					\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon} ~op
 			\end{array}}
 		}\\[6ex]
 		
@@ -1164,7 +1164,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 				\begin{array}{l}	
 					\Gamma;\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi;\mathsf{M}\cup(a,p') ; \mathsf{S'}\cons\mathsf{regT}(\theta,e,a,p',p) \cons\mathsf{S} \\
 					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op    
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \cancel{\varepsilon} op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op    
 					\end{array}		
 		}}
 		\\[6ex]
@@ -1174,8 +1174,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 					\Gamma;\tuple{p,\mathsf{regF}(\theta,e,a,p',p)\cons\h,(\theta,regFail),q}\comp \Pi;
 					\mathsf{M,} \mathsf{S'}\cons\mathsf{regF}(\theta,e,a,p',p) \cons\mathsf{S} \\    
 					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op ~ \mathsf{o} ~ p' \centernot\varepsilon op
-					%\mbox{Se in S' non sono presenti operazioni di scrittura sulla mappa }\\\mbox{che coinvolgono il pid p' o l'atomo a}                  
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon} ~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op  
 				\end{array}
 		}}
 		\\[6ex]
@@ -1186,7 +1185,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 					\mathsf{S'}\cons\mathsf{unregT}(\theta,e,a,p',p)\cons\mathsf{S} \\
 					\hspace{20ex}
 					\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op
 				\end{array}
 		}}
 		\\[6ex]
@@ -1196,7 +1195,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 					\Gamma;\tuple{p,\mathsf{unregF}(\theta,e,a,p)\cons\h,(\theta,unregFail),q}\comp \Pi; \mathsf{M;} 
 					\mathsf{S'}\cons\mathsf{unregF}(\theta,e,a,p) \cons\mathsf{S}  \\
 					\hspace{20ex}  \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon op                  	
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon}~op                  	
 				\end{array}
 				
 		}}
@@ -1215,8 +1214,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 				\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
 				\mathsf{M}\backslash\!\!\backslash (a' ,p), \mathsf{S}\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\mathsf{S}
 				\lh  \Gamma;\tuple{p,\h,(\theta,\epsilon),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-				Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a' \centernot\varepsilon op ~ \mathsf{o} ~ p \centernot\varepsilon op
-				% \mbox{Se in S' non sono presenti operazioni di scrittura e lettura sulla mappa}\\\mbox{ che coinvolgono il pid p o l'atomo a'}                  
+				Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a'~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p~\cancel{\varepsilon}~op                  
 			\end{array}		
 	}}
 	\end{array}
@@ -1225,24 +1223,16 @@ Ora verranno discusse brevementealcune situazioni particolari:
 \end{figure}
 
 \begin{itemize}
-	\item $\ol{\mathit{RegisterT}}$
+	\item Le regole $\ol{\mathit{RegisterT}}$, $\ol{\mathit{RegisterF}}$, $\ol{\mathit{UnregisterT}}$ e $\ol{\mathit{End}}$ sono tutte regole in scrittura sulla mappa che annullano la corrispondente regola forward restituendo il controllo al processo (come tutte le altre regole). Essendo regole in scrittura sulla mappa richiederanno prima di poter essere eseguite l'annullamento di tutte le regole che coinvolgono atomi o pid  coinvolti dalla regola che si vuole annullare.
 \end{itemize}
 \begin{itemize}
-	\item $\ol{\mathit{RegisterF}}$
+	\item Anche $\ol{\mathit{UnregisterF}}$ è una regola in scrittura ma al contrario delle altre non coinvolge solo un atomo (e non un pid) e quindi da questa regola la side-condidtion richiederà solo che non siano presenti nella storia della mappa operazioni più recenti che coinvolgano l'atomo coinvolto dalla regola.
 \end{itemize}
-\begin{itemize}
-	\item $\ol{\mathit{UnregisterT}}$
-\end{itemize}
-\begin{itemize}
-	\item $\ol{\mathit{UnregisterF}}$
-\end{itemize}
-\begin{itemize}
-	\item $\ol{\mathit{Catch}}$
-\end{itemize}
-\begin{itemize}
-	\item $\ol{\mathit{End}}$
-\end{itemize}
- 
+%\begin{itemize}
+%	\item $\ol{\mathit{Catch}}$
+%\end{itemize}
+
+
 \section{Semantica rollback}\label{sect:semrollback}
 
 In questa sezione introdurremo un operatore di rollback che avvia un calcolo reversibile per un processo.
