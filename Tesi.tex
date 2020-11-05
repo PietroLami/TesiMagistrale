@@ -19,98 +19,17 @@
 \usepackage{color}
 
 
-\newcommand{\snorm}{||\!\cdot\!||} 
-\newcommand{\depth}{\mathit{depth}} 
-\newcommand{\conc}{\bullet}
 
 \newcommand{\id}{id}
-
-% Letters
-
-\def\defemb#1#2{\expandafter\def\csname #1\endcsname
-	{\relax\ifmmode #2\else\hbox{$#2$}\fi}}
-\defemb{cA}{{\cal A}}
-\defemb{cB}{{\cal B}}
-\defemb{cC}{{\cal C}}
-\defemb{cD}{{\cal D}}
-\defemb{cE}{{\cal E}}
-\defemb{cF}{{\cal F}}
-\defemb{cG}{{\cal G}}
-\defemb{cH}{{\cal H}}
-\defemb{cI}{{\cal I}}
-\defemb{cJ}{{\cal J}}
-\defemb{cL}{{\cal L}}
-\defemb{cM}{{\cal M}}
-\defemb{cN}{{\cal N}}
-\defemb{cO}{{\cal O}}
-\defemb{cP}{{\cal P}}
-\defemb{cQ}{{\cal Q}}
-\defemb{cR}{{\cal R}}
-\defemb{cS}{{\cal S}}
-\defemb{cT}{{\cal T}}
-\defemb{cU}{{\cal U}}
-\defemb{cV}{{\cal V}}
-\defemb{cX}{{\cal X}}
-\defemb{cZ}{{\cal Z}}
-
 % Terms
-
-\newcommand{\pos}{{\cP}os}
-\newcommand{\fpos}{{\cN}{\cV}{\cP}os}
-\newcommand{\var}{{\cV}ar}
-\newcommand{\fvar}{{\cF}{\cV}ar}
-\newcommand{\head}{hd}
-\newcommand{\dom}{{\cD}om}
-\newcommand{\nat}{\mbox{$I\!\!N$}}
-\newcommand{\mas}{+}
 \newcommand{\nil}{[\:]}
-
-\newcommand{\Cc}{{\cal{C}}} % constructors
-\newcommand{\Fc}{{\cal{F}}} % defined functions
-\newcommand{\Var}{{\cal V}ar} % variables in an object
-\newcommand{\Rc}{{\cal{R}}} % rewrite system
-\newcommand{\Tc}{{\cal{T}}} % algebra of terms
-\newcommand{\Xc}{{\cal{X}}} % set of all variables
-\renewcommand{\phi}{\varphi}
-\newcommand{\equ}{\approx}
-\newcommand{\dt}{{\cal P}} % definitional tree
-\newcommand{\nns}{{\lambda_{needed}}} % needed narrowing strategy
-\newcommand{\lns}{\lambda_{lazy}} % lazy narrowing strategy
-\newcommand{\toppos}{\epsilon} % top position
 \newcommand{\ol}[1]{\overline{#1}}  % sequence of objects
-\newcommand{\pr}[1]{\mbox{$\tt #1$}}   % program text in normal text
-\newcommand{\prm}[1]{\mbox{\tt #1}}   % program text in normal text
-\newcommand{\todo}[1]{\fbox{\sc To do: #1}}
-\newcommand{\To}{\Rightarrow}
-\newcommand{\foo}[1]{\tt #1}
-
-
-\newcommand{\pred}{\mathit{pred}}
-\newcommand{\opred}{\textsc{pred}}
-\newcommand{\cfg}{\textsc{cfg}}
-\newcommand{\srg}{\textsc{srg}}
-\newcommand{\start}{\textsc{start}}
-\newcommand{\terminals}{\textsc{t}}
-
-\newcommand{\acalls}{Ancestors}
-\newcommand{\unfq}{{Unf}}
-
-\def\ri{<\!\!\!<}   % renamed instance
-
-\newcommand{\sql}{\mbox{$[\![$}}
-\newcommand{\sqr}{\mbox{$]\!]$}}
 
 % New symbols:
 \newcommand{\cons}{\!:\!}
 
 
 % Arrows
-
-\newcommand{\lto}{\longrightarrow}
-\newcommand{\hto}{~\hookrightarrow}
-\newcommand{\gn}{\rightsquigarrow}
-
-
 \newcommand{\h}{\mathit{h}}
 \renewcommand{\k}{\lambda}
 \newcommand{\init}{\mathsf{init}}
@@ -127,12 +46,9 @@
 \newcommand{\remark}[1]{\mbox{}\\\fbox{\begin{minipage}{.95\linewidth}
 			Remark: \textsf{#1} \end{minipage}}\\}
 
-\def\res{\mathrel{\vert\grave{ }}}
-\let\l=\langle
-\let\r=\rangle
 \def \tuple#1{\langle #1 \rangle}
 
-\long\def\comment#1{}
+
 \usepackage{xcolor}
 \newcommand{\mathcolorbox}[2]{\colorbox{#1}{$\displaystyle #2$}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,8 +58,6 @@
 \renewcommand{\sectionmark}[1]{
 	\markright{\thesection\ #1}}
 
-
-\newcommand{\ignore}[1]{} 
 \newcommand{\too}{\longrightarrow}
 \newcommand{\arro}[1]{\xrightarrow{#1}} 
 \newcommand{\hoo}{\hookrightarrow} 
@@ -154,15 +68,12 @@
 
 \usepackage{thmtools}
 
-\declaretheoremstyle[headfont=\normalfont]{normalhead}
-
-
-
-\newtheorem{theorem}{Theorem}
+\newtheorem{theorem}{Teorema}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{corollary}[theorem]{Corollario}
 \newtheorem{example}[theorem]{Esempio}
+
 
 \newtheoremstyle{theoremdd}
   {\topsep}% measure of space to leave above the theorem. E.g.: 3pt
@@ -181,13 +92,14 @@
 \usepackage{tikz}
 \usepackage{diagbox}
 \usepackage{multirow}
-\newcommand{\reflect}[1]{\tikz[baseline=(h.base)]\node[xscale=-1](h){#1}; }
 
-\usepackage{ebproof}
+
+
+%\usepackage{ebproof}
 % \usepackage{tikz} % Useless, but might be handy to draw fancier lines.
 \usepackage{amssymb} % To provide the \varnothing symbol
 \newcommand{\nothing}{\varnothing} % different from \emptyset
-\usepackage{cancel}
+\usepackage{centernot,cancel}
 
 
 
@@ -840,13 +752,12 @@ Questa definizione è utile per la dimostrazione del prossimo lemma.
 		\item vale anche se entrambe le operazioni $r$ sono eseguite sulla mappa, questo perché se andassero a modificare gli stessi elementi della mappa non potrebbero essere concorrenti per la definizione data: 
 		\begin{itemize}
 			\item se $r_1 = r_2 = \mathsf{UnregisterT}$ e deregistrano gli atomi $a_1$ e $a_2$ se le due operazioni sono concorrenti (quindi $a_1 \not= a_2$), deregistrare prima $a_1$ e poi $a_2$ o viceversa non cambia (in $s'$ la mappa sarà la stessa);
-			\item  questo ragionamento lo si può fare con tutte le regole sulla mappa.  
+			\item  questo ragionamento lo si può fare con tutte le regole sulla mappa. 
 		\end{itemize}
-
 	\end{itemize}
 \end{proof} 
-Notiamo qui che sono possibili altre definizioni di transizioni concorrenti. La modifica del modello di concorrenza richiederebbe la modifica delle informazioni memorizzate nella semantica reversibile al fine di preservare la coerenza causale. Abbiamo scelto la nozione sopra poiché è ragionevolmente semplice da definire e perché è facile lavorarci.
 
+Notiamo qui che sono possibili altre definizioni di transizioni concorrenti. La modifica del modello di concorrenza richiederebbe la modifica delle informazioni memorizzate nella semantica reversibile al fine di preservare la coerenza causale. Abbiamo scelto la nozione sopra poiché è ragionevolmente semplice da definire e perché è facile lavorarci.
 
 \section{Semantica reversibile}\label{sect:semreversibile}
 
@@ -867,7 +778,7 @@ L'aggiunta della storia del processo e della mappa è un tipico incorporamento di
 
 Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un "ack" dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non possiamo distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
 
-\begin{figure}[hp]
+\begin{figure}[htp]
 	\footnotesize
 	\[
 	\begin{array}{c}
@@ -876,6 +787,16 @@ Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $
 			}{\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\mathcolorbox{yellow}{\M;\s} \rh
 				\Gamma;\tuple{p,\tau(\theta,e)\cons\h,(\theta',e'),q}\comp \Pi;\mathcolorbox{yellow}{\M;\s} }
 		}\\[4ex]
+	
+			\mathcolorbox{yellow}{(\mathit{Call3}) ~ {\displaystyle
+			\frac{\theta,e\arro{\tau\M\M'} \theta',e'}
+			{      \begin{split}
+					\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\M;\s 
+					\rh \Gamma;\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\comp \Pi;\\
+					\M;\tau\mathsf{MM'}(\theta,e,p)\cons\s
+				\end{split}
+			}
+	}}\\[7ex]
 		
 		(\mathit{Check}) ~ {\displaystyle
 			\frac{\theta,e \arro{\mathsf{check}(\mathtt{t})} \theta',e'}{\Gamma;\tuple{p,\h,(\theta,e),q} 
@@ -958,38 +879,19 @@ Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $
 		}
 	\end{array}
 	\]
-		\caption{Semantica reversibile forward} \label{fig:forwardsem}
+	\caption{Semantica reversibile forward} \label{fig:forwardsem}
 \end{figure}
-The transition rules of the forward reversible semantics can be found
-in Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1}. Processes now include a memory (or
-\emph{history}) $\h$ that records the intermediate states of a process,
-and messages have an associated unique identifier. In the memory, we use terms
-headed by constructors $\tau$, $\mathsf{check}$, $\mathsf{send}$,
-$\mathsf{rec}$, $\mathsf{spawn}$, and $\mathsf{self}$
-to record the steps performed by the forward semantics. Note that
-we could optimise the information stored in these terms by following a
-strategy similar to that in \cite{MHNHT07,NPV16,TA15} for the
-reversibility of functional expressions, but this is orthogonal to our
-purpose in this paper, so we focus mainly on the concurrent actions.
-%
-Note also that the auxiliary function $\mathsf{matchrec}$ now deals
-with messages of the form $\{v,\k\}$, which is a trivial
-extension of the original function in the standard semantics by just
-ignoring $\k$ when computing the first matching message.
-\begin{figure}[hp]
+
+Le regole di transizioni della semantica forward si possono trovare nelle Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1}. Ai processi è stata aggiunta una \emph{storia} (o memoria) $\h$ che registra gli stati intermedi del processo e dei messaggi con l'identificatore (univoco) a loro associato. \\~\\
+Nella storia per identificare le operazioni eseguite si utilizzano dei costruttori $\tau$, $\mathsf{check}$, $\mathsf{send}$,
+$\mathsf{rec}$, $\mathsf{spawn}$, $\mathsf{self}$, $\tau\M\M'$, $\mathsf{sendA}$, $\mathsf{sendF}$, $\mathsf{regT}$, $\mathsf{regF}$, $\mathsf{unregT}$, $\mathsf{unregF}$, $\mathsf{fail}$ e $\mathsf{end}$  che identificano le regole applicate nella semantica forward. 
+%Si nota che si potrebbero diminuire le informazioni salvate nella storia utilizzando una strategia simile a quella utilizzata in \cite{MHNHT07,NPV16,TA15} ma questo è un problema diverso da quello discusso nella tesi.
+Nella regola $ \mathit {Receive} $ si può notare che la funzione ausiliare  $\mathsf{matchrec}$ prende in input un messaggio del tipo $\{v,\k\}$, che è l'estensione originale che ingnora $\k$ quando elabora il match col primo messaggio.
+
+\begin{figure}[htp]
 	\footnotesize
 	\[
 	\begin{array}{c}
-		
-		\mathcolorbox{yellow}{(\mathit{Call3}) ~ {\displaystyle
-				\frac{\theta,e\arro{\tau\M\M'} \theta',e'}
-				{      \begin{split}
-						\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi;\M;\s 
-						\rh \Gamma;\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\comp \Pi;\\
-						\M;\tau\mathsf{MM'}(\theta,e,p)\cons\s
-					\end{split}
-				}
-		}}\\[7ex]
 	
 		\mathcolorbox{yellow}{(\mathit{RegisterT}) ~ {\displaystyle
 				\frac{\theta,e\arro{\mathsf{register}(\mathsf{true},a,p')} \theta',e'~ \mathsf{matchMapReg}(\M, a,p') = true}
@@ -1049,26 +951,47 @@ ignoring $\k$ when computing the first matching message.
 	\]
 	\caption{Semantica reversibile forward} \label{fig:forwardsem1}
 \end{figure}
+~\\
+Per dimostrare che la semantica forward $\rh$ estende la semantica standard $\hoo$ bisogna introdurre $ \del(s) $.
+ Si può vedere che $ \del(s) $ denoti il sistema risultante da $ s $ rimuovendo le cronologie dei processi; formalmente,
+$\del(\Gamma;\Pi;\mathsf{M;S}) = \Gamma;\del'(\Pi);\mathsf{M}$, dove
+\[
+\begin{array}{lll}
+	\del'(\tuple{p,\h,(\theta,e),q}) & = &
+	\tuple{p,(\theta,e),q}
+	\\
+	\del'(\tuple{p,\h,(\theta,e),q}\:\comp\:\Pi) & = &
+	\tuple{p,(\theta,e),q}\:\comp\:\del'(\Pi)
+	\\
+\end{array}
+\]
+si assume che $\Pi$ non sia vuoto. \\
 
+\begin{theorem} \label{th:conservative}
+	Sia $s_1$ un sistema nella semantica forward senza occorrenze di ``$\mathsf{check}$'' e $s'_1=\del(s_1)$ un sistema nella semantica standard. Allora, $s'_1 \hoo^\ast s'_2$ sse $s_1 \rh^\ast s_2$
+	e $\del(s_2) = s'_2$.
+\end{theorem}
+
+\begin{proof}
+	La dimostrazione avviene mostrando che le regole della semantica standard nelle Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1} sono la versione con la storia delle regole corrispondenti presenti nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}. L'unico punto complicato e capire che l'introduzione dell'identificatore univoco nel messaggio non cambia il comportamento della regola $\mathit{Receive}$ poiché la funzione $\mathsf{matchrec}$ ha come risultato sempre l'occorrenza più vecchia (in termini di posizione nella coda) del messaggio selezionato \cite{Lanese}.
+\end{proof}
 
 In alcune delle regole di transizione della semantica backward, nelle side condition si richiederà che non siano presenti alcune delle regole di lettura o scrittura. 
 
  \begin{definition}[$\varepsilon$ e $\cancel{\varepsilon}$]\label{def:coinvolgimento}
 	Per le operazioni sulla mappa diciamo che $x ~ \varepsilon ~op$ se l'operazione coinvolge l'elemento $x$ cioè se l'operazione aggiunge, rimuove o legge l'elemento $x$ dalla mappa. Si indica con $x~\cancel{\varepsilon}~op$ se l'operazione non coinvolge l'elemento $x$.
 	Di seguito verrà mostrato l'elenco di come nella storia della mappa le regole vengono rappresentate e di quali sono gli elementi coinvolti.
-	\begin{itemize}
-		\item se $op=\mathsf{regT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{regT}$, $p ~\varepsilon~ \mathsf{regT}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
-		\item se $op=\mathsf{unregT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{unregT}$, $p ~\varepsilon ~\mathsf{unregT}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
-		\item se $op=\mathsf{regF}(\theta,e,a,p,p')$ allora $a~ \varepsilon~ \mathsf{regF}$, $p~ \varepsilon~ \mathsf{regF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
-		\item se $op=\mathsf{unregF}(\theta,e,a,p')$ allora  $p~ \varepsilon~ \mathsf{unregF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
-		\item se $op=\mathsf{sendA}(\theta,e,p,\{v,\k\},a,p')$ allora $a ~\varepsilon~ \mathsf{sendA}$, $p~ \varepsilon~ \mathsf{sendA}$, $p'$ è il pid corrispondente al processo che esegue l'operazione e la coppia $\{v,\k\}$ rappresenta il messaggio inviato
-		\item se $op=\mathsf{sendF}(\theta,e,a,p')$ se e solo se $a ~\varepsilon~ \mathsf{sendF}$ e $p'$ è il pid corrispondente al processo che esegue l'operazione
-		\item se $op=\mathsf{end}(\theta,e,p)$ allora $a~ \varepsilon~ \mathsf{end}$, $p ~\varepsilon ~\mathsf{end}$ e $p$ è il pid corrispondente al processo che esegue l'operazione, da notare che 
-		\item se $op=\tau\mathsf{MM'}(\theta,e,p')$ allora $\forall~ p,a\in \mathsf{M'}; ~ p~\varepsilon ~ \tau\mathsf{MM'} \land a~\varepsilon ~ \tau\mathsf{MM'},$ e $p'$ è il pid corrispondente al processo che esegue l'operazione \qed
-	\end{itemize}
+\begin{itemize}
+	\item se $op=\mathsf{regT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{regT}$, $p ~\varepsilon~ \mathsf{regT}$;% e $p'$ è il pid corrispondente al processo che esegue l'operazione
+	\item se $op=\mathsf{unregT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{unregT}$, $p ~\varepsilon ~\mathsf{unregT}$;% e $p'$ è il pid corrispondente al processo che esegue l'operazione
+	\item se $op=\mathsf{regF}(\theta,e,a,p,p')$ allora $a~ \varepsilon~ \mathsf{regF}$, $p~ \varepsilon~ \mathsf{regF}$;% e $p'$ è il pid corrispondente al processo che esegue l'operazione
+	\item se $op=\mathsf{unregF}(\theta,e,a,p')$ allora  $a~ \varepsilon~ \mathsf{unregF}$;% e $p'$ è il pid corrispondente al processo che esegue l'operazione
+	\item se $op=\mathsf{sendA}(\theta,e,p,\{v,\k\},a,p')$ allora $a ~\varepsilon~ \mathsf{sendA}$, $p~ \varepsilon~ \mathsf{sendA}$;% $p'$ è il pid corrispondente al processo che esegue l'operazione e la coppia $\{v,\k\}$ rappresenta il messaggio inviato
+	\item se $op=\mathsf{sendF}(\theta,e,a,p')$ allora $a ~\varepsilon~ \mathsf{sendF}$; %e $p'$ è il pid corrispondente al processo che esegue l'operazione
+	\item se $op=\mathsf{end}(\theta,e,p')$ allora $a~ \varepsilon~ \mathsf{end}$, $p' ~\varepsilon ~\mathsf{end}$;% e $p$ è il pid corrispondente al processo che esegue l'operazione, da notare che 
+	\item se $op=\tau\mathsf{MM'}(\theta,e,p')$ allora $\forall~ p,a\in \mathsf{M'}; ~ p~\varepsilon ~ \tau\mathsf{MM'} \land a~\varepsilon ~ \tau\mathsf{MM'}$.\qed% e $p'$ è il pid corrispondente al processo che esegue l'operazione 
+\end{itemize}
 \end{definition}
-%Per queste regole $a$ e $p$ sono gli atomi e i pid coinvolti dalla regola (se presenti), $\mathsf{M'}$ sono gli atomi e i pid coinvolti dalla $\mathsf{Call3}$. L'ultimo elemento ($p'$) è il pid corrispondente a processo che esegue l'operazione. Nel caso della regola $\mathsf{End}$ i due pid coincidono ($p=p'$) negli altri casi possono essere diversi.\\ La coppia $\{v,\k\}$ nella regola $\mathsf{sendA}$ rappresenta il messaggio inviato. \\Mentre si può notare che l'unica regola che non coinvolge nessun pid è la $\mathsf{unregF}$.
-
 
 \begin{definition}[Operazioni lettura e scrittura]\label{def:lettura-scrittura}
 	
@@ -1077,7 +1000,7 @@ In alcune delle regole di transizione della semantica backward, nelle side condi
 		\item per operazioni in scrittura si intendono le operazioni che modificano la mappa (cioè quelle regole che aggiungono o tolgono coppie alla mappa) e sono $\mathsf{RegisterT}$, $\mathsf{UnregisterT}$, $\mathsf{End}$.
 		\item per operazioni in lettura si intendono le operazioni che  accedono alla mappa senza modificarla e sono $\mathsf{SendA}$, $\mathsf{SendF}$, $\mathsf{RegisterF}$, $\mathsf{UnregisterF}$, $\mathsf{Call3}$.
 	\end{itemize}
-	Questo vale anche per la semantica forward.
+	Questo vale anche per la semantica forward. 
 	Per la semantica backward invece:
 	\begin{itemize}
 		\item le operazioni in scrittura sulla mappa sono $\ol{\mathsf{RegisterT}}$, $\ol{\mathsf{UnregisterT}}$ e $\ol{\mathsf{End}}$, da notare che anche queste operazioni vanno a modificare la mappa nel modo apposto alla regola forward corrispondente. 
@@ -1091,7 +1014,7 @@ Scegliere di dire che un'operazione all'indietro sia un operazione in lettura è 
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a)$
 	\end{center}
-	se fosse possibile fare un operazione di annullamento di call3 allora si otterrebbe
+	se si potesse fare un operazione di annullamento di call3 allora si otterrebbe
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a);\ol{\mathsf{Call3}(a)}$\\ la storia sarebbe quindi \\ $\mathsf{RegT}(a,p);\mathsf{unregT}(a)$
 	\end{center}
@@ -1102,8 +1025,224 @@ Scegliere di dire che un'operazione all'indietro sia un operazione in lettura è 
 	In questo modo non si potrebbe far vedere che facendo operazioni di \textit{undo-redo} si ritornerebbe in uno stato equivalente.
 \end{example}
 
+Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le regole di transizione della semantica backward.
 
 
+\begin{figure}[ht]
+	\footnotesize
+	\[
+	\begin{array}{lc}
+		(\mathit{\ol{Seq}}) ~ {\displaystyle
+			\Gamma;
+			\tuple{p,\tau(\theta,e)\cons\h,(\theta',e'),q}
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		}\\[2ex]
+		
+				\mathcolorbox{yellow}{(\mathit{\ol{Call3}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;
+					\tuple{p,\tau\mathsf{MM'}(\theta,e,p)\cons\h,(\theta',e'),q}
+					\:\comp\: \Pi;\mathsf{M;S' : \tau\mathsf{MM'}(\theta,e,p):S}
+					\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					\mbox{Se in S' non sono presenti operazioni di scrittura su elementi presenti in M'}    
+				\end{array}
+		}}
+		\\[3ex]
+		
+		(\mathit{\ol{Check}}) ~ {\displaystyle
+			\Gamma;
+			\tuple{p,\mathsf{check}(\theta,e,\mathtt{t})\cons\h,(\theta',e'),q}
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		} 
+		\\[2ex]
+		
+		(\mathit{\ol{Send}}) ~ {\displaystyle
+			\begin{array}{lc }
+				\Gamma\cup\{(p'',\{v,\k\})\};\tuple{p,\mathsf{send}(\theta,e,p'',\{v,\k\})\cons\h,(\theta',e'),q}\:\comp\:
+				\Pi;\mathcolorbox{yellow}{\mathsf{M;}\mathsf{S}}
+				\lh \Gamma;\tuple{p,\h,(\theta,e),q} 
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+				
+			\end{array}
+		}\\[2ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{SendA}}) ~ {\displaystyle
+				\begin{array}{lc }
+					\Gamma\cup\{(p'',\{v,\k\})\};\tuple{p,\mathsf{sendA}(\theta,e,p'',\{v,\k\},a,p)\cons\h,(\theta',e'),q}\:\comp\:
+					\Pi;\mathsf{M;S'}\cons \mathsf{sendA}(\theta,e,p'',\{v,\k\},a,p)\cons\mathsf{S}\\
+					\hspace{20ex}
+					\lh \Gamma;\tuple{p,\h,(\theta,e),q} 
+					\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op ~ \mathsf{o} ~ p'' \centernot\varepsilon  op
+				\end{array}
+		}}\\[6ex]
+		
+		\mathcolorbox{yellow} {(\mathit{\ol{SendF}}) ~ {\displaystyle
+				\begin{array}{lc }
+					\Gamma;\tuple{p,\mathsf{sendF}(\theta,e,a,p)\cons\h,(\theta,sendFail),q}\:\comp\:
+					\Pi;\mathsf{M;S'}\cons \mathsf{sendF}(\theta,e,a,p)\cons\mathsf{S}\\
+					\hspace{20ex}
+					\lh \Gamma;\tuple{p,\h,(\theta,e),q} 
+					\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op
+			\end{array}}
+		}\\[6ex]
+		
+		(\mathit{\ol{Receive}}) ~ {\displaystyle
+			\Gamma;\tuple{p,\mathsf{rec}(\theta,e,\{v,\k\},q)\cons\h,(\theta',e'), q\backslash\!\!\backslash\{v,\k\}}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		}
+		\\[2ex]
+		
+		(\mathit{\ol{Spawn}}) ~ {\displaystyle
+			\begin{array}{l}
+				\Gamma;\tuple{p,\mathsf{spawn}(\theta,e,p')\cons\h,(\theta',e'),q}
+				\:\comp\: 
+				\tuple{p',\nil,(\id,e''),\nil}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} 
+				\\
+				\hspace{20ex}\lh
+				\Gamma;\tuple{p,\h,(\theta,e),q}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} 
+			\end{array}
+		}\\[5ex]
+		
+		(\mathit{\ol{Self}}) ~ {\displaystyle
+			\Gamma;\tuple{p,\mathsf{self}(\theta,e)\cons\h,(\theta',e'),q} 
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} \lh
+			\Gamma;\tuple{p,\h,(\theta,e),q} 
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}  
+		}\\[2ex]
+		
+		(\mathit{\ol{Sched}}) ~ {\displaystyle
+			\begin{array}{l}
+				\Gamma;\tuple{p,\h,(\theta,e),\{v,\k\}\cons q} \: \comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} \lh 
+				\Gamma\cup(p,\{v,\k\});\tuple{p,\h,(\theta,e),q}\:\comp\:\Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+				\hspace{20ex}\mbox{if the topmost $\mathsf{rec}(\ldots)$ item in
+					$\h$ (if any) has the}\\ 
+				\hspace{20ex}\mbox{form}~\mathsf{rec}(\theta',e',\{v',\k'\},q')~\mbox{with}~q'\backslash\!\!\backslash\{v',\k'\}\neq \{v,\k\}\cons q
+			\end{array}
+		} \\[5ex]
+		
+	\end{array}
+	\]
+	\caption{Backward reversible semantics } \label{fig:backwardsem}
+\end{figure}
+Ora verranno discusse brevementealcune situazioni particolari:
+\begin{itemize}
+	\item Innanzitutto, osserva che la regola $\ol{\mathit{Send}}$ può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale. Se questo non è il caso (cioè, il messaggio è stato consegnato usando la regola $\mathit{Sched}$), allora dovremmo prima applicare i passaggi a ritroso al processo del destinatario fino, alla fine, l'applicazione della regola $\ol{\mathit{Sched}}$ rimette il messaggio nella casella di posta globale e la regola $\ol{\mathit{Send}}$ diventa applicabile. Ciò è necessario per garantire la coerenza causale. Nella sezione successiva, introdurremo una strategia particolare che ottiene questo effetto in modo controllato \cite{Lanese}.
+\end{itemize}
+\begin{itemize}
+	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale (cioè, il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$). Inoltre essendo un operazione sulla mappa in lettura si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$, questo è necessario per rispettare la coerenza causale.
+\end{itemize}
+\begin{itemize}
+	\item La regola $\ol{\mathit{SendF}}$ è anch'essa in lettura sulla mappa quindi per rispettare la consistenza causale verrà richiesto che non ci siano operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$.
+\end{itemize}
+\begin{itemize}
+	\item La regola $\ol{\mathit{Call3}}$ come $\ol{\mathit{SendA}}$ e $\ol{\mathit{SendF}}$ è una regola in lettura sulla mappa, però come side-condidtion richiede  che non ci siano operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono atomi o pid presenti $\M'$.
+\end{itemize}
+	\begin{itemize}
+	\item Una situazione simile si verifica con la regola $\ol{\mathit{Spawn}}$. Dato un processo $ p $ con un elemento della cronologia $\mathsf{spawn}(\theta,e,p')$, la regola $ \ol{\mathit{Spawn}}$ non può essere applicata finché la cronologia e la coda del processo $ p '$ sono entrambi vuoti. Pertanto, si dovrebbe prima applicare una serie di passaggi all'indietro per elaborare $ p '$ in modo da poter annullare l'elemento $\mathsf{spawn}$.
+	%
+	Notiamo che non è necessario richiedere che nessun messaggio indirizzato al processo $ p '$ (che diventerebbe un messaggio \emph{orfano}) è nella casella di posta globale: per inviare un tale messaggio il pid $ p' $ è necessario, quindi l'invio del messaggio dipende da $\mathsf {spawn}$ e, quindi, deve essere annullato in anticipo \cite{Lanese}.
+\end{itemize}
+\begin{itemize}
+	\item Osserva anche che la regola $\ol{\mathit{Receive}}$ può essere applicata solo quando la coda del processo è esattamente la stessa che è stata ottenuta dopo aver applicato il corrispondente passaggio $\mathit{Receive}$. Ciò è necessario per garantire che la coda ripristinata sia effettivamente quella giusta (notare che l'aggiunta del messaggio a una coda arbitraria non funzionerebbe poiché non conosciamo la posizione ``giusta'' per il messaggio) \cite{Lanese}.
+\end{itemize}
+\begin{itemize}
+	\item Per l'applicazione della regola $\ol{\mathit{Sched}}$ poiché non interferisce con le regole rimanenti, ad eccezione di $\ol{\mathit{Receive}}$ e altre applicazioni di $\ol{\mathit{Sched}}$. Pertanto, l'applicazione della regola $\ol{\mathit{Sched}}$ può essere cambiata con l'applicazione di qualsiasi altra regola all'indietro eccetto $\ol{\mathit{Receive}}$ o un altro $\ol{\mathit{Sched}}$. Il fatto che due $ \ol{\mathit{Sched}}$ (che coinvolgono lo stesso processo) non si spostino è garantito poiché $\ol{\mathit{Sched}}$ si applica sempre al messaggio più recente di una coda. Il fatto che $\ol{\mathit{Sched}}$ e $\ol{\mathit{Receive}}$ non si spostino è garantito poiché la condizione secondaria di $\ol{\mathit{Sched}}$ controlla che non ci sia nessun elemento $\mathsf{rec}(\ldots)$ nella cronologia del processo che può essere utilizzato per applicare la regola $\ol{Receive}$ con la coda corrente. Pertanto, le loro condizioni di applicabilità non si sovrappongono \cite{Lanese}.
+\end{itemize}
+
+\begin{figure}[ht]
+	\footnotesize
+	\[
+	\begin{array}{lc}
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{RegisterT}}) ~ {\displaystyle
+				\begin{array}{l}	
+					\Gamma;\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi;\mathsf{M}\cup(a,p') ; \mathsf{S'}\cons\mathsf{regT}(\theta,e,a,p',p) \cons\mathsf{S} \\
+					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op    
+					\end{array}		
+		}}
+		\\[6ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{RegisterF}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\tuple{p,\mathsf{regF}(\theta,e,a,p',p)\cons\h,(\theta,regFail),q}\comp \Pi;
+					\mathsf{M,} \mathsf{S'}\cons\mathsf{regF}(\theta,e,a,p',p) \cons\mathsf{S} \\    
+					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon  op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+					%\mbox{Se in S' non sono presenti operazioni di scrittura sulla mappa }\\\mbox{che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}
+		\\[6ex]
+		
+	\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterT}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi; \mathsf{M}\backslash\!\!\backslash(a,p') ;
+					\mathsf{S'}\cons\mathsf{unregT}(\theta,e,a,p',p)\cons\mathsf{S} \\
+					\hspace{20ex}
+					\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+				\end{array}
+		}}
+		\\[6ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterF}}) ~ {\displaystyle
+				\begin{array}{l}	
+					\Gamma;\tuple{p,\mathsf{unregF}(\theta,e,a,p)\cons\h,(\theta,unregFail),q}\comp \Pi; \mathsf{M;} 
+					\mathsf{S'}\cons\mathsf{unregF}(\theta,e,a,p) \cons\mathsf{S}  \\
+					\hspace{20ex}  \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon op                  	
+				\end{array}
+				
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{Catch}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\tuple{p,\mathsf{fail}(\theta,e)\cons\h,(\theta,fail),q}\comp \Pi; \mathsf{M};\mathsf{S}
+					\lh
+					\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi; \mathsf{M};\mathsf{S}
+				\end{array}	
+		}}\\[3ex]
+	
+		\mathcolorbox{yellow}{ (\mathit{\ol{End}}) ~ {\displaystyle
+			\begin{array}{l}
+				\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
+				\mathsf{M}\backslash\!\!\backslash (a' ,p), \mathsf{S}\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\mathsf{S}
+				\lh  \Gamma;\tuple{p,\h,(\theta,\epsilon),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
+				Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a' \centernot\varepsilon op ~ \mathsf{o} ~ p \centernot\varepsilon op
+				% \mbox{Se in S' non sono presenti operazioni di scrittura e lettura sulla mappa}\\\mbox{ che coinvolgono il pid p o l'atomo a'}                  
+			\end{array}		
+	}}
+	\end{array}
+	\]
+	\caption{Backward reversible semantics } \label{fig:backwardsem1}
+\end{figure}
+
+\begin{itemize}
+	\item $\ol{\mathit{RegisterT}}$
+\end{itemize}
+\begin{itemize}
+	\item $\ol{\mathit{RegisterF}}$
+\end{itemize}
+\begin{itemize}
+	\item $\ol{\mathit{UnregisterT}}$
+\end{itemize}
+\begin{itemize}
+	\item $\ol{\mathit{UnregisterF}}$
+\end{itemize}
+\begin{itemize}
+	\item $\ol{\mathit{Catch}}$
+\end{itemize}
+\begin{itemize}
+	\item $\ol{\mathit{End}}$
+\end{itemize}
+ 
 \section{Semantica rollback}\label{sect:semrollback}
 
 In questa sezione introdurremo un operatore di rollback che avvia un calcolo reversibile per un processo.
