@@ -776,7 +776,7 @@ Di seguito, consideriamo che le regole per valutare le espressioni del linguaggi
 Le principali modifiche effettuate sono state l'aggiunta di una storia al processo, di un identificatore per i messaggi (un timestamp $\lambda$)~\cite{Lanese} e di una storia della mappa. 
 L'aggiunta della storia del processo e della mappa è un tipico incorporamento di Laundered in cui viene aggiunta la cronologia delle operazioni eseguite dal processo (nel primo caso) e delle operazioni eseguite sulla mappa. Il sistema ora include una memoria (storia) che registra gli stati intermedi della mappa. Questo è stato fatto perché in questo modo è possibile tenere traccia delle operazioni che sono state eseguite sulla mappa e del loro ordine di esecuzione.
 
-Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un "ack" dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non possiamo distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
+Al messaggio è stato aggiunto un timestamp perché  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un ``ack'' dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non possiamo distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
 
 \begin{figure}[htp]
 	\footnotesize
@@ -886,7 +886,7 @@ Le regole di transizioni della semantica forward si possono trovare nelle Figure
 Nella storia per identificare le operazioni eseguite si utilizzano dei costruttori $\tau$, $\mathsf{check}$, $\mathsf{send}$,
 $\mathsf{rec}$, $\mathsf{spawn}$, $\mathsf{self}$, $\tau\M\M'$, $\mathsf{sendA}$, $\mathsf{sendF}$, $\mathsf{regT}$, $\mathsf{regF}$, $\mathsf{unregT}$, $\mathsf{unregF}$, $\mathsf{fail}$ e $\mathsf{end}$  che identificano le regole applicate nella semantica forward. 
 %Si nota che si potrebbero diminuire le informazioni salvate nella storia utilizzando una strategia simile a quella utilizzata in \cite{MHNHT07,NPV16,TA15} ma questo è un problema diverso da quello discusso nella tesi.
-Nella regola $ \mathit {Receive} $ si può notare che la funzione ausiliare  $\mathsf{matchrec}$ prende in input un messaggio del tipo $\{v,\k\}$, che è l'estensione originale che ingnora $\k$ quando elabora il match col primo messaggio.
+Nella regola $ \mathit {Receive} $ si può notare che la funzione ausiliare  $\mathsf{matchrec}$ prende in input un messaggio del tipo $\{v,\k\}$, che è l'estensione originale che ignora $\k$ quando elabora il match col primo messaggio.
 
 \begin{figure}[htp]
 	\footnotesize
@@ -973,7 +973,7 @@ si assume che $\Pi$ non sia vuoto. \\
 \end{theorem}
 
 \begin{proof}
-	La dimostrazione avviene mostrando che le regole della semantica standard nelle Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1} sono la versione con la storia delle regole corrispondenti presenti nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}. L'unico punto complicato e capire che l'introduzione dell'identificatore univoco nel messaggio non cambia il comportamento della regola $\mathit{Receive}$ poiché la funzione $\mathsf{matchrec}$ ha come risultato sempre l'occorrenza più vecchia (in termini di posizione nella coda) del messaggio selezionato \cite{Lanese}.
+	La dimostrazione avviene mostrando che le regole della semantica standard nelle Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1} sono la versione con la storia delle regole corrispondenti presenti nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}. L'unico punto complicato è capire che l'introduzione dell'identificatore univoco nel messaggio non cambia il comportamento della regola $\mathit{Receive}$ poiché la funzione $\mathsf{matchrec}$ ha come risultato sempre l'occorrenza più vecchia (in termini di posizione nella coda) del messaggio selezionato \cite{Lanese}.
 \end{proof}
 
 In alcune delle regole di transizione della semantica backward, nelle side condition si richiederà che non siano presenti alcune delle regole di lettura o scrittura. 
@@ -1008,17 +1008,17 @@ In alcune delle regole di transizione della semantica backward, nelle side condi
 		Le operazioni di backward in lettura vengono considerate come operazioni che leggono gli stessi elementi dell'operazione forward corrispondenti.\\\qed
 	\end{itemize}
 \end{definition}
-Scegliere di dire che un'operazione all'indietro sia un operazione in lettura è una scelta insolita ma è dovuta al fatto che si vuole evitare un ``annullamento'' di un'operazione di lettura sulla mappa quando la mappa è stata modificata.
+Scegliere di dire che un'operazione all'indietro sia un'operazione in lettura è una scelta insolita ma è dovuta al fatto che si vuole evitare un ``annullamento'' di un'operazione di lettura sulla mappa quando la mappa è stata modificata.
 \begin{example}
 	Se si considera il caso in cui la storia ha una forma:
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a)$
 	\end{center}
-	se si potesse fare un operazione di annullamento di call3 allora si otterrebbe
+	se si potesse fare un'operazione di annullamento di call3 allora si otterrebbe
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a);\ol{\mathsf{Call3}(a)}$\\ la storia sarebbe quindi \\ $\mathsf{RegT}(a,p);\mathsf{unregT}(a)$
 	\end{center}
-	Però in questo modo si sarebbe annullata un operazione di lettura sulla mappa dopo che la mappa è stata modificata e si potrebbe riapplicare l'operazione $\mathsf{Call3}(a)$ che fallirebbe (o darebbe un risultato diverso) ottenendo una storia 
+	Però in questo modo si sarebbe annullata un'operazione di lettura sulla mappa dopo che la mappa è stata modificata e si potrebbe riapplicare l'operazione $\mathsf{Call3}(a)$ che fallirebbe (o darebbe un risultato diverso) ottenendo una storia 
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{unregT}(a);\mathsf{Call3}(a)$
 	\end{center}
@@ -1132,10 +1132,10 @@ Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le reg
 \end{figure}
 Ora verranno discusse brevementealcune situazioni particolari:
 \begin{itemize}
-	\item Innanzitutto, osserva che la regola $\ol{\mathit{Send}}$ può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale. Se questo non è il caso (cioè, il messaggio è stato consegnato usando la regola $\mathit{Sched}$), allora dovremmo prima applicare i passaggi a ritroso al processo del destinatario fino, alla fine, l'applicazione della regola $\ol{\mathit{Sched}}$ rimette il messaggio nella casella di posta globale e la regola $\ol{\mathit{Send}}$ diventa applicabile. Ciò è necessario per garantire la coerenza causale. Nella sezione successiva, introdurremo una strategia particolare che ottiene questo effetto in modo controllato \cite{Lanese}.
+	\item Innanzitutto, si osserva che la regola $\ol{\mathit{Send}}$ può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale. Se questo non è il caso (cioè, il messaggio è stato consegnato usando la regola $\mathit{Sched}$), allora dovremo prima applicare i passaggi a ritroso al processo del destinatario fino alla fine; l'applicazione della regola $\ol{\mathit{Sched}}$ rimette il messaggio nella casella di posta globale e la regola $\ol{\mathit{Send}}$ diventa applicabile. Ciò è necessario per garantire la coerenza causale. Nella sezione successiva, introdurremo una strategia particolare che ottiene questo effetto in modo controllato \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
-	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale (cioè, il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$). Inoltre essendo un operazione sulla mappa in lettura si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$, questo è necessario per rispettare la coerenza causale.
+	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale (cioè, il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$). Inoltre essendo un'operazione sulla mappa in lettura si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$, questo è necessario per rispettare la coerenza causale.
 \end{itemize}
 \begin{itemize}
 	\item La regola $\ol{\mathit{SendF}}$ è anch'essa in lettura sulla mappa quindi per rispettare la consistenza causale verrà richiesto che non ci siano operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$.
@@ -1152,7 +1152,7 @@ Ora verranno discusse brevementealcune situazioni particolari:
 	\item Osserva anche che la regola $\ol{\mathit{Receive}}$ può essere applicata solo quando la coda del processo è esattamente la stessa che è stata ottenuta dopo aver applicato il corrispondente passaggio $\mathit{Receive}$. Ciò è necessario per garantire che la coda ripristinata sia effettivamente quella giusta (notare che l'aggiunta del messaggio a una coda arbitraria non funzionerebbe poiché non conosciamo la posizione ``giusta'' per il messaggio) \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
-	\item Per l'applicazione della regola $\ol{\mathit{Sched}}$ poiché non interferisce con le regole rimanenti, ad eccezione di $\ol{\mathit{Receive}}$ e altre applicazioni di $\ol{\mathit{Sched}}$. Pertanto, l'applicazione della regola $\ol{\mathit{Sched}}$ può essere cambiata con l'applicazione di qualsiasi altra regola all'indietro eccetto $\ol{\mathit{Receive}}$ o un altro $\ol{\mathit{Sched}}$. Il fatto che due $ \ol{\mathit{Sched}}$ (che coinvolgono lo stesso processo) non si spostino è garantito poiché $\ol{\mathit{Sched}}$ si applica sempre al messaggio più recente di una coda. Il fatto che $\ol{\mathit{Sched}}$ e $\ol{\mathit{Receive}}$ non si spostino è garantito poiché la condizione secondaria di $\ol{\mathit{Sched}}$ controlla che non ci sia nessun elemento $\mathsf{rec}(\ldots)$ nella cronologia del processo che può essere utilizzato per applicare la regola $\ol{Receive}$ con la coda corrente. Pertanto, le loro condizioni di applicabilità non si sovrappongono \cite{Lanese}.
+	\item L'applicazione della regola $\ol{\mathit{Sched}}$ può essere cambiata con l'applicazione di qualsiasi altra regola all'indietro eccetto $\ol{\mathit{Receive}}$ o un altro $\ol{\mathit{Sched}}$, poiché non interferisce con le regole rimanenti. Il fatto che due $ \ol{\mathit{Sched}}$ (che coinvolgono lo stesso processo) non si spostino è garantito poiché $\ol{\mathit{Sched}}$ si applica sempre al messaggio più recente di una coda. Il fatto che $\ol{\mathit{Sched}}$ e $\ol{\mathit{Receive}}$ non si spostino è garantito poiché la condizione secondaria di $\ol{\mathit{Sched}}$ controlla che non ci sia nessun elemento $\mathsf{rec}(\ldots)$ nella cronologia del processo che può essere utilizzato per applicare la regola $\ol{Receive}$ con la coda corrente. Pertanto, le loro condizioni di applicabilità non si sovrappongono \cite{Lanese}.
 \end{itemize}
 
 \begin{figure}[ht]
