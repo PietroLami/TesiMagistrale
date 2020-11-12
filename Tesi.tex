@@ -40,6 +40,7 @@
 \newcommand{\lhh}{\leftharpoondown\hspace{-1.8ex}\leftharpoondown}
 \newcommand{\rlhh}{\rightleftharpoons\hspace{-1.8ex}\rightleftharpoons}
 \newcommand{\M}{\mathsf{M}}
+\newcommand{\Hi}{\mathsf{H}}
 \newcommand{\s}{\mathsf{S}}
 
 
@@ -100,6 +101,17 @@
 \usepackage{amssymb} % To provide the \varnothing symbol
 \newcommand{\nothing}{\varnothing} % different from \emptyset
 \usepackage{cancel}
+
+
+\usepackage{tikz}
+
+\newcommand{\reflect}[1]{\tikz[baseline=(h.base)]\node[xscale=-1](h){#1}; }
+\usepackage{centernot}
+\usepackage{stmaryrd}
+\usepackage{ebproof}
+% \usepackage{tikz} % Useless, but might be handy to draw fancier lines.
+\usepackage{amssymb} % To provide the \varnothing symbol
+
 
 
 
@@ -206,7 +218,7 @@ Nella Figura~\ref{ErlangSyntax} viene presentata la sintassi del linguaggio, si 
 sono anche state aggiunte le funzioni:
 \begin{itemize}
 	\item $\mathsf{register}$ che dati in input un atomo e un pid inserisce la in una mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo o il pid sono già presenti nella mappa il processo fallisce;
-	\item $\mathsf{unregister}$ che dato in input un atomo toglie dalla mappa la coppia atomo,pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo non è presente nella mappa il processo fallisce.
+	\item $\mathsf{unregister}$ che dato in input un atomo toglie dalla mappa la coppia atomo, pid e restituisce l'atomo \textbf{true}. Altrimenti se l'atomo non è presente nella mappa il processo fallisce.
 \end{itemize}
 Inoltre è stato creato il non terminale \textit{end} per riuscire a determinare quando un processo è in uno stato finale, così è possibile determinare se un processo è fallito. In questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. Nelle regole che verranno descritte successivamente il simbolo $\epsilon$ rappresenterà un non terminale \textit{end}. 
 
@@ -1014,15 +1026,15 @@ Scegliere di dire che un'operazione all'indietro sia un'operazione in lettura è 
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a)$
 	\end{center}
-	se si potesse fare un'operazione di annullamento di call3 allora si otterrebbe
+	se fosse possibile fare un operazione di annullamento di call3 ($\ol{\mathsf{Call3}(a)}$) allora si otterrebbe una storia
 	\begin{center}
-		$\mathsf{RegT}(a,p);\mathsf{Call3}(a);\mathsf{unregT}(a);\ol{\mathsf{Call3}(a)}$\\ la storia sarebbe quindi \\ $\mathsf{RegT}(a,p);\mathsf{unregT}(a)$
+		$\mathsf{RegT}(a,p);\mathsf{unregT}(a)$
 	\end{center}
-	Però in questo modo si sarebbe annullata un'operazione di lettura sulla mappa dopo che la mappa è stata modificata e si potrebbe riapplicare l'operazione $\mathsf{Call3}(a)$ che fallirebbe (o darebbe un risultato diverso) ottenendo una storia 
+	Però in questo modo si sarebbe annullata un operazione di lettura sulla mappa dopo che la mappa è stata modificata e si potrebbe riapplicare l'operazione $\mathsf{Call3}(a)$ che fallirebbe (o darebbe un risultato diverso) ottenendo una storia 
 	\begin{center}
 		$\mathsf{RegT}(a,p);\mathsf{unregT}(a);\mathsf{Call3}(a)$
 	\end{center}
-	In questo modo non si potrebbe far vedere che facendo operazioni di \textit{undo-redo} si ritornerebbe in uno stato equivalente.
+	In questo modo non si potrebbe far vedere che facendo operazioni di \textit{undo-redo} si ritornerebbe in uno stato equivalente, una proprietà importante che è richiesta.
 \end{example}
 
 Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le regole di transizione della semantica backward.
@@ -1228,10 +1240,371 @@ Ora verranno discusse brevementealcune situazioni particolari:
 \begin{itemize}
 	\item Anche $\ol{\mathit{UnregisterF}}$ è una regola in scrittura ma al contrario delle altre non coinvolge solo un atomo (e non un pid) e quindi da questa regola la side-condidtion richiederà solo che non siano presenti nella storia della mappa operazioni più recenti che coinvolgano l'atomo coinvolto dalla regola.
 \end{itemize}
-%\begin{itemize}
-%	\item $\ol{\mathit{Catch}}$
-%\end{itemize}
 
+\subsection*{Proprietà della semantica reversibile incontrollata}
+Di seguito, dimostriamo diverse proprietà della semantica reversibile mostrata precedentemente.
+Dati i sistemi $s_1,s_2$ chiamiamo $s_1\rh^\ast s_2$ derivazione \emph {forward} e $s_2\lh^\ast s_1$ derivazione \emph {backward}.
+La derivazione che potenzialmente include sia i passi avanti che quelli indietro è indicata da $s_1\rlh^\ast s_2$.
+%
+Etichettiamo le transizioni come segue: $s_1\rlh_ {p, r, k} s_2$ dove:
+\begin{itemize}
+	\item $ p, r $ sono rispettivamente il pid del processo selezionato e l'etichetta della regola applicata,
+	\item $ k $ è un elemento della cronologia se la regola applicata è diversa da $ \mathit {Sched} $ e $ \ol {\mathit {Sched}} $ e
+	\item $ k = \mathsf {sched} (\{v, \k \}) $ quando la regola applicata è $ \mathit {Sched} $ o $ \ol {\mathit {Sched}} $, dove $ \{v, \ k \} $ è il messaggio consegnato o reinserito in $ \Gamma $. Si nota che le informazioni sono disponibili quando si applica la regola.
+\end{itemize}
+Si ingnorano alcune etichette quando sono chiare dal contesto.
+
+Estendiamo le definizioni delle funzioni $ \init $ e $ \final $ date nella Sezione~\ref{sect:semantica} a derivazioni reversibili in modo naturale. Anche le nozioni di derivazione componibile, coiniziale e cofinale sono estese in modo semplice.
+Data un'etichetta di regola $ r $, lasciamo che $\ol{r} $ denoti la sua versione inversa, ovvero se $ r=\mathit{Send} $ allora $\ol{r}=\ol{\mathit {Send}}$ e viceversa (se $r=\ol{\mathit{Send}}$ allora $\ol{r}=\mathit{Send}$).
+		%
+Inoltre, data una transizione $ t $, lasciamo che $ \ol{t} =(s'\lh_{p, \ol{r},k} s) $ se $ t = (s \rh_ {p, r, k} s ') $ e $ \ol {t} = (s' \rh_ {p, r, k} s) $ se $ t = (s \lh_ {p, \ol {r}, k} s ') $. Diciamo che $ \ol {t} $ è \emph {inverso} di $ t $.
+Questa notazione è naturalmente estesa alle derivazioni.
+		
+Di seguito limitiamo l'attenzione ai sistemi raggiungibili dall'esecuzione di un programma.
+
+\begin{definition}[Sistema raggiungibile]\label{def:reachable}
+	Un sistema è \emph{iniziale} se è composto da un singolo processo, e questo processo ha una cronologia vuota e una coda vuota; inoltre la mailbox globale è vuota. Un sistema $s$ è raggiungibile se esiste un sistema iniziale $s_0$ e una derivazione $s_0 \rlh^\ast s$ utilizzando le regole corrispondenti a un dato programma.\qed
+\end{definition}
+
+Le definizioni e i lemmi successivi sono utilizzati per dimostrare che ogni transizione in avanti (risp. indietro) può essere annullata da una transizione all'indietro (risp. avanti), che viene dimostrato nel Lemma~\ref{lemma:loop} .
+
+\begin{definition}[Equivalenza fra storie ($\equiv$)]\label{def:equivS}
+Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \Hi_3$ diciamo che:
+	\begin{itemize}
+		\item se $op$ è un operazione in lettura tale che $a ~ \varepsilon ~ op $ e $ p ~ \varepsilon ~ op$ e se per ogni  operazione in scrittura $op_1 \in \Hi_2$ vale che $a \cancel{\varepsilon} op_1 $ e $ p  \cancel{\varepsilon} op_1$ allora $\Hi \cong \Hi'$.
+		\item se $op$ è un operazione in scrittura tale che $a ~ \varepsilon ~ op $ e $ p ~ \varepsilon ~ op$ e se per ogni operazione in lettura o scrittura $op_1 \in \Hi_2$ vale che $a \cancel{\varepsilon} op_1 $ e $ p  \cancel{\varepsilon} op_1$ allora $\Hi \cong \Hi'$.
+		
+	\end{itemize} 
+	La relazione di equivalenza fra due storie viene indicata col simbolo $\equiv$ ed è la chiusura transitiva e simmetrica della relazione $\cong$ \qed
+\end{definition}
+\begin{definition}[Trasposizione]
+	Data una storia $h=\Hi_1 : \Hi_2 : op :\Hi_3$ e una storia $h'=\Hi_1 : op : \Hi_2 : \Hi_3$ tali per cui $h\cong h'$ si dice che c'è stata la \textbf{trasposizione} di $op$ (con $\Hi_2$).   \qed 
+\end{definition}
+\begin{corollary}
+	La relazione $\equiv$ fra due storie è anche riflessiva.
+\end{corollary}
+\begin{proof}
+	Per vedere che una storia $h$ sia equivalente a se stessa si può sempre considerare $h = \Hi_1 : op : \Hi_2 :\Hi_3 $ con $\Hi_2 = [~]$ ($\Hi_2$ vuoto) e quindi si può mostrare che $\Hi_1 : op : [~] :\Hi_3 \cong \Hi_1 : [~]  : op :\Hi_3$ e quindi che $h \equiv h$
+\end{proof}
+
+\begin{lemma}\label{myCorollario0}
+	Se $\Hi_1: op : \Hi_2 \cong \Hi_1': op : \Hi_2'$ con trasposizione di $op$ allora $\Hi_1: \Hi_2= \Hi_1': \Hi_2'$.
+\end{lemma}
+\begin{proof}
+	Visto che c'è stata la trasposizione di $op$ togliendo $op$ si ottiene una storia $\Hi_1: \Hi_2= \Hi_1': \Hi_2'$ dove non è presente nessuna trasposizione.
+\end{proof}
+\begin{lemma}\label{myCorollario1}
+	Se $\Hi_1: op : \Hi_2 \cong \Hi_1': op : \Hi_2'$ con trasposizione di $op'\not=op$ con $\Hi_3$(dove $\Hi_3$ parte della storia) allora $\Hi_1: \Hi_2\cong \Hi_1': \Hi_2'$ mediante la trasposizione di $op'$ con $\Hi_3$ o con $\Hi_3$ senza $op$.
+\end{lemma}
+\begin{proof}
+	~
+	\begin{itemize}
+		\item se $op\in \Hi_3$ la trasposizione di $op'$ con $\Hi_3$ senza $op$ è sempre possibile perché applicata su un sottoinsieme di $\Hi_3$ e quindi la Definizione~\ref{def:equivS} è sempre rispettata;  
+		\item se $op\notin \Hi_3$ la trasposizione di $op'$ con $\Hi_3$ è la medesima.
+	\end{itemize}
+\end{proof}
+
+\begin{corollary}\label{myCorollario2}
+	Se  $\Hi_1: op : \Hi_2 \cong \Hi_1': op : \Hi_2'$ allora $\Hi_1: \Hi_2\cong \Hi_1': \Hi_2'$.
+\end{corollary}
+\begin{proof}
+	~
+	\begin{itemize}
+		\item se c'è trasposizione di $op$ per    Lemma~\ref{myCorollario0};  
+		\item se non c'è trasposizione di $op$ per Lemma~\ref{myCorollario1}. 
+	\end{itemize}
+\end{proof}
+
+\begin{lemma}\label{myCorollario3}
+	Se  $\Hi_1: op : \Hi_2 \equiv \Hi_1': op : \Hi_2'$ allora $\Hi_1: \Hi_2\equiv \Hi_1': \Hi_2'$.
+\end{lemma}
+\begin{proof}
+	Per induzione strutturale sull'albero di derivazione della chiusura contestuale la dimostrazione è:\\
+	\begin{itemize}
+		\item Caso Base:\\
+		
+		\begin{prooftree} 
+			\hypo[]{\Hi_1:op:\Hi_2 \cong \Hi_1':op :\Hi_2'}
+			% Conclusion
+			\Infer1[]{\Hi_1:op:\Hi_2 \equiv \Hi_1':op :\Hi_2'}           
+		\end{prooftree}
+		~\\~\\
+		
+		Da $\Hi_1':op:\Hi_2' \cong \Hi_1:op :\Hi_2$, per il Corollario~\ref{myCorollario2} vale che $\Hi_1:\Hi_2 \cong \Hi_1':\Hi_2'$. Quindi costruisco l'albero:\\ 
+		
+		\begin{prooftree} 
+			\hypo[]{\Hi_1:\Hi_2 \cong \Hi_1':\Hi_2'}
+			% Conclusion
+			\Infer1[]{\Hi_1:\Hi_2 \equiv \Hi_1':\Hi_2'}           
+		\end{prooftree}
+		
+		
+		\item Caso Induttivo:\\
+		\begin{itemize}
+			\item caso riflessivo:\\
+			
+			\begin{prooftree} 
+				\hypo[]{\Hi_1':op:\Hi_2' \equiv \Hi_1:op :\Hi_2}
+				% Conclusion
+				\Infer1[]{\Hi_1:op:\Hi_2 \equiv \Hi_1':op :\Hi_2'}           
+			\end{prooftree}
+			~\\~\\
+			
+			Per l'ipotesi induttiva su $\Hi_1':op:\Hi_2' \equiv \Hi_1:op :\Hi_2$ si ha $\Hi_1':\Hi_2' \equiv \Hi_1:\Hi_2$. Quindi costruisco l'albero:\\
+			
+			\begin{prooftree} 
+				\hypo[]{\Hi_1':\Hi_2' \equiv \Hi_1:\Hi_2}
+				% Conclusion
+				\Infer1[]{\Hi_1:\Hi_2 \equiv \Hi_1':\Hi_2'}           
+			\end{prooftree}
+			
+			\item caso transitivo:\\
+			
+			\begin{prooftree} 
+				\hypo[]{\Hi_1:op:\Hi_2 \equiv \Hi_1'':op:\Hi_2''}
+				\hypo[]{\Hi_1'':op:\Hi_2'' \equiv \Hi_1':op:\Hi_2'}
+				% Conclusion
+				\Infer2[]{\Hi_1:op:\Hi_2 \equiv \Hi_1':op:\Hi_2'}           
+			\end{prooftree}
+			~\\~\\
+			
+			Per l'ipotesi induttiva su $\Hi_1:op:\Hi_2 \equiv \Hi_1'':op :\Hi_2''$ e\\ $\Hi_1'':op:\Hi_2'' \equiv \Hi_1':op :\Hi_2'$ si ha $\Hi_1:\Hi_2 \equiv \Hi_1'':\Hi_2''$ e $\Hi_1'':\Hi_2'' \equiv \Hi_1':\Hi_2'$. Quindi costruisco l'albero:\\
+			
+			\begin{prooftree} 
+				\hypo[]{\Hi_1:\Hi_2 \equiv \Hi_1'':\Hi_2''}
+				\hypo[]{\Hi_1'':\Hi_2'' \equiv \Hi_1':\Hi_2'}
+				% Conclusion
+				\Infer2[]{\Hi_1:\Hi_2 \equiv \Hi_1':\Hi_2'}           
+			\end{prooftree}
+		\end{itemize}
+			\end{itemize}
+\end{proof}
+
+Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti gli elementi sono uguali (la lista $\h$ di operazione deve essere uguale perché se no i processi avrebbero fatto operazioni diverse e quindi non sarebbero uguali).
+
+\begin{definition} [Equivalenza fra sistemi ($\equiv$)]\label{def:equiv} Due sistemi $s_1 = (\Gamma_1,\Pi_1,\M_1,\Hi) $ e $s_2 = (\Gamma_2,\Pi_2,\M_2,\Hi')$ sono equivalenti se: 
+	\begin{itemize}
+		\item $\Gamma_1 = \Gamma_2$
+		\item $ \Pi_1 = \Pi_2$
+		\item $ \M_1 = \M_2$
+		\item $ \Hi \equiv \Hi' $ 
+	\end{itemize}
+	Due sistemi $s_1, s_2$ equivalenti vengono  indicati con $s_1 \equiv s_2$.\qed
+\end{definition}
+
+\begin{lemma} \label{lemma:my3}
+	Dato un sistema $s$ con storia $h = \Hi_2~op~\Hi_1 $ in cui è possibile applicare $\ol{op}$ e un sistema $s'\equiv s$ con storia	$h' = \Hi_2'~op~\Hi_1' $  allora  è possibile applicare $\ol{op}$ a $s'$. 
+\end{lemma}
+\begin{proof}
+	In $s$ è possibile applicare $\ol{op}$ quindi:
+	\begin{itemize}
+		\item se $\ol{op}$ è in lettura e $a~\varepsilon~\ol{op}$ e $p~\varepsilon~\ol{op}$, allora in $\Hi_2$ non sono presenti operazioni in scrittura tali che $a~\varepsilon~op_1$ o $p~\varepsilon~op_1$;
+		\item se $\ol{op}$ è in scrittura e $a~\varepsilon~\ol{op}$ e $p~\varepsilon~\ol{op}$, allora in $\Hi_2$ non sono presenti operazioni in scrittura o lettura tali che $a~\varepsilon~op_1$ o $p~\varepsilon~op_1$.
+	\end{itemize}
+	Visto che $s\equiv s'$ allora anche $h\equiv h'$ per la Definizione~\ref{def:equiv}.
+	Per applicare $\ol{op}$ in $s'$ bisogna che le side-condition della regola vengano rispettate in $h'$ e quindi che:
+	\begin{itemize}
+		\item se $\ol{op}$ è in lettura e $a~\varepsilon~\ol{op}$ e $p~\varepsilon~\ol{op}$  allora in $\Hi_2'$ non devono essere presenti operazioni in scrittura tali che $a~\varepsilon~op_1$ o $p~\varepsilon~op_1$;
+		\item se $\mathsf{\ol{op}}$ è in scrittura e $a~\varepsilon~\ol{op}$ e $p~\varepsilon~\ol{op}$  allora in $\Hi_2'$ non devono essere presenti operazioni in scrittura o lettura tali che $a~\varepsilon~op_1$ o $p~\varepsilon~op_1$;
+	\end{itemize}
+	questo è rispettato in entrambi i casi per la Definizione~\ref{def:equivS} (di equivalenza fra storie), visto che è possibile applicare $\ol{op}$ in $s$ allora non ci possono essere trasposizioni in $h'$ che violino le side-condition della regola $\ol{op}$, e quindi è possibile applicare $\ol{op}$ a $s'$. 
+\end{proof}
+
+\begin{lemma} \label{lemma:my4}
+	
+	Dato un sistema $s_1$ con storia $h = \Hi_2~op~\Hi_1$ in cui è possibile applicare $\ol{op}$ ottenendo $s_1'$ e un sistema $s_2\equiv s_1$ con  storia $h' = \Hi_2'~op~\Hi_1'$ allora applicando $\ol{op}$ a $s_2$ si ottiene un sistema $s_2'\equiv s_1'$.
+\end{lemma}
+\begin{proof}
+	Per il Lemma~\ref{lemma:my3} è possibile applicare $\ol{op}$ anche ad $s_2$. \\
+	Applicando $\ol{op}$ a $s_1$ si ottiene $s_1'$ con storia $\Hi_2:\Hi_1$, mentre applicando $\ol{op}$ a $s_2$  si ottiene $s_2'$ con storia $\Hi_2':\Hi_1'$.\\
+	Per il Lemma~\ref{myCorollario3} si vede che $\Hi_2:\Hi_1\equiv\Hi_2':\Hi_1'$ e quindi che $s_1'\equiv s_2'$.
+\end{proof}
+
+\begin{lemma}\label{lemma:my1}
+	Se $s_1 \equiv s_1' $ e $ s_1 \rlh_ {p, r, k} s_2$ allora $\exists~s_2'$  t.c. $s_2\equiv s_2'$  e $s_1' \rlh_ {p, r, k} s_2'$
+\end{lemma}
+\begin{proof}
+	La dimostrazione si divide in due parti:
+	\begin{itemize}
+		\item se $r$ è forward la dimostrazione si divide in due casi:
+		\begin{itemize}
+			\item nel caso l'operazione non sia sulla mappa è facile mostrare che  applicando a $s_1'$  la stessa transizione, applicata a $s_1$, muova in uno stato $s_2'$ equivalente a $s_2$.  Se la modifica effettuata al sistema è la stessa allora anche $\Gamma $ e $\Pi$ saranno uguali a quelli di $s_2$ e non essendo stata modificata la mappa allora anch'essa e la sua storia saranno equivalenti;
+			\item nel caso l'operazione sia sulla mappa invece per dimostrare l'equivalenza di $s_2$ e $s_2'$ bisognerà mostrare l'equivalenza fra le storie della dei due sistemi.\\
+			In questo caso sappiamo che la storia di $s_1$ indicata con $\Hi_1$ è equivalente alla storia di $s_1'$ indicata con $\Hi_1'$. Inoltre sappiamo anche che applicando a $s_1'$ la regola $r$ si muoverà in $s_2'$ con storia $\Hi_2'= \Hi_1' : op$. Applicando la regola a $s_1$ si muoverà in uno stato $s_2$ con storia $\Hi_2 = \Hi_1 : op$. È facile vedere che $\Hi_2 \equiv \Hi_2'$ visto che $\Hi_1 \equiv \Hi_1'$ ed è stato aggiunto alla fine della storia lo stesso elemento;
+		\end{itemize}
+		\item se $r$ è backward la dimostrazione si divide in due casi:
+		\begin{itemize}
+			\item nel caso l'operazione non sia sulla mappa se si applica la stessa regola backward a due sistemi equivalenti allora muoveranno in due sistemi equivalenti visto che le modifiche al sistema sono le stesse (la mappa e la sua storia non vengono modificate per questo rimarranno equivalenti);
+			\item nel caso l'operazione sia sulla mappa per il Lemma~\ref{lemma:my3} è possibile applicare a $s_1'$ la regola backward $r$. L'equivalenza di $s_2$ e $s_2'$ si può vedere grazie al Lemma~\ref{lemma:my4}.
+		\end{itemize}
+	\end{itemize}
+\end{proof}
+
+\begin{lemma}[Loop lemma] \label{lemma:loop} Per ogni coppia di sistemi raggiungibili,
+	$s_1$ e $s_2$, si ha $s_1 \rh_{p,r,k} s_2$ sse $s_2
+	\lh_{p,\ol{r},k} s_1'$ tale per cui  $s_1\equiv s_1'$.
+\end{lemma}
+\begin{proof}
+	La prova è l'analisi dei casi sulla regola applicata. 
+	Discutiamo di seguito i casi più interessanti.
+	\begin{itemize}
+		\item Regola forward sulla mappa: in questo caso applicare successivamente la regola backward corrispondente è possibile perché vengono rispettate tutte le condizioni richieste, visto che l'ultima regola applicata alla mappa è quella forward. In questo caso si può facilmente vedere che si torna allo stato originale.
+		\item  Regola backward sulla mappa: in questo caso se si può applicare la regola backward vuol dire che sono rispettate tutte le condizioni richieste dalla regola. Al sistema quindi sarà possibile applicare la regola forward successivamente tornado ad uno stato equivalente al precedente, questo perché se sono state rispettate le condizioni imposte dalla regola allora nella storia, nel caso in cui la regola di backward sia in lettura, non sono presenti operazioni in scrittura che coinvolgono gli stessi atomi o pid coinvolti dalla regola forward, nel caso in cui la regola sia in scrittura allora nella storia non sono presenti operazioni in scrittura o lettura che coinvolgono gli stessi atomi o pid coinvolti dalla regola forward.
+	\end{itemize}
+\end{proof}
+
+
+\begin{definition}[Transizioni concorrenti] \label{def:concurrent}
+	Date due transizioni coiniziali, $t_1 = (s \rlh_{p_1,r_1,k_1} s_1)$
+	e $t_2 = (s \rlh_{p_2,r_2,k_2} s_2)$, diciamo che sono
+	\emph{in conflitto} se almeno una delle seguenti condizioni sussiste:
+	\begin{itemize}
+		\item Le regole viste nella Tabella~\ref{tab:conflitti} presente nella definizione~\ref{def:concurrent1} + definizione articolo 
+		\item nel caso in cui entrambe le transizioni siano sulla mappa, le transizioni accedono agli stessi pid o atomi e se una delle due transizioni è in scrittura sulla mappa (se entrambe le transizioni sono in lettura il conflitto non è presente).
+		\item nel caso in cui entrambe le transizioni siano sulla mappa e inoltre una transizione sia \textbf{forward} e l'altra transizione sia \textbf{backward} tali per cui:
+		
+		\begin{table}[h]
+			\hspace{-17ex}
+			\begin{tabular}{@{}|l|l|l|l|l|l|l|l|l|@{}}
+				\hline
+				\backslashbox{$~r_1~~$} {$~~r_2~$} &  $\ol{\mathsf{RegisterT}}$&  $\ol{\mathsf{UnregisterT}}$& $\ol{\mathsf{End}}$ & $\ol{\mathsf{SendA}}$ & $\ol{\mathsf{SendF}}$ & $\ol{\mathsf{RegisterF}}$ & $\ol{\mathsf{UnregisterF}}$ & $\ol{\mathsf{Call3}}$ \\ \hline
+				$\mathsf{RegisterT}$   &       & \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}              &      \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}     &       &   $a' = a''$    &     &      $a' = a''$       & \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}        \\ \hline
+				
+				$\mathsf{UnregisterT}$ &    \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}    &             &           &   \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}    &  &  \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}   &             &               \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                 \\ \hline
+				
+				$\mathsf{End}$         &    \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}    &             &           &   \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}    &  &  \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}   &             &               \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                 \\ \hline
+				
+				$\mathsf{SendA}$       &   \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}    &            &           &       &       &                          &                                  &                                \\ \hline
+				
+				$\mathsf{SendF}$       &       &          $a'=a''$    &      $a'=a''$      &       &                            &                          &                                  &                                \\ \hline
+				
+				$\mathsf{RegisterF}$   &  \begin{tabular}[c]{@{}l@{}}$a'=a'' ~\lor$ \\ $ p' =p''$ \end{tabular}     &             &           &                            &                            &                          &                                  &                                \\ \hline
+				
+				$\mathsf{UnregisterF}$ &       &    $a'=a''$         &   $a'=a''$                              &                            &                            &                          &                                  &                                \\ \hline
+				
+				$\mathsf{Call3}$       &     \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}  &                 \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                 &          \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                      &                            &                            &                          &                                  &                                \\ \hline
+			\end{tabular}
+			\caption{\label{tab:conflitti1} Tabella dei conflitti.}
+		\end{table}
+		
+		Nella Tabella~\ref{tab:conflitti1} sono presenti i casi in cui si verificano i conflitti, $a'$ e $p'$ rappresentano l'atomo e il pid coinvolti da $r_1$, mentre $a''$ e $p''$ rappresentano l'atomo e il pid coinvolto da $r_2$. $\M'$ rappresenta gli elementi letti nella mappa dalla regola $\mathsf{Call3}$ o $\ol{\mathsf{Call3}}$. Le celle vuote rappresentano transizioni coiniziali che non vanno in conflitto.\\
+		Da notare che,anche in questo caso, non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro, questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
+	\end{itemize}
+	%
+	Due transizioni coiniziali sono \emph{concorrenti} se non sono in conflitto. \qed
+\end{definition}
+%
+Il seguente lemma è la controparte del Lemma~\ref{lemma:square} per la semantica standard.
+
+\begin{lemma}[Square lemma] \label{lemma:square} Date due operazioni coiniziali concorrenti $t_1 = (s \rlh_{p_1,r_1,k_1} s_1)$ e
+	$t_2 = (s \rlh_{p_2,r_2,k_2} s_2)$, allora esistono due transizioni $t_2/t_1 = (s_1 \rlh_{p_2,r_2,k_2} s')$,
+	$t_1/t_2 = (s_2 \rlh_{p_1,r_1,k_1} s'')$ tali per cui $s' \equiv s''$.  Graficamente,
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{p_1,r_1,k_1} \ar@<1pt>@^{->}[d]_{p_2,r_2,k_2} & s_1 \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[u]& 
+		}
+	\end{minipage}
+	~~
+	\Longrightarrow
+	~~
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{p_1,r_1,k_1} \ar@<1pt>@^{->}[d]_{p_2,r_2,k_2} & s_1 \ar@<1pt>@^{->}[d]^{p_2,r_2,k_2} \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[r]_{p_1,r_1,k_1} \ar@<1pt>@^{->}[u] & s'' \equiv s' ~~~~~~ \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l]
+		}
+	\end{minipage}
+	\]
+\end{lemma}
+
+\begin{proof}
+	Distinguiamo i seguenti casi a seconda delle regole applicate: \\ [1ex]
+	(1) Due transizioni forward. Quindi, abbiamo i seguenti casi:
+	\begin{itemize}
+		\item $r_1= \mathsf{End}$ e $r_2=\mathsf{RegisterF}$ nel caso in cui %(accedono a pid e atomi diversi) 
+		$a~\varepsilon~r_1$, $p_1~\varepsilon~r_1$, $a'~\varepsilon~r_2$ e $p'~\varepsilon~r_2$ dove $a$ e $a'$ sono atomi e $p'$ è un pid:
+		\begin{itemize}
+			\item se $a\not= a'$ e $p_1 \not= p'$ si può vedere che applicando prima la transizione $t_1$ e poi la $t_2$ o viceversa si arriva in due stati rispettivamente $s'$ e $s''$ che sono equivalenti perché la mappa è la stessa mentre la storia della mappa differisce per gli ultimi elementi che sono scambiati ma visto che $a\not= a'$ e $p_1 \not= p'$ rispetta la Definizione~\ref{def:equivS} (equivalenza fra storie) e quindi $s'\equiv s''$. 
+			\item  se $a= a'$ o $p_1 = p'$ le due operazioni sono in conflitto (vedere Tabella~\ref{tab:conflitti}).
+		\end{itemize}
+		\item questo ragionamento si può effettuare su tutte le regole sulla mappa 
+	\end{itemize}
+	(2) Una transizione forward e una transizione backward. Quindi, distinguiamo i seguenti casi:
+	\begin{itemize}
+		\item $r_1 = \mathsf{RegisterT}$ e $r_2= \mathsf{\ol{UnregisterT}}$ nel caso in cui %(accedono a pid e atomi diversi) 
+		$a~\varepsilon~r_1$, $p~\varepsilon~r_1$, $a'~\varepsilon~r_2$ e $p'~\varepsilon~r_2$ dove $a$ e $a'$ sono atomi e $p$ e $p'$ sono pid:
+		\begin{itemize}
+			\item se $a\not= a'$ e $p \not= p'$ allora applicando prima la transizione $t_1$ e poi $t_2$ o viceversa si ottengono due transizioni $t_1/t_2$ e $t_2/t_1$ che finiscono in due stati che sono equivalenti (la storia della mappa sarà la stessa sia in $s'$ che in $s''$).
+			\item se $a= a'$ o $p = p'$ le due operazioni sono in conflitto (vedere Tabella~\ref{tab:conflitti1}).
+		\end{itemize}
+		\item questo ragionamento si può effettuare su tutte le regole sulla mappa 
+	\end{itemize}
+	(3) Due transizioni backward. Quindi, distinguiamo i seguenti casi:
+	\begin{itemize}
+		\item Nel caso di due operazioni sulla mappa (o anche in cui solo una è sulla mappa) è sempre verificato: 
+		\begin{itemize}
+			\item nel caso in cui entrambe le operazioni backward sono sulla mappa allora vuol dire che le condizioni di entrambe le regole sono rispettate, quindi sarà indifferente applicare prima una o l'altra (la storia della mappa sarà la stessa sia in $s'$ che in $s''$).
+			\item nel caso in cui una regola è sulla mappa e l'altra non lo è allora le condizioni di entrambe le regole sono rispettate, applicare prima la regola sulla mappa o prima la regola non sulla mappa non cambia il risultato (la storia della mappa sarà la stessa sia in $s'$ che in $s''$). 
+		\end{itemize}
+	\end{itemize}
+\end{proof}
+
+\begin{lemma}[Confluenza] \label{lemma:square*} Date due operazioni coiniziali concorrenti $t_1 = (s \rlh^* s_1)$ e
+	$t_2 = (s \rlh^* s_2)$, allora $t_2/t_1^* = (s_1 \rlh^* s')$,
+	$t_1/t_2^* = (s_2 \rlh* s'')$ tali per cui $s' \equiv s''$.  Graficamente,
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{*} \ar@<1pt>@^{->}[d]_{*} & s_1 \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[u]& 
+		}
+	\end{minipage}
+	~~
+	\Longrightarrow
+	~~
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{*} \ar@<1pt>@^{->}[d]_{*} & s_1 \ar@<1pt>@^{->}[d]^{*} \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[r]_{*} \ar@<1pt>@^{->}[u] & s'' \equiv s' ~~~~~~ \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l]
+		}
+	\end{minipage}
+	\]
+\end{lemma}
+\begin{proof}
+	Per il Lemma~\ref{lemma:my1} è possibile applicare una stessa regola a stati equivalenti e ottenere due stati equivalenti. Quindi è possibile iterare più volte il Lemma \ref{lemma:square} a stati equivalenti. Formalmente la prova avviene per induzione sul numero di passi e poi applicando il Lemma~\ref{lemma:my1} e \ref{lemma:square}, $m$ volte (dove $m$ è il numero di passi su cui non si è fatta induzione).   
+\end{proof}
+La dimostrazione è per induzione sul numero di passi:
+\begin{itemize}
+	\item Caso base:
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{m} \ar@<1pt>@^{->}[d]_{0} & s_1 \ar@<1pt>@^{->}[d]^{0} \ar@<1pt>@^{->}[l]\\
+			s \ar@<1pt>@^{->}[r]_{m} \ar@<1pt>@^{->}[u] & s_1 \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l]
+		}
+	\end{minipage}
+	\]
+	\item Caso induttivo ($n+1$)
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			s \ar@<1pt>@^{->}[r]^{m} \ar@<1pt>@^{->}[d]_{n} & s_1 \ar@<1pt>@^{->}[d]^{n} \ar@<1pt>@^{->}[l]\\
+			i \ar@<1pt>@^{->}[r]_{m} \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[d] & i'' \equiv i' ~~~~~~ \ar@<1pt>@^{->}[u]  \ar@<1pt>@^{->}[d]^{1}\ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[r] \ar@<1pt>@^{->}[u]^{1}   & s'' \equiv s' ~~~~~\ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l]^{m} 
+		}
+	\end{minipage}
+	\]
+	\[
+	\begin{minipage}{50ex}
+		\xymatrix@C=50pt@R=20pt{
+			i \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]_{1} & i_1 \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]\ar@<1pt>@^{->}[l]& \dots \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d] \ar@<1pt>@^{->}[d]_{1}\ar@<1pt>@^{->}[l]& i''\equiv i' \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[r]_{1} \ar@<1pt>@^{->}[u] & i_1'\equiv i_1'' \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & \dots \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & s''\equiv s' \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] 
+		}
+	\end{minipage}
+	\]
+	
+\end{itemize}
 
 \section{Semantica rollback}\label{sect:semrollback}
 
