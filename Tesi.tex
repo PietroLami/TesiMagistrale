@@ -365,7 +365,7 @@ Nella regola $\mathit {Apply2}$, si considera che la mappatura $\mu$ memorizza t
 %
 Per quanto riguarda le applicazioni, si noti che consideriamo solo il primo ordine funzioni. Per estendere la nostra semantica a considerare anche funzioni di ordine superiore, si dovrebbe ridurre il nome della funzione a \emph {chiusura} della forma $ (\theta ', \mathsf {fun} ~ (X_1, \ldots, X_n) \to e) $. 
 \newline
-Alle regole della semantica standard delle espressi sequenziali è stata aggiunta la regola $Call3$ utilizzata per la valutazione delle funzioni built-in che devono accedere alla mappa. Le funzioni built-in come si può vedere dalla regola $Call2$ vengono valutate tramite la funzione ausiliaria $\mathsf{eval}$, per questo motivo si è scelto di utilizzare la funzione ausiliaria $\mathsf{evalM}$ per valutare le funzioni built-in che utilizzano una mappa. Infatti per la valutazione $\mathsf{evalM}$ oltre a prendere in input i parametri prende in input pure la mappa, indicata con $\mathsf{M}$.
+Alle regole della semantica standard delle espressi sequenziali è stata aggiunta la regola $Call3$ utilizzata per la valutazione delle funzioni built-in che devono accedere alla mappa. Le funzioni built-in come si può vedere dalla regola $Call2$ vengono valutate tramite la funzione ausiliaria $\mathsf{eval}$, per questo motivo si è scelto di utilizzare la funzione ausiliaria $\mathsf{evalM}$ per valutare le funzioni built-in che utilizzano una mappa. Infatti per la valutazione $\mathsf{evalM}$ oltre a prendere in input i parametri prende in input pure la mappa, indicata con $\M$.
 La funzione $\mathsf{evalM}$ e la funzione $\mathsf{eval}$ sono quindi sono due funzioni parziali visto che non è definito l'output per ogni input. $\mathsf{M'}$ corrisponde alla parte della mappa acceduta dalla funzione $\mathsf{evalM}$.
 \newpage
 \begin{figure}[h]
@@ -958,7 +958,15 @@ Nella regola $ \mathit {Receive} $ si può notare che la funzione ausiliare  $\ma
 						\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
 						\M\backslash\!\!\backslash (a' ,p); \mathsf{end}(\theta,\epsilon,a',p)\cons\s
 				}
-		}}				
+		}}\\[3ex]
+	
+\mathcolorbox{yellow}{(\mathit{End}) ~ {\displaystyle
+\frac{\mathsf{matchEnd}(\M,p)=\emptyset}{
+	\Gamma;\tuple{p,\h,(\theta,\epsilon),q}\comp \Pi;\M;\s \rh
+	\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,\mathsf{undefined},p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
+	\M; \mathsf{end}(\theta,\epsilon,\mathsf{undefined},p)\cons\s
+}
+}}								
 	\end{array}
 	\]
 	\caption{Semantica reversibile forward} \label{fig:forwardsem1}
@@ -966,7 +974,7 @@ Nella regola $ \mathit {Receive} $ si può notare che la funzione ausiliare  $\ma
 ~\\
 Per dimostrare che la semantica forward $\rh$ estende la semantica standard $\hoo$ bisogna introdurre $ \del(s) $.
  Si può vedere che $ \del(s) $ denoti il sistema risultante da $ s $ rimuovendo le cronologie dei processi; formalmente,
-$\del(\Gamma;\Pi;\mathsf{M;S}) = \Gamma;\del'(\Pi);\mathsf{M}$, dove
+$\del(\Gamma;\Pi;\mathsf{M;S}) = \Gamma;\del'(\Pi);\M$, dove
 \[
 \begin{array}{lll}
 	\del'(\tuple{p,\h,(\theta,e),q}) & = &
@@ -1174,9 +1182,9 @@ Ora verranno discusse brevementealcune situazioni particolari:
 		
 		\mathcolorbox{yellow}{ (\mathit{\ol{RegisterT}}) ~ {\displaystyle
 				\begin{array}{l}	
-					\Gamma;\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi;\mathsf{M}\cup(a,p') ; \mathsf{S'}\cons\mathsf{regT}(\theta,e,a,p',p) \cons\mathsf{S} \\
-					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a \cancel{\varepsilon} op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op    
+					\Gamma;\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi;\M\cup(a,p') ; \s'\cons\mathsf{regT}(\theta,e,a,p',p) \cons\s \\
+					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a \cancel{\varepsilon} op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op    
 					\end{array}		
 		}}
 		\\[6ex]
@@ -1184,30 +1192,30 @@ Ora verranno discusse brevementealcune situazioni particolari:
 		\mathcolorbox{yellow}{ (\mathit{\ol{RegisterF}}) ~ {\displaystyle
 				\begin{array}{l}
 					\Gamma;\tuple{p,\mathsf{regF}(\theta,e,a,p',p)\cons\h,(\theta,regFail),q}\comp \Pi;
-					\mathsf{M,} \mathsf{S'}\cons\mathsf{regF}(\theta,e,a,p',p) \cons\mathsf{S} \\    
-					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon} ~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op  
+					\M; \s'\cons\mathsf{regF}(\theta,e,a,p',p) \cons\s \\    
+					\hspace{20ex} \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \s' ~  a~\cancel{\varepsilon} ~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op  
 				\end{array}
 		}}
 		\\[6ex]
 		
 	\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterT}}) ~ {\displaystyle
 				\begin{array}{l}
-					\Gamma;\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi; \mathsf{M}\backslash\!\!\backslash(a,p') ;
-					\mathsf{S'}\cons\mathsf{unregT}(\theta,e,a,p',p)\cons\mathsf{S} \\
+					\Gamma;\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\comp \Pi; \M\backslash\!\!\backslash(a,p') ;
+					\s'\cons\mathsf{unregT}(\theta,e,a,p',p)\cons\s \\
 					\hspace{20ex}
-					\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op
+					\lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p'~\cancel{\varepsilon}~op
 				\end{array}
 		}}
 		\\[6ex]
 		
 		\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterF}}) ~ {\displaystyle
 				\begin{array}{l}	
-					\Gamma;\tuple{p,\mathsf{unregF}(\theta,e,a,p)\cons\h,(\theta,unregFail),q}\comp \Pi; \mathsf{M;} 
-					\mathsf{S'}\cons\mathsf{unregF}(\theta,e,a,p) \cons\mathsf{S}  \\
-					\hspace{20ex}  \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~\cancel{\varepsilon}~op                  	
+					\Gamma;\tuple{p,\mathsf{unregF}(\theta,e,a,p)\cons\h,(\theta,unregFail),q}\comp \Pi; \M; 
+					\s'\cons\mathsf{unregF}(\theta,e,a,p) \cons\s  \\
+					\hspace{20ex}  \lh  \Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \s' ~  a~\cancel{\varepsilon}~op                  	
 				\end{array}
 				
 		}}
@@ -1215,18 +1223,18 @@ Ora verranno discusse brevementealcune situazioni particolari:
 		
 		\mathcolorbox{yellow}{ (\mathit{\ol{Catch}}) ~ {\displaystyle
 				\begin{array}{l}
-					\Gamma;\tuple{p,\mathsf{fail}(\theta,e)\cons\h,(\theta,fail),q}\comp \Pi; \mathsf{M};\mathsf{S}
+					\Gamma;\tuple{p,\mathsf{fail}(\theta,e)\cons\h,(\theta,fail),q}\comp \Pi; \M;\s
 					\lh
-					\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi; \mathsf{M};\mathsf{S}
+					\Gamma;\tuple{p,\h,(\theta,e),q}\comp \Pi; \M;\s
 				\end{array}	
 		}}\\[3ex]
 	
 		\mathcolorbox{yellow}{ (\mathit{\ol{End}}) ~ {\displaystyle
 			\begin{array}{l}
 				\Gamma;\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\comp \Pi,
-				\mathsf{M}\backslash\!\!\backslash (a' ,p), \mathsf{S}\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\mathsf{S}
-				\lh  \Gamma;\tuple{p,\h,(\theta,\epsilon),q}\:\comp\: \Pi;\mathsf{M;S'}\cons\mathsf{S}\\
-				Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \mathsf{S'} ~  a'~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p~\cancel{\varepsilon}~op                  
+				\M\backslash\!\!\backslash (a' ,p), \s'\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\s
+				\lh  \Gamma;\tuple{p,\h,(\theta,\epsilon),q}\:\comp\: \Pi;\M;\s'\cons\s\\
+				Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a'~\cancel{\varepsilon}~op ~ \mathsf{o} ~ p~\cancel{\varepsilon}~op                  
 			\end{array}		
 	}}
 	\end{array}
@@ -1463,7 +1471,7 @@ Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti g
 		\item nel caso in cui entrambe le transizioni siano sulla mappa, le transizioni accedono agli stessi pid o atomi e se una delle due transizioni è in scrittura sulla mappa (se entrambe le transizioni sono in lettura il conflitto non è presente).
 		\item nel caso in cui entrambe le transizioni siano sulla mappa e inoltre una transizione sia \textbf{forward} e l'altra transizione sia \textbf{backward} tali per cui:
 		
-		\begin{table}[h]
+		\begin{table}[h!]
 			\hspace{-17ex}
 			\begin{tabular}{@{}|l|l|l|l|l|l|l|l|l|@{}}
 				\hline
@@ -1598,8 +1606,8 @@ La dimostrazione è per induzione sul numero di passi:
 	\[
 	\begin{minipage}{50ex}
 		\xymatrix@C=50pt@R=20pt{
-			i \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]_{1} & i_1 \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]\ar@<1pt>@^{->}[l]& \dots \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d] \ar@<1pt>@^{->}[d]_{1}\ar@<1pt>@^{->}[l]& i''\equiv i' \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l]\\
-			s_2 \ar@<1pt>@^{->}[r]_{1} \ar@<1pt>@^{->}[u] & i_1'\equiv i_1'' \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & \dots \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & s''\equiv s' \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] 
+			i \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]_{1} & i_1 \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d]\ar@<1pt>@^{->}[l]& \dots \ar@<1pt>@^{->}[r]^{1} \ar@<1pt>@^{->}[d] \ar@<1pt>@^{->}[d]_{1}\ar@<1pt>@^{->}[l]& i''\equiv i'~~~~ \ar@<1pt>@^{->}[d]_{1} \ar@<1pt>@^{->}[l]\\
+			s_2 \ar@<1pt>@^{->}[r]_{1} \ar@<1pt>@^{->}[u] & i_1'\equiv i_1''~~~ \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & \dots \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & s''\equiv s' ~~~~~\ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] 
 		}
 	\end{minipage}
 	\]
@@ -1609,6 +1617,451 @@ La dimostrazione è per induzione sul numero di passi:
 \section{Semantica rollback}\label{sect:semrollback}
 
 In questa sezione introdurremo un operatore di rollback che avvia un calcolo reversibile per un processo.
+L'operazione di annullamento (non deterministica) ha alcune somiglianze con l'operatore di rollback di \cite{LMSS11, GLM14}.
+I processi vengono messi in modalità di ``rollback'' utilizzando $\lfloor ~ \rfloor_\Psi$, dove $ \Psi $ è l'insieme di rollback. 
+Un tipico rollback si riferisce a un checkpoint che deve essere superato da una computazione backward del processo prima di riprendere una computazione forward.
+Per essere precisi, distinguiamo le seguenti tipologie di rollback:
+
+\begin{itemize}
+	\item $\#_\mathsf{ch}^\mathtt{t}$, dove ``$\mathsf{ch}$'' sta per ``checkpoint'': un rollback per annullare le azioni di un processo fino a che non ha raggiunto il checkpoint con identificatore $\mathtt {t}$;
+	\item $\#_\mathsf{sp}$, dove ``$ \mathsf{sp}$'' sta per ``spawn'': un rollback per annullare \emph{tutte} le azioni di un processo, infine cancellandolo dal sistema;
+	\item $ \#_\mathsf {sch}^{\k}$, dove ``$\mathsf{sch}$'' sta per ``sched'': un rollback per annullare le azioni di un processo fino alla consegna di un messaggio nella forma $\{v, \k \}$ non è annullata.
+	\item $\#_\mathsf{op}^\mathtt{par}$: richiede un rollback per annullare le azioni di un processo fino a quando non viene raggiunto l'operatore con identificatore $\mathtt{op(par)}$;
+	\item $\#_\mathsf{([a],[p]),t}^\mathsf{S'}$: si applica ad un insieme di processi $\Pi$, 
+	\begin{itemize}
+		\item se $S'=\emptyset$ allora $\lfloor\Pi\rfloor_{\#_\mathsf{([a],[p]),t}^\emptyset} = \Pi$
+		\item se $S'\not=\emptyset$ allora $\lfloor\Pi\rfloor_{\#_\mathsf{([a],[p]),t}^{\mathsf{S'}}} = \lfloor\Pi'\rfloor_{\#_\mathsf{([a],[p]),t}^{\mathsf{S''}}}$ dove $\mathsf{S'} = op(par):\mathsf{S''}$ e dove:
+		\begin{itemize}
+			\item se $a \centernot\varepsilon op(par)$ e $p \centernot\varepsilon op(par)$ allora $\Pi' = \Pi$
+			\item se $a~ \varepsilon~op(par)$ o $p ~\varepsilon~op(par)$ allora $\Pi' = \Pi~\cup~\{newproc\}~\backslash~\{proc\}$ dove:
+			\begin{itemize}
+				\item $proc = \lfloor\tuple{p',(\theta,e),q,h}\rfloor_{\Psi} \in \Pi$ (è il processo che ha eseguito l'operazione $op(par)$ che viene identificato da $p'$ che è presente in $par$);
+				\item $newproc = \lfloor\tuple{p',(\theta,e),q,h}\rfloor_{\Psi'}$ con $\Psi' = \Psi\cup \#_{op}^{par}$ se $\#_{op}^{par}\not\in\Psi$, o altrimenti $\Psi' = \Psi$
+			\end{itemize}
+		\end{itemize}
+		Se $t=l$ allora $\Pi' = \Pi$ anche se $op(par)$ è un'operazione in lettura.
+	\end{itemize}
+\end{itemize}
+
+Di seguito, al fine di semplificare le regole di riduzione, consideriamo che la nostra semantica soddisfa la seguente \emph{equivalenza strutturale}:
+\[
+\begin{array}{ll}
+	(\mathit{SC}) & {\displaystyle
+		\Gamma;
+		\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\emptyset}
+		\:\comp\: \Pi
+		~\equiv~
+		\Gamma;\tuple{p,\h,(\theta,e),q}\:\comp\: \Pi
+	}
+\end{array}
+\]
+Nota che solo il primo dei tipi di rollback sopra indicati è destinato a un ~checkpoint. Questo tipo di checkpoint è introdotto in modo non deterministico dalla regola seguente, dove indichiamo con $\lhh$ la nuova relazione di riduzione che modella i movimenti all'indietro della semantica di rollback:
+\[
+\begin{array}{ll}
+	(\mathit{\ol{Undo}}) & {\displaystyle
+		\Gamma;
+		\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}
+		\:\comp\: \Pi
+		\lhh
+		\Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi\cup\{\#_\mathsf{ch}^\mathtt{t}\}}\:\comp\: \Pi
+	}
+	\\[1ex] & \mbox{if } \mathsf{check}(\theta',e',\mathtt{t}) \mbox{ occurs
+		in } \h, ~\mbox{for some $\theta'$ and $e'$}
+\end{array}
+\]
+Solo dopo l'applicazione di questa regola i passaggi possono essere annullati, poiché il calcolo predefinito nella semantica di rollback è in avanti.
+
+Le regole backward della semantica di rollback sono mostrate nelle Figure~\ref{fig:rollsem0},~\ref{fig:rollsem1}~e~\ref{fig:rollsem2}. Si assume che $\Psi\neq\emptyset$ (ma $\Psi'$ potrebbe essere vuoto).
+
+\begin{figure}[h!]
+	\footnotesize
+	\[
+	\hspace{-3ex}
+	\begin{array}{r@{~~}l}
+		(\mathit{\ol{Seq}}) & {\displaystyle
+			\Gamma;
+			\lfloor\tuple{p,\tau(\theta,e)\cons\h,(\theta',e'),q}\rfloor_{\Psi}
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		}
+		\\[2ex]
+		
+		(\mathit{\ol{Check}}) & {\displaystyle
+			\Gamma;
+			\lfloor\tuple{p,\mathsf{check}(\theta,e,\mathtt{t})\cons\h,(\theta',e'),q}\rfloor_{\Psi}
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi\setminus\{\#_\mathsf{ch}^\mathtt{t}\}}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		} 
+		\\[2ex]
+		
+		(\mathit{\ol{Send1}}) & {\displaystyle
+			\begin{array}{l}
+				\Gamma\cup\{(p',\{v,\k\})\};\lfloor\tuple{p,\mathsf{send}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+				\Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+				\lhh \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi} 
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+			\end{array}
+		}\\[2ex]
+		
+		(\mathit{\ol{Send2}}) & {\displaystyle
+			\begin{array}{l}
+				\Gamma;\lfloor\tuple{p,\mathsf{send}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+				\lfloor\tuple{p',\h',(\theta'',e''),q'}\rfloor_{\Psi'}\:\comp\:\Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+				\lhh 
+				\Gamma;\lfloor\tuple{p,\mathsf{send}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+				\lfloor\tuple{p',\h',(\theta'',e''),q'}\rfloor_{\Psi'\cup\{\#_\mathsf{sch}^\k\}}\:\comp\:
+				\Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+				\hspace{20ex}\mbox{if}~(p',\{v,\k\})~\mbox{does not
+					occur
+					in}~\Gamma~\mbox{and}~\#_\mathsf{sch}^{\k}\not\in\Psi'
+			\end{array}
+		}\\[5ex]
+		
+		(\mathit{\ol{Receive}}) & {\displaystyle
+			\Gamma;\lfloor\tuple{p,\mathsf{rec}(\theta,e,\{v,\k\},q)\cons\h,(\theta',e'), q\backslash\!\!\backslash\{v,\k\}}\rfloor_{\Psi}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+			\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+		}
+		\\[2ex]
+		
+		(\mathit{\ol{Spawn1}}) & {\displaystyle
+			\begin{array}{l}
+				\Gamma;\lfloor\tuple{p,\mathsf{spawn}(\theta,e,p'')\cons\h,(\theta',e'),q}\rfloor_{\Psi}
+				\:\comp\: 
+				\lfloor\tuple{\nil,p'',(\theta'',e''),\nil}\rfloor_{\Psi'}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}
+				\\
+				\hspace{20ex}\lhh
+				\Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} 
+			\end{array}
+		}\\[3ex]
+		
+		(\mathit{\ol{Spawn2}}) & {\displaystyle
+			\begin{array}{l}
+				\Gamma;\lfloor\tuple{p,\mathsf{spawn}(\theta,e,p'')\cons\h,(\theta,e),q}\rfloor_{\Psi}
+				\:\comp\: 
+				\lfloor\tuple{p'',\h'',(\theta'',e''),q''}\rfloor_{\Psi'}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} 
+				\\
+				\hspace{0ex}\lhh
+				\Gamma;\lfloor\tuple{p,\mathsf{spawn}(\theta,e,p'')\cons\h,(\theta,e),q}\rfloor_{\Psi}
+				\:\comp\: 
+				\lfloor\tuple{p'',\h'',(\theta'',e''),q''}\rfloor_{\Psi'\cup\{\#_\mathsf{sp}\}}
+				\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} \\
+				\hspace{20ex}\mbox{if}~\h''\neq\nil \lor q''\neq\nil~\mbox{and}~\#_\mathsf{sp}\not\in\Psi'
+			\end{array}
+		}\\[4ex]
+		
+		
+		(\mathit{\ol{Self}}) & {\displaystyle
+			\Gamma;\lfloor\tuple{p,\mathsf{self}(\theta,e)\cons\h,(\theta',e'),q}\rfloor_{\Psi} 
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} \lhh
+			\Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi} 
+			\:\comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}}  
+		}\\[2ex]
+		
+		(\mathit{\ol{Sched}}) & {\displaystyle
+			\begin{array}{l}
+				\Gamma;\lfloor\tuple{p,\h,(\theta,e),\{v,\k\}\cons q}\rfloor_{\Psi} \: \comp\: \Pi;\mathcolorbox{yellow}{\mathsf{M;S}} \lhh 
+				\Gamma\cup(p,\{v,\k\});\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi\setminus\{\#_\mathsf{sch}^\k\}}\:\comp\:\Pi;\mathcolorbox{yellow}{\mathsf{M;S}}\\
+				\hspace{20ex} %%\mbox{if}~\#_\mathsf{sch}^\k\not\in\Psi
+				%%~\mbox{and 
+				\mbox{if the topmost $\mathsf{rec}(\ldots)$ item in
+					$\h$ (if any) has the}\\ 
+				\hspace{20ex}\mbox{form}~\mathsf{rec}(\theta',e',\{v',\k'\},q')~\mbox{with}~q'\backslash\!\!\backslash\{v',\k'\}\neq
+				\{v,\k\}\cons q
+			\end{array}
+		}
+	\end{array}
+	\]
+	\caption{Rollback semantics: backward reduction rules} \label{fig:rollsem0}
+\end{figure}
+
+\begin{figure}[h!]
+	\footnotesize
+	\[
+	\hspace{-3ex}
+	\begin{array}{l@{~~}l}
+		
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{SendA1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma\cup\{(p',\{v,\k\})\};\lfloor\tuple{p,\mathsf{sendA}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+					\Pi;\\\mathsf{S'}\cons\mathsf{sendA}(\theta,e,p',\{v,\k\},a,p)\cons\mathsf{S}
+					\lhh \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi} 
+					\:\comp\: \Pi ; \mathsf{S'}\cons\mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon op        
+					%\mbox{Se in S' non sono presenti operazioni di scrittura sulla mappa che coinvolgono l'atomo a}
+				\end{array}
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{SendA2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma\cup\{(p',\{v,\k\})\};\lfloor\tuple{p,\mathsf{sendA}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\: \Pi;
+					\mathsf{S'}\cons\mathsf{sendA}(\theta,e,p',\{v,\k\},a,p)\cons\mathsf{S}\lhh \\
+					\Gamma\cup\{(p',\{v,\k\})\};\lfloor\tuple{p,\mathsf{sendA}(\theta,e,p',\{v,\k\})\cons\h,(\theta,e),q}\rfloor_{\Psi} 
+					\:\comp\: \lfloor\Pi \rfloor_{\#_\mathsf{([a],\emptyset),l}^\mathsf{S'}};\\
+					\mathsf{S'}\cons\mathsf{sendA}(\theta,e,p',\{v,\k\},a,p)\cons\mathsf{S}\\
+					Se ~ \exists ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~ \varepsilon ~op 
+					%\mbox{Se in S' sono presenti operazioni di scrittura sulla mappa che coinvolgono l'atomo a}
+				\end{array}
+		}}\\[6ex]
+		
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{SendA3}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{sendA}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:\lfloor\tuple{p',\h',(\theta'',e''),q'}\rfloor_{\Psi'}\:\comp\:\Pi;\\\mathsf{S'}\cons\mathsf{sendA}(\theta,e,p',\{v,\k\},a,p)\cons\mathsf{S}\\
+					\lhh 
+					\Gamma;\lfloor\tuple{p,\mathsf{sendA}(\theta,e,p',\{v,\k\})\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:\lfloor\tuple{p',\h',(\theta'',e''),q'}\rfloor_{\Psi'\cup\{\#_\mathsf{sch}^\k\}}\:\comp\:
+					\Pi;\\
+					\mathsf{S'}\cons\mathsf{sendA}(\theta,e,p',\{v,\k\},a,p)\cons\mathsf{S}\\
+					\hspace{20ex}\mbox{se}~(p',\{v,\k\})~\mbox{non occorre
+						in}~\Gamma~\mbox{e}~\#_\mathsf{sch}^{\k}\not\in\Psi'
+				\end{array}
+		}}\\[7ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{SendF1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{sendF1}(\theta,e,p,a)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+					\Pi;\mathsf{M;S'}\cons \mathsf{sendF1}(\theta,e,p,a)\cons\mathsf{S}\\
+					\lhh         \Gamma;\lfloor\tuple{p,\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+					\Pi;
+					\mathsf{M;S'}\cons \mathsf{S}\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a \centernot\varepsilon op        
+					% \mbox{Se in S' non sono presenti operazioni di scrittura sulla mappa che coinvolgono l'atomo a}
+				\end{array}
+		}}\\[4ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{SendF2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{sendF1}(\theta,e,p,a)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+					\Pi;\mathsf{M;S'}\cons \mathsf{sendF1}(\theta,e,p,a)\cons\mathsf{S}\\
+					\lhh         \Gamma;\lfloor\tuple{p,\mathsf{sendF1}(\theta,e,p,a)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\:\comp\:
+					\lfloor\Pi\rfloor_{\#_\mathsf{([a],\emptyset),l}^\mathsf{S'}};
+					\mathsf{M;S'}\cons \mathsf{sendF1}(\theta,e,p,a)\cons\mathsf{S}\\
+					Se ~ \exists ~ op ~ \mbox{in scrittura} \in \mathsf{S'} ~  a~ \varepsilon ~op
+					%\mbox{Se in S'  sono presenti operazioni di scrittura sulla mappa che coinvolgono l'atomo a}
+				\end{array}
+		}}\\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{RegisterT1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q} \rfloor_{\Psi} \comp \Pi;\M\cup(a,p') ; \s'\cons\mathsf{regT}(\theta,e,a,p',p) \cons\s \\
+					\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q} \rfloor_{\Psi}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+					%\mbox{Se in S' non sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{RegisterT2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q} \rfloor_{\Psi} \comp \Pi;\M; \s'\cons\mathsf{regT}(\theta,e,a,p',p) \cons\s \\
+					\lhh  \Gamma;\lfloor\tuple{p,\mathsf{regT}(\theta,e,a,p',p)\cons\h,(\theta,e),q} \rfloor_{\Psi}\:\comp\: \lfloor\Pi \rfloor_{\#_\mathsf{([a],[p']),s}^{\s'}};\M;\s'\cons\mathsf{regT}(\theta,e,a,p',p)\cons\s\\
+					Se ~ \exists ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a~ \varepsilon ~ op ~ \mathsf{o} ~ p'~ \varepsilon ~ op
+					%\mbox{Se in S' sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{RegisterF1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{regF1}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \Pi;
+					\M; \s'\cons\mathsf{regF1}(\theta,e,a,p',p) \cons\s \\    
+					\hspace{20ex} \lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \s' ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+					%\mbox{Se in S' non sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{RegisterF2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{regF1}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \Pi;
+					\M; \s'\cons\mathsf{regF1}(\theta,e,a,p',p) \cons\s \\    
+					\lhh \Gamma;\lfloor\tuple{p,\mathsf{regF1}(\theta,e,a,p',p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \lfloor\Pi\rfloor_{\#_\mathsf{([a],[p']),l}^{\s'}};
+					\M; \s'\cons\mathsf{regF1}(\theta,e,a,p',p) \cons\s \\    
+					Se ~ \exists ~ op ~ \mbox{in scrittura} \in \s' ~  a~ \varepsilon ~ op ~ \mathsf{o} ~ p'~ \varepsilon ~ op
+					% \mbox{Se in S' sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}\\[5ex]
+		
+	\end{array}
+	\]
+	\caption{Rollback semantics: backward reduction rules} \label{fig:rollsem1}
+\end{figure}
+
+\begin{figure}[h!]
+	\footnotesize
+	\[
+	\hspace{-3ex}
+	\begin{array}{l@{~~}l}
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterT1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q} \rfloor_{\Psi} \comp \Pi;\M\backslash\!\!\backslash(a,p') ; \s'\cons\mathsf{unregT}(\theta,e,a,p',p) \cons\s \\
+					\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,e),q} \rfloor_{\Psi}\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a \centernot\varepsilon op ~ \mathsf{o} ~ p' \centernot\varepsilon op
+					%\mbox{Se in S' non sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterT2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta',e'),q} \rfloor_{\Psi} \comp \Pi;\M; \s'\cons\mathsf{unregT}(\theta,e,a,p',p) \cons\s \\
+					\lhh  \Gamma;\lfloor\tuple{p,\mathsf{unregT}(\theta,e,a,p',p)\cons\h,(\theta,e),q} \rfloor_{\Psi}\:\comp\: \lfloor\Pi \rfloor_{\#_\mathsf{([a],[p']),s}^{\s'}};\M;\s'\cons\mathsf{unregT}(\theta,e,a,p',p)\cons\s\\
+					Se ~ \exists ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a~ \varepsilon ~ op ~ \mathsf{o} ~ p'~ \varepsilon ~ op
+					%\mbox{Se in S' sono presenti operazioni sulla mappa che coinvolgono il pid p' o l'atomo a}                  
+				\end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{UnregisterF1}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{unregF1}(\theta,e,a,p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \Pi;
+					\M; \s'\cons\mathsf{unregF1}(\theta,e,a,p) \cons\s \\    
+					\lhh \Gamma;\lfloor\tuple{p,\h,(\theta',e'),q}\rfloor_{\Psi}\comp \Pi;
+					\M; \s'\cons\s \\    
+					Se ~ \forall ~ op ~ \mbox{in scrittura} \in \s' ~  a \centernot\varepsilon op 
+					%\mbox{Se in S' non sono presenti operazioni sulla mappa che coinvolgono l'atomo a}                  
+				\end{array}
+		}}\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{UnregisterF2}}) ~~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{unregF1}(\theta,e,a,p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \Pi;
+					\M; \s'\cons\mathsf{unregF1}(\theta,e,a,p) \cons\s \\    
+					\lhh \Gamma;\lfloor\tuple{p,\mathsf{unregF1}(\theta,e,a,p)\cons\h,(\theta',e'),q}\rfloor_{\Psi}\comp \lfloor\Pi\rfloor_{\#_\mathsf{([a],[\emptyset]),l}^{\s'}};
+					\M; \s'\cons\mathsf{unregF1}(\theta,e,a,p) \cons\s \\    
+					Se ~ \exists ~ op ~ \mbox{in scrittura} \in \s' ~  a~ \varepsilon ~ op
+					%\mbox{Se in S' sono presenti operazioni sulla mappa che coinvolgono l'atomo a}                  
+				\end{array}
+		}}\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{Call3-1}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;
+					\lfloor\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\rfloor_\Psi
+					\:\comp\: \Pi;\mathsf{M;S' : \tau\M\M'(\theta,e,p):S}
+					\\ \lhh \Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_\Psi\:\comp\: \Pi;\M;\s'\cons\s\\
+					\mbox{Se in S' non sono presenti operazioni di scrittura su elementi presenti in M'}     \end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{(\mathit{\ol{Call3-2}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;
+					\lfloor\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\rfloor_\Psi
+					\:\comp\: \Pi;\M;\s'\cons\mathsf{\tau\M\M'(\theta,e,p)}\cons\s
+					\lhh \\
+					\Gamma;
+					\lfloor\tuple{p,\tau\M\M'(\theta,e,p)\cons\h,(\theta',e'),q}\rfloor_\Psi
+					\:\comp\: \lfloor\Pi\rfloor_{\#_\mathsf{(\M'),l}^\mathsf{S'}};\mathsf{M;S' : \tau\mathsf{MM'}(\theta,e,p):S}\\
+					\mbox{Se in S' sono presenti operazioni di scrittura su elementi presenti in M'}     \end{array}
+		}}
+		\\[5ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{Catch}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{fail}(\theta,e)\cons\h,(\theta,fail),q}\rfloor_\Psi \comp \Pi; \M;\s
+					\lhh
+					\Gamma;\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_\Psi\comp \Pi; \M;\s
+				\end{array}
+		}}  \\[2ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{End1}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\rfloor_\Psi \comp \Pi,
+					\M\backslash\!\!\backslash (a' ,p), \s'\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\s
+					\lhh  \Gamma;\lfloor\tuple{p,\h,(\theta,\epsilon),q}\rfloor_\Psi\:\comp\: \Pi;\M;\s'\cons\s\\
+					Se ~ \forall ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a' \centernot\varepsilon op ~ \mathsf{o} ~ p \centernot\varepsilon op
+					% \mbox{Se in S' non sono presenti operazioni di scrittura e lettura sulla mappa}\\\mbox{ che coinvolgono il pid p o l'atomo a'}                  
+					
+				\end{array}
+				
+		}}
+		\\[4ex]
+		
+		\mathcolorbox{yellow}{ (\mathit{\ol{End2}}) ~ {\displaystyle
+				\begin{array}{l}
+					\Gamma;\lfloor\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\rfloor_\Psi\comp \Pi,
+					\M, \s'\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\s
+					\lhh \\ \Gamma;\lfloor\tuple{p,\mathsf{end}(\theta,\epsilon,a',p)\cons\h,(\theta,\epsilon),q}\rfloor_\Psi\comp \lfloor\Pi \rfloor_{\#_\mathsf{([a'],[p]),s}^{\s'}};
+					\M, \s'\cons\mathsf{end}(\theta,\epsilon,a',p)\cons\s\\
+					Se ~ \exists ~ op ~ \mbox{in scrittura o lettura} \in \s' ~  a'~ \varepsilon ~ op ~ \mathsf{o} ~ p~ \varepsilon ~ op  			
+				\end{array}
+				
+		}}
+		
+	
+	\end{array}
+	\]
+	\caption{Rollback semantics: backward reduction rules} \label{fig:rollsem2}
+\end{figure}
+
+Si può notare che i rollback fino ai checkpoint vengono generati non deterministicamente dalla regola $\mathit{\ol{Undo}}$, gli altri due tipi di rollback sono generati dalle regole di riduzione backward in un certo ordine per garantire la coerenza causale. Questo è chiarito dalla discussione seguente, dove si spiegano brevemente le principali differenze rispetto a semantica backward descritta precedentemente:
+\begin{itemize}
+	\item Come nella semantica nella Figura~\ref{fig:backwardsem}, l'invio di un messaggio può essere annullato quando il messaggio è ancora nella casella di posta globale (regola $\ol{\mathit{Send1}}$). Altrimenti, potrebbe essere necessario applicare prima la regola $\ol{\mathit{Send2}}$ per ``propagare'' la modalità di rollback fino al destinatario del messaggio, in modo che le regole $\ol{\mathit{Sched}}$ e $\ol{\mathit{Send1}}$ possano essere eventualmente applicate.
+	
+	\item Per l'annullamento della generazione di un processo $p''$, la regola $\ol{\mathit{Spawn1}}$ si applica quando sia la cronologia che le code del processo generato $p''$ sono vuote, eliminando sia l'elemento della cronologia in $p$ che il processo $p''$. Altrimenti, si applica la regola $\ol{\mathit{Spawn2}}$ che propaga la modalità di rollback in modo che, alla fine, la regola $\ol{\mathit{Spawn1}}$ si possa applicare a $p''$.
+	
+	\item Si osserva che la regola $\ol{\mathit{Sched}}$ richiede la stessa side-condition della semantica incontrollata. Questo è necessario per evitare la commutazione delle regole $\mathit{\ol{Receive}}$ e $\mathit{\ol{Sched}}$.
+	
+	\item Infine, si può notare inoltre che per ogni nuova regola $\lh$ sulla mappa sono state aggiunte due regole $\lhh$: una per il caso in cui in $\s'$ siano presenti operazioni eseguite sugli stessi pid e/o atomi che inseriscono gli operatori di rollback ove necessario, l'altra che effettuasse effettivamente la regola di rollback dell'operazione, visto che in $\s'$ non sono presenti le regole che non consentono il rollback. 
+	
+\end{itemize}
+
+La semantica di rollback è modellata dalla relazione $\looparrowright$, che è definita come l'unione della relazione reversibile diretta $\rh$ (Figure~\ref {fig:forwardsem} e \ref {fig:forwardsem1}) e la relazione a ritroso $\lhh$ definita nelle Figure~\ref {fig:rollsem0},~\ref {fig:rollsem1} e~\ref {fig:rollsem2}. Si noti che, in contrasto con la semantica reversibile (non controllata) della Sezione~\ref{sect:semreversibile}, la semantica di rollback data dalla relazione $\looparrowright$ ha meno scelte non deterministiche: tutti i calcoli vengono eseguiti in avanti tranne quando un'azione di rollback richiede alcuni passi all'indietro per ripristinare uno stato precedente di un processo (che può essere propagato ad altri processi al fine di annullare la generazione di un processo o l'invio di un messaggio).\\
+Si noti, tuttavia, che oltre all'introduzione dei rollback, c'è ancora un certo non determinismo nelle regole all'indietro della semantica del rollback: da un lato, la selezione del processo quando ci sono diversi rollback in corso è non deterministica; inoltre, in molti casi, sia la regola $\mathit{\ol{Sched}}$ sia un'altra regola sono applicabili allo stesso processo. La semantica potrebbe essere resa deterministica utilizzando una particolare strategia per selezionare i processi (es. Round robin) e applicando la regola $\mathit{\ol{Sched}}$ ogniqualvolta possibile (es. dare a $\mathit{\ol{Sched}}$ una priorità più alta rispetto alle restanti regole all'indietro).\\
+Dichiariamo di seguito la validità della semantica di rollback. Per farlo, lasciamo che $\rolldel(s)$ denoti il sistema che risulta da $s$ rimuovendo i rollback in corso; formalmente, $\rolldel(\Gamma;\Pi;\M;\s) = \Gamma; \rolldel'(\Pi);\M;\s$, dove:
+\[
+\begin{array}{lll}
+	\rolldel'(\tuple{p,\h,(\theta,e),q}) & = &
+	\tuple{p,\h,(\theta,e),q}\\
+	\rolldel'(\lfloor \tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}) & = &
+	\tuple{p,\h,(\theta,e),q}\\
+	\rolldel'(\tuple{p,\h,(\theta,e),q}\:\comp\:\Pi) & = &
+	\tuple{p,\h,(\theta,e),q}\:\comp\:\rolldel'(\Pi)\\
+	\rolldel'(\lfloor\tuple{p,\h,(\theta,e),q}\rfloor_{\Psi}\:\comp\:\Pi) & = &
+	\tuple{p,\h,(\theta,e),q}\:\comp\:\rolldel'(\Pi)
+	\\                                              
+\end{array}
+\]
+dove assumiamo che $ \Pi $ non sia vuoto.
+Estendiamo anche la definizione di sistemi iniziali e raggiungibili alla semantica di rollback.
+
+\begin{definition} [Sistemi raggiungibili sotto il rollback
+	semantica] \label {def:reachableroll} \mbox {} \\
+	Un sistema è \emph {iniziale} sotto la semantica di rollback, se è
+	composto da un unico processo con un set vuoto $ \Psi $ di rollback attivi; inoltre, la storia, la coda dei massaggi, la mail-box globale, la storia della mappa e la mappa sono vuote. Un sistema $ s $ è
+	\emph {raggiungibile} sotto la semantica di rollback se esiste un sistema
+	iniziale $ s_0 $ e una derivazione $ s_0 \looparrowright ^ \ast s $
+	utilizzando le regole corrispondenti a un determinato programma.
+\end{definition}
+
+\begin{theorem} [Soundness] \label{thm:soundness-rollback}
+	Sia $ s $ un sistema raggiungibile con la semantica di rollback. Se
+	$ s \looparrowright ^ \ast s '$, allora $ \rolldel (s) \rlh^ \ast \rolldel (s') $.
+\end{theorem}
+\begin{proof}
+	Per le transizioni in avanti la dimostrazione è banale poiché le regole in avanti sono le stesse in entrambe le semantiche e si applicano solo ai processi che non sono in fase di rollback. Per le transizioni all'indietro la dimostrazione è per casi analizzando la regola applicata, tramite l'equivalenza strutturale e l'utilizzo di $\rolldel$:
+	\begin{itemize}
+		\item Regola $ \mathit {\ol{Undo}} $: l'effetto viene rimosso da $ \rolldel $, quindi un'applicazione di questa regola corrisponde a un file derivazione a passo zero sotto la semantica incontrollata;
+		\item Regole $ \mathit {\ol{Seq}} $, $ \mathit {\ol{Check}} $, $ \mathit {\ol {Send1}} $, $ \mathit {\ol{Receive}} $, $ \mathit {\ol{Spawn1}} $, $ \mathit {\ol {Self}} $, $ \mathit {\ol{Sched}} $, $\mathit{\ol{SendA1}}$, $\mathit{\ol{SendF1}}$, $\mathit{\ol{Call3-1}}$, $\mathit{\ol{RegisterT1}}$, $\mathit{\ol{RegisterF1}}$, $\mathit{\ol{UnregisterT1}}$, $\mathit{\ol{UnregisterF1}}$,  $\mathit{\ol{Catch}}$ e $\mathit{\ol{End1}}$:
+		corrispondono, rispettivamente, alle regole $ \mathit {\ol{Seq}} $, $ \mathit {\ol{Check}} $, $ \mathit{\ol{Send}} $, $ \mathit {\ol{Receive}} $, $ \mathit {\ol{ Spawn}} $, $ \mathit {\ol{Self}} $, $ \mathit {\ol{Sched}} $, $\mathit{\ol{SendA}}$, $\mathit{\ol{SendF}}$, $\mathit{\ol{Call3}}$, $\mathit{\ol{RegisterT}}$, $\mathit{\ol{RegisterF}}$, $\mathit{\ol{UnregisterT}}$, $\mathit{\ol{UnregisterF}}$,  $\mathit{\ol{Catch}}$ e $\mathit{\ol{End}}$ della semantica incontrollata;
+		\item Regole $\mathit{\ol{Send2}}$, $\mathit{\ol{Spawn2}}$, $\mathit{\ol{SendA2}}$, $\mathit{\ol{SendA3}}$, $\mathit{\ol{SendF2}}$, $\mathit{\ol{Call3-2}}$,\\ $\mathit{\ol{RegisterT2}}$, $\mathit{\ol{RegisterF2}}$, $\mathit{\ol{UnregisterT2}}$, $\mathit{\ol{UnregisterF2}}$ e $\mathit{\ol{End2}}$: l'effetto viene rimosso da $ \rolldel $, quindi un'applicazione di una qualsiasi di queste regole corrisponde a una derivazione a passo zero sotto semantica incontrollata. 
+	\end{itemize}
+\end{proof}
+
+Ora possiamo mostrare la completezza della semantica di rollback a condizione che il processo coinvolto sia in modalità rollback:
+
+\begin{lemma} [Completezza in modalità rollback] \label{lemma:completezza-rollback}
+	Sia $ s $ un sistema raggiungibile. Se $ s \lh s '$ allora un qualsiasi sistema $ s_r $ tale che $ \rolldel (s_r) = s $ e dove il processo che ha eseguito la transizione $ s \lh s '$ è in modalità rollback per un insieme non vuoto di rollback. Allora esiste $ s'_r $ tale che $ s_r \lhh s'_r $ e $ \rolldel (s'_r) = s '$.
+\end{lemma}
+\begin{proof}
+	La prova è l'analisi dei casi sulla regola applicata. Ogni passaggio è corrispondente alla regola omonima, ma per $ \mathit{\ol{Send}} $, $ \mathit{\ol{Spawn}} $, $\mathit{\ol{SendA}}$, $\mathit{\ol{SendF}}$, $\mathit{\ol{Call3}}$, $\mathit{\ol{RegisterT}}$, $\mathit{\ol{RegisterF}}$, $\mathit{\ol{UnregisterT}}$, $\mathit{\ol{UnregisterF}}$ e $\mathit{\ol{End}}$  a cui corrispondono rispettivamente le regole $ \mathit {\ol{Send1}} $, $ \mathit {\ol{Spawn1}} $, $\mathit{\ol{SendA1}}$, $\mathit{\ol{SendF1}}$, $\mathit{\ol{Call3-1}}$, $\mathit{\ol{RegisterT1}}$, $\mathit{\ol{RegisterF1}}$, $\mathit{\ol{UnregisterT1}}$, $\mathit{\ol{UnregisterF1}}$ e $\mathit{\ol{End1}}$.
+\end{proof}
+
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
 \chapter{Conclusione}
@@ -1667,6 +2120,23 @@ In questa sezione introdurremo un operatore di rollback che avvia un calcolo rev
 	Springer, 2017.
 	\newblock Preliminary version available from
 	\texttt{https://arxiv.org/abs/1608.05521}.
+	
+	\bibitem{LMSS11}
+	I.~Lanese, C.~A. Mezzina, A.~Schmitt, and J.~Stefani.
+	\newblock Controlling reversibility in higher-order pi.
+	\newblock In J.~Katoen and B.~K{\"{o}}nig, editors, {\em Proceedings of the
+		22nd International Conference on Concurrency Theory ({CONCUR} 2011)}, volume
+	6901 of {\em Lecture Notes in Computer Science}, pages 297--311. Springer,
+	2011.
+	
+	\bibitem{GLM14}
+	E.~Giachino, I.~Lanese, and C.~A. Mezzina.
+	\newblock Causal-consistent reversible debugging.
+	\newblock In S.~Gnesi and A.~Rensink, editors, {\em Proc.\ of the 17th
+		International Conference on Fundamental Approaches to Software Engineering
+		({FASE} 2014)}, volume 8411 of {\em Lecture Notes in Computer Science}, pages
+	370--384. Springer, 2014.
+	
 
 \end{thebibliography}
 \end{document}
