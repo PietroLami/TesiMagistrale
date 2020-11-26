@@ -228,11 +228,11 @@ In questa sezione descriveremo formalmente la semantica del linguaggio presentat
 \begin{definition} [Processo]
 	Un processo è indicato da una tupla $\tuple {p, (\theta, e), q}$ dove $p$ è il pid del processo (ed è unico), $(\theta, e)$ è il controllo, che consiste di un ambiente (una sostituzione) e di un'espressione da valutare, e $q$ è la casella di posta del processo, una coda FIFO con la sequenza di messaggi che sono stati inviati al processo.
 	
-	Si considera le seguenti operazioni sulle cassette postali locali. Dato un messaggio $v$ e una casella di posta locale $q$, $v:q$ denota una nuova casella di posta con il messaggio $v$ sopra (cioè $v$ è il messaggio più recente). Indichiamo anche con $q \backslash\! \! \backslash v$ una nuova coda che risulta da $q$ rimuovendo l'occorrenza più vecchia del messaggio $v$ (che non è necessariamente il messaggio più vecchio nel
+	Si considera le seguenti operazioni sulle cassette postali locali. Dato un messaggio $v$ e una casella di posta locale $q$, $v:q$ denota una nuova casella di posta con il messaggio $v$ sopra (cioè $v$ è il messaggio più recente). Con $q \backslash\! \! \backslash v$ verrà indicata una nuova coda che risulta da $q$ rimuovendo l'occorrenza più vecchia del messaggio $v$ (che non è necessariamente il messaggio più vecchio nel
 	coda). \qed
 \end{definition}
 %
-Un \emph{sistema} in esecuzione può quindi essere visto come un insieme di processi, che definiamo formalmente come segue:
+Un \emph{sistema} in esecuzione può quindi essere visto come un insieme di processi, che vengono definiti formalmente come segue:
 
 \begin{definition} [Sistema] \label{sistema}
 	Un sistema è indicato da $\Gamma;\Pi;\M$, dove $\Gamma$, la \emph{casella di posta globale}, è un insieme di coppie nella forma $(destinazione,$ $messaggio)$ e $\Pi$ è un insieme di processi, indicato da un'espressione della forma
@@ -357,7 +357,7 @@ Nella Figura~\ref{fig:seq-rules} sono presenti le regole di transizione per la v
 \newline
 Come in Erlang, si considera che l'ordine di valutazione degli argomenti in una tupla, lista, ecc. è fisso da sinistra a destra.
 \newline
-Per la valutazione dei case, si assume una funzione ausiliaria $\mathsf{match}$ che seleziona la prima clausola, $cl_i = (pat_i ~\mathsf{when} ~ e'_i \to e_i)$, in modo tale che $v$ corrisponda a $pat_i$, ovvero $ v = \theta_i (pat_i)$, e che la guardia sia soddisfatta, cioè, $\theta \theta_i, e'_i \too^\ast \theta ', true$. Come in Core Erlang, si assume che i patterns possano solo contenere nuove variabili (ma le guardie potrebbero avere variabili legate, quindi passiamo l'ambiente corrente $ \theta $ alla funzione $ \mathsf {match} $).
+Per la valutazione dei case, si assume una funzione ausiliaria $\mathsf{match}$ che seleziona la prima clausola, $cl_i = (pat_i ~\mathsf{when} ~ e'_i \to e_i)$, in modo tale che $v$ corrisponda a $pat_i$, ovvero $ v = \theta_i (pat_i)$, e che la guardia sia soddisfatta, cioè, $\theta \theta_i, e'_i \too^\ast \theta ', true$. Come in Core Erlang, si assume che i patterns possano solo contenere nuove variabili (ma le guardie potrebbero avere variabili legate, quindi verrà passato l'ambiente corrente $ \theta $ alla funzione $ \mathsf {match} $).
 \newline
 Le funzioni possono essere definite nel programma, in questo caso sono invocate da $\mathsf {apply}$, o essere un built-in, invocate da $\mathsf{call}$. In quest'ultimo caso vengono valutati utilizzando la funzione ausiliaria $\mathsf {eval}$.
 \newline
@@ -496,7 +496,7 @@ Con il simbolo $\emptyset$ si intende:
 	\caption{Semantica standard: valutazione delle espressioni concorrenti} \label{fig:concurrent-rules}
 \end{figure}
 
-Si considera ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Si hanno le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per ``$!$''. In questo caso si sa \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole questo non è noto localmente e, quindi, restituiamo un nuovo simbolo distinto, $\kappa $,  che viene trattato come una variabile, in modo che nelle regole di sistema nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Ricevive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}) in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
+Si considera ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Si hanno le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per ``$!$''. In questo caso si sa \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole questo non è noto localmente e, quindi, si restituisce un nuovo simbolo distinto, $\kappa $,  che viene trattato come una variabile, in modo che nelle regole di sistema nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Receive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}) in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
 Nelle regole di valutazione delle espressioni concorrenti della semantica standard sono state aggiunte le regole per la valutazione della $\mathsf{register}$ e dell'$\mathsf{unregister}$.
 
 \begin{figure}[h]
@@ -616,7 +616,7 @@ La regola $\mathit{SendF}$ introduce un fallimento, visto che l'espressione da v
 	
 Nella regola $ \mathit {Receive} $ si usa la funzione ausiliaria $ \mathsf {matchrec} $ per valutare un'espressione di ricezione. La differenza principale con $\mathsf {match}$ è che $\mathsf{matchrec}$ prende anche una coda $q$ e restituisce il messaggio selezionato $v$. Più precisamente, la funzione $ \mathsf {matchrec} $ esegue la scansione della coda $ q $ cercando il \emph {primo} messaggio $ v $ che corrisponde a un modello dell'istruzione di ricezione. Quindi $ \kappa $ viene associato all'espressione nella clausola selezionata, $ e_i $, e l'ambiente viene esteso con la sostituzione corrispondente.
 		
-Se nessun messaggio nella coda $ q $ corrisponde ad alcuna clausola, la regola non è applicabile e il processo selezionato non può essere ridotto (cioè viene sospeso). Come nelle espressioni case, assumiamo che i pattern possano contenere solo nuove variabili.
+Se nessun messaggio nella coda $ q $ corrisponde ad alcuna clausola, la regola non è applicabile e il processo selezionato non può essere ridotto (cioè viene sospeso). Come nelle espressioni case, si assume che i pattern possano contenere solo nuove variabili.
 		
 Le regole presentate finora consentono di memorizzare i messaggi nella casella di posta globale, ma non di rimuoverli. Questo è esattamente il compito dello scheduler, modellato dalla regola $ \mathit{Sched}$. Questa regola sceglie in modo non deterministico una coppia $ (p, v) $ nella cassetta postale globale $ \Gamma $ e consegna il messaggio $ v $ al processo di destinazione $ p $. Qui si ignora deliberatamente la restrizione: `` i messaggi inviati, direttamente, tra due processi dati arrivano nello stesso ordine in cui sono stati inviati", poiché le attuali implementazioni lo garantiscono solo all'interno dello stesso nodo. In pratica, ignorare questa restrizione equivale a considerare che ogni processo è potenzialmente eseguito in un nodo diverso. Una definizione alternativa che garantisce questa restrizione può essere trovata in \cite{NPV16b}.
 
@@ -677,18 +677,18 @@ La regola $End$ serve per gestire il caso di fine di un processo. In caso di fal
 
 \subsection*{Concorrenza in Erlang}
 
-Per definire una semantica reversibile per Erlang abbiamo bisogno non solo di una semantica come quella appena presentata, ma anche di una nozione di concorrenza (o, equivalentemente, della nozione opposta di conflitto). 
+Per definire una semantica reversibile per Erlang si ha bisogno non solo di una semantica come quella appena presentata, ma anche di una nozione di concorrenza (o, equivalentemente, della nozione opposta di conflitto). 
 
-Dati i sistemi $ s_1, s_2 $, chiamiamo $ s_1 \hoo ^ \ast s_2 $ una \emph {derivazione}.
+Dati i sistemi $ s_1, s_2 $, si chiama $ s_1 \hoo ^ \ast s_2 $ una \emph {derivazione}.
 %
-Le derivazioni in un passaggio sono chiamate semplicemente \emph {transizioni}. Usiamo $ d, d ', d_1, \ldots $ per indicare le derivazioni e $ t, t', t_1, \ldots $ per le transizioni.
+Le derivazioni in un passaggio sono chiamate semplicemente \emph {transizioni}. Si usa $ d, d ', d_1, \ldots $ per indicare le derivazioni e $ t, t', t_1, \ldots $ per le transizioni.
 
 Le transizioni vengono etichettate con: $s_1 \hoo_{p,r} s_2$ dove:
 \begin{itemize}
 	\item $p$ è il pid del processo selezionato nella transizione o del processo a cui viene consegnato un messaggio (se la regola applicata è  $\mathit{Sched})$;
 	\item $r$ è l'etichetta della regola di transizione applicata. 
 \end{itemize}
-Data una derivazione $ d = (s_1 \hoo ^\ast s_2) $, definiamo $ \init(d) = s_1 $ e $ \final(d) = s_2 $.
+Data una derivazione $ d = (s_1 \hoo ^\ast s_2) $, si definisce $ \init(d) = s_1 $ e $ \final(d) = s_2 $.
 Due derivazioni, $ d_1 $ e $ d_2 $, sono \emph{componibili} se $\final(d_1) = \init (d_2) $. In questo caso, $ d_1; d_2 $ corrisponde alla composizione $d_1; d_2=(s_1\hoo s_2\hoo\cdots\hoo s_n\hoo s_{n + 1}\hoo\cdots\hoo s_m)$ se $d_1 = (s_1 \hoo s_2 \hoo \cdots \hoo s_n) $ e $ d_2 = (s_n \hoo s_ {n + 1} \hoo \cdots \hoo s_m)$.
 Due derivazioni, $ d_1 $ e $ d_2 $, sono dette \emph{coiniziali} se $\init(d_1) = \init (d_2) $ e \emph {cofinali} se $\final(d_1) = \final( d_2)$.
 
@@ -754,10 +754,10 @@ Questa definizione è utile per la dimostrazione del prossimo lemma.
 		\item entrambe le transizioni non applicano regole sulla mappa:
 			\begin{itemize}
 		\item due transizioni $ t_1 $ e $ t_2 $ dove $r_1\neq\mathit{Sched}$ e $r_2\neq\mathit{Sched}$. Banalmente, si applicano a processi diversi, ad esempio $p_1\neq p_2$. Quindi, si può facilmente dimostrare che applicando la regola $r_2$ a $p_1$ in $s_1$ e la regola $r_1$ a $p_2$ in $s_2$, si hanno due transizioni $t_1/t_2$ e $t_2/t_1$ che sono cofinali \cite{Lanese};
-		\item una transizione $t_1$ che applica la regola $r_1=\mathit{Sched}$ per consegnare il messaggio $v_1$ all'elaborazione $p_1=\mathrm{p}$, e un'altra transizione che applica una regola $r_2$ diversa da $\mathit{Sched}$. Tutti i casi tranne $r_2=\mathit{Ricevi}$ con $p_2=\mathrm{p}$ sono semplici. Quest'ultimo caso, tuttavia, non può accadere poiché le transizioni che utilizzano le regole $\mathit{Sched}$ e $\mathit{Ricevi}$ non sono simultanee \cite{Lanese};
-		\item due transizioni $ t_1 $ e $ t_2 $ con le regole $ r_1 = r_2 = \mathit {Sched} $ che consegnano rispettivamente i messaggi $ v_1 $ e $ v_2 $. Poiché le transizioni sono simultanee, dovrebbero consegnare i messaggi a processi differenti, cioè $ p_1 \neq p_2 $. Pertanto, possiamo vedere che consegnando $ v_2 $ da $ s_1 $ e $ v_1 $ da $ s_2 $ otteniamo due transizioni cofinali \cite{Lanese}; 
+		\item una transizione $t_1$ che applica la regola $r_1=\mathit{Sched}$ per consegnare il messaggio $v_1$ all'elaborazione $p_1=\mathrm{p}$, e un'altra transizione che applica una regola $r_2$ diversa da $\mathit{Sched}$. Tutti i casi tranne $r_2=\mathit{Receive}$ con $p_2=\mathrm{p}$ sono semplici. Quest'ultimo caso, tuttavia, non può accadere poiché le transizioni che utilizzano le regole $\mathit{Sched}$ e $\mathit{Receive}$ non sono simultanee \cite{Lanese};
+		\item due transizioni $ t_1 $ e $ t_2 $ con le regole $ r_1 = r_2 = \mathit {Sched} $ che consegnano rispettivamente i messaggi $ v_1 $ e $ v_2 $. Poiché le transizioni sono simultanee, dovrebbero consegnare i messaggi a processi differenti, cioè $ p_1 \neq p_2 $. Pertanto, si può vedere che consegnando $ v_2 $ da $ s_1 $ e $ v_1 $ da $ s_2 $ si ottengono due transizioni cofinali \cite{Lanese}; 
 				\end{itemize}
-		\item due transizioni $t_1$ e $t_2$ dove $r_1 = $ operazione sulla mappa e $r_2 \neq $ operazione sulla mappa. Quindi, possiamo facilmente dimostrare che applicando la regola $r_2$ a $p_1$ in $s_1$ e la regola $r_1$ a $p_2$ in $s_2$ abbiamo due transizioni $t_1 / t_2$ e $t_2 / t_1$ che sono cofinali;
+		\item due transizioni $t_1$ e $t_2$ dove $r_1 = $ operazione sulla mappa e $r_2 \neq $ operazione sulla mappa. Quindi, si può facilmente dimostrare che applicando la regola $r_2$ a $p_1$ in $s_1$ e la regola $r_1$ a $p_2$ in $s_2$ si hanno due transizioni $t_1 / t_2$ e $t_2 / t_1$ che sono cofinali;
 		\item entrambe le operazioni $r$ sono eseguite sulla mappa, questo perché se andassero a modificare gli stessi elementi della mappa non potrebbero essere concorrenti per la definizione data: 
 		\begin{itemize}
 			\item se $r_1 = r_2 = \mathsf{UnregisterT}$ e deregistrano gli atomi $a_1$ e $a_2$ se le due operazioni sono concorrenti (quindi $a_1 \not= a_2$), deregistrare prima $a_1$ e poi $a_2$ o viceversa non cambia (in $s'$ la mappa sarà la stessa);
@@ -772,10 +772,10 @@ Si noti che sono possibili altre definizioni di transizioni concorrenti. La modi
 
 In questa sezione, viene introdotta una semantica reversibile (non controllata) per il linguaggio considerato. Grazie al design modulare della semantica concreta, non è necessario modificare le regole di transizione per le espressioni del linguaggio per definire la semantica reversibile.
 
-Per essere precisi, in questa sezione introduciamo due relazioni di transizione: $ \rh $ e $ \lh $. La prima relazione, $ \rh $, è un'estensione conservativa della semantica standard $ \hoo $ (Figure~\ref {fig:system-rules} e \ref{fig:system-rules-map}) per includere anche alcune informazioni aggiuntive negli stati, seguendo un tipico incorporamento di Landauer. Ci riferiamo a $ \rh $ come alla semantica reversibile \emph{forward} (o semplicemente alla semantica forward). Al contrario, la seconda relazione, $ \lh $, procede nella direzione all'indietro, ``annullando'' le azioni passo dopo passo. Ci riferiamo a $ \lh $ come semantica \emph{backward} (reversibile). Indichiamo l'unione $ \rh \cup \lh $ con $ \rlh $.
+Per essere precisi, in questa sezione verranno introdotte due relazioni di transizione: $ \rh $ e $ \lh $. La prima relazione, $ \rh $, è un'estensione conservativa della semantica standard $ \hoo $ (Figure~\ref {fig:system-rules} e \ref{fig:system-rules-map}) per includere anche alcune informazioni aggiuntive negli stati, seguendo un tipico incorporamento di Landauer. Verrà indicata con $ \rh $ la semantica reversibile \emph{forward} (o semplicemente alla semantica forward). Al contrario, la seconda relazione, $ \lh $, procede nella direzione all'indietro, ``annullando'' le azioni passo dopo passo. Ci si riferisce a $ \lh $ come semantica \emph{backward} (reversibile). Verrà indicata l'unione $ \rh \cup \lh $ con $ \rlh $.
 
-Per evitare di annullare tutte le azioni fino all'inizio del processo, lasceremo anche che il programmatore introduca \emph{checkpoints}. Sintatticamente, sono indicati con la funzione incorporata \textsf{check}, che accetta un identificatore $ \mathtt{t} $ come argomento. Tali identificatori dovrebbero essere univoci nel programma. Data un'espressione, $ expr $, possiamo introdurre un checkpoint sostituendo $ expr $ con `` $\mathsf {let} ~ X = \mathsf {check} (\mathtt {t}) ~ \mathsf {in} ~ expr $''. Una chiamata nella forma $ \mathsf {check} (\mathtt {t}) $ restituisce semplicemente $ \mathtt {t} $ (vedi sotto).
-Di seguito, consideriamo che le regole per valutare le espressioni del linguaggio (Figure~\ref {fig:seq-rules} e \ref{fig:concurrent-rules}) sono estese con la seguente regola:
+Per evitare di annullare tutte le azioni fino all'inizio del processo, lasceremo anche che il programmatore introduca \emph{checkpoints}. Sintatticamente, sono indicati con la funzione incorporata \textsf{check}, che accetta un identificatore $ \mathtt{t} $ come argomento. Tali identificatori dovrebbero essere univoci nel programma. Data un'espressione, $ expr $, si può introdurre un checkpoint sostituendo $ expr $ con `` $\mathsf {let} ~ X = \mathsf {check} (\mathtt {t}) ~ \mathsf {in} ~ expr $''. Una chiamata nella forma $ \mathsf {check} (\mathtt {t}) $ restituisce semplicemente $ \mathtt {t} $ (vedi sotto).
+Di seguito, si considera che le regole per valutare le espressioni del linguaggio (Figure~\ref {fig:seq-rules} e \ref{fig:concurrent-rules}) sono estese con la seguente regola:
 \[
 (\mathit{Check}) ~~ 
 {\displaystyle 
@@ -785,7 +785,7 @@ Di seguito, consideriamo che le regole per valutare le espressioni del linguaggi
 Le principali modifiche effettuate sono state l'aggiunta di una storia al processo, di un identificatore per i messaggi (un timestamp $\lambda$)~\cite{Lanese} e di una storia della mappa. 
 L'aggiunta della storia del processo e della mappa è un tipico incorporamento di Laundered in cui viene aggiunta la cronologia delle operazioni eseguite dal processo (nel primo caso) e delle operazioni eseguite sulla mappa. Il sistema ora include una memoria (storia) che registra gli stati intermedi della mappa. Questo è stato fatto perché in questo modo è possibile tenere traccia delle operazioni che sono state eseguite sulla mappa e del loro ordine di esecuzione.
 
-Al messaggio è stato aggiunto un timestamp perché,  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un ``ack'' dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non possiamo distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
+Al messaggio è stato aggiunto un timestamp perché,  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un ``ack'' dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non si può distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
 
 \begin{figure}[htp]
 	\footnotesize
@@ -995,7 +995,7 @@ Si assume che $\Pi$ non sia vuoto. \\
 In alcune delle regole di transizione della semantica backward, nelle side condition si richiederà che non siano presenti alcune delle regole di lettura o scrittura. 
 
  \begin{definition}[$\varepsilon$ e $\cancel{\varepsilon}$]\label{def:coinvolgimento}
-	Per le operazioni sulla mappa diciamo che $x ~ \varepsilon ~op$ se l'operazione coinvolge l'elemento $x$, cioè se l'operazione aggiunge, rimuove o legge $x$ dalla mappa. Si indica con $x~\cancel{\varepsilon}~op$ se l'operazione non coinvolge l'elemento $x$.
+	Per le operazioni sulla mappa si dice che $x ~ \varepsilon ~op$ se l'operazione coinvolge l'elemento $x$, cioè se l'operazione aggiunge, rimuove o legge $x$ dalla mappa. Si indica con $x~\cancel{\varepsilon}~op$ se l'operazione non coinvolge l'elemento $x$.
 	Di seguito verrà mostrato l'elenco di come nella storia della mappa le regole vengono rappresentate e di quali sono gli elementi coinvolti.
 \begin{itemize}
 	\item se $op=\mathsf{regT}(\theta,e,a,p,p')$ allora $a ~\varepsilon~ \mathsf{regT}$, $p ~\varepsilon~ \mathsf{regT}$;% e $p'$ è il pid corrispondente al processo che esegue l'operazione
@@ -1154,7 +1154,7 @@ Ora verranno discusse brevemente alcune situazioni particolari:
 	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale, cioè il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$. Inoltre, essendo un'operazione sulla mappa in lettura, si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$; questo è necessario per rispettare la coerenza causale.
 \end{itemize}
 \begin{itemize}
-	\item La regola $\ol{\mathit{SendF}}$ è anch'essa in lettura sulla mappa, quindi per rispettare la consistenza causale verrà richiesto che non ci siano operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$.
+	\item La regola $\ol{\mathit{SendF}}$ è anch'essa in lettura sulla mappa, quindi per rispettare la consistenza causale verrà richiesto che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$.
 \end{itemize}
 \begin{itemize}
 	\item La regola $\ol{\mathit{Call3}}$, come $\ol{\mathit{SendA}}$ e $\ol{\mathit{SendF}}$, è una regola in lettura sulla mappa, che però come side-condition richiede  che non ci siano operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono atomi o pid presenti $\M'$.
@@ -1165,7 +1165,7 @@ Ora verranno discusse brevemente alcune situazioni particolari:
 	Si noti che non è necessario richiedere che nessun messaggio indirizzato al processo $ p '$ (che diventerebbe un messaggio \emph{orfano}) sia nella casella di posta globale: per inviare un tale messaggio il pid $ p' $ è necessario, quindi l'invio del messaggio dipende da $\mathsf {spawn}$ e di conseguenza deve essere annullato in anticipo \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
-	\item si osserva anche che la regola $\ol{\mathit{Receive}}$ può essere applicata solo quando la coda del processo è esattamente la stessa che è stata ottenuta dopo aver applicato il corrispondente passaggio $\mathit{Receive}$. Ciò è necessario per garantire che la coda ripristinata sia effettivamente quella giusta (notare che l'aggiunta del messaggio a una coda arbitraria non funzionerebbe poiché non conosciamo la sua posizione ``giusta'') \cite{Lanese}.
+	\item si osserva anche che la regola $\ol{\mathit{Receive}}$ può essere applicata solo quando la coda del processo è esattamente la stessa che è stata ottenuta dopo aver applicato il corrispondente passaggio $\mathit{Receive}$. Ciò è necessario per garantire che la coda ripristinata sia effettivamente quella giusta (notare che l'aggiunta del messaggio a una coda arbitraria non funzionerebbe poiché non si conosce la sua posizione ``giusta'') \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
 	\item L'applicazione della regola $\ol{\mathit{Sched}}$ può essere cambiata con l'applicazione di qualsiasi altra regola all'indietro eccetto $\ol{\mathit{Receive}}$ o un altro $\ol{\mathit{Sched}}$, poiché non interferisce con le regole rimanenti. È garantito il fatto che due $ \ol{\mathit{Sched}}$ che coinvolgono lo stesso processo non si spostino, poiché $\ol{\mathit{Sched}}$ si applica sempre al messaggio più recente di una coda. Il fatto che $\ol{\mathit{Sched}}$ e $\ol{\mathit{Receive}}$ non si spostino è garantito poiché la condizione secondaria di $\ol{\mathit{Sched}}$ controlla che non ci sia nessun elemento $\mathsf{rec}(\ldots)$ nella cronologia del processo che può essere utilizzato per applicare la regola $\ol{Receive}$ con la coda corrente. Pertanto, le loro condizioni di applicabilità non si sovrappongono \cite{Lanese}.
@@ -1247,7 +1247,7 @@ Ora verranno discusse brevemente alcune situazioni particolari:
 
 \subsection*{Proprietà della semantica reversibile incontrollata}
 Di seguito verranno dimostate diverse proprietà della semantica reversibile mostrata precedentemente.
-Dati i sistemi $s_1,s_2$ chiamiamo $s_1\rh^\ast s_2$ derivazione \emph {forward} e $s_2\lh^\ast s_1$ derivazione \emph {backward}.
+Dati i sistemi $s_1,s_2$ verrà indicata con $s_1\rh^\ast s_2$ una derivazione \emph {forward} e con $s_2\lh^\ast s_1$ una derivazione \emph {backward}.
 La derivazione che potenzialmente include sia i passi avanti che quelli indietro è indicata da $s_1\rlh^\ast s_2$.
 %
 Si etichettano le transizioni come segue: $s_1\rlh_ {p, r, k} s_2$, dove:
@@ -1258,10 +1258,10 @@ Si etichettano le transizioni come segue: $s_1\rlh_ {p, r, k} s_2$, dove:
 \end{itemize}
 Si ingnorano alcune etichette quando sono chiare dal contesto.
 
-Estendiamo le definizioni delle funzioni $ \init $ e $ \final $ date nella Sezione~\ref{sect:semantica} a derivazioni reversibili in modo naturale. Anche le nozioni di derivazione componibile, coiniziale e cofinale sono estese in modo semplice.
+Si estendono le definizioni delle funzioni $ \init $ e $ \final $ date nella Sezione~\ref{sect:semantica} a derivazioni reversibili in modo naturale. Anche le nozioni di derivazione componibile, coiniziale e cofinale sono estese in modo semplice.
 Data un'etichetta di regola $ r $, allora $\ol{r} $ denota la sua versione inversa, ovvero se $ r=\mathit{Send} $ allora $\ol{r}=\ol{\mathit {Send}}$ e viceversa (se $r=\ol{\mathit{Send}}$ allora $\ol{r}=\mathit{Send}$).
 		%
-Inoltre, data una transizione $ t $, lasciamo che $ \ol{t} =(s'\lh_{p, \ol{r},k} s) $ se $ t = (s \rh_ {p, r, k} s ') $ e $ \ol {t} = (s' \rh_ {p, r, k} s) $ se $ t = (s \lh_ {p, \ol {r}, k} s ') $. Diciamo che $ \ol {t} $ è \emph {inverso} di $ t $.
+Inoltre, data una transizione $ t $, si dice che $ \ol{t} =(s'\lh_{p, \ol{r},k} s) $ se $ t = (s \rh_ {p, r, k} s ') $ e che $ \ol {t} = (s' \rh_ {p, r, k} s) $ se $ t = (s \lh_ {p, \ol {r}, k} s ') $. Si dice che $ \ol {t} $ è \emph {inverso} di $ t $.
 Questa notazione è naturalmente estesa alle derivazioni.
 		
 Di seguito si limita l'attenzione ai sistemi raggiungibili dall'esecuzione di un programma.
@@ -1273,7 +1273,7 @@ Di seguito si limita l'attenzione ai sistemi raggiungibili dall'esecuzione di un
 Le definizioni e i lemmi successivi sono utilizzati per dimostrare che ogni transizione in avanti (risp. indietro) può essere annullata da una transizione all'indietro (risp. avanti), come dimostrato nel Lemma~\ref{lemma:loop} .
 
 \begin{definition}[Equivalenza fra storie ($\equiv$)]\label{def:equivS}
-Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \Hi_3$ diciamo che:
+Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \Hi_3$ si dice che:
 	\begin{itemize}
 		\item se $op$ è un'operazione in lettura tale che $a ~ \varepsilon ~ op $ e $ p ~ \varepsilon ~ op$ e se per ogni  operazione in scrittura $op_1 \in \Hi_2$ vale che $a \cancel{\varepsilon} op_1 $ e $ p  \cancel{\varepsilon} op_1$, allora $\Hi \cong \Hi'$.
 		\item se $op$ è un'operazione in scrittura tale che $a ~ \varepsilon ~ op $ e $ p ~ \varepsilon ~ op$ e se per ogni operazione in lettura o scrittura $op_1 \in \Hi_2$ vale che $a \cancel{\varepsilon} op_1 $ e $ p  \cancel{\varepsilon} op_1$, allora $\Hi \cong \Hi'$.
@@ -1334,7 +1334,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 		\end{prooftree}
 		~\\~\\
 		
-		Da $\Hi_1':op:\Hi_2' \cong \Hi_1:op :\Hi_2$, per il Corollario~\ref{myCorollario2} vale che $\Hi_1:\Hi_2 \cong \Hi_1':\Hi_2'$. Quindi costruisco l'albero:\\ 
+		Da $\Hi_1':op:\Hi_2' \cong \Hi_1:op :\Hi_2$, per il Corollario~\ref{myCorollario2} vale che $\Hi_1:\Hi_2 \cong \Hi_1':\Hi_2'$. Quindi si costruisce l'albero:\\ 
 		
 		\begin{prooftree} 
 			\hypo[]{\Hi_1:\Hi_2 \cong \Hi_1':\Hi_2'}
@@ -1354,7 +1354,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 			\end{prooftree}
 			~\\~\\
 			
-			Per l'ipotesi induttiva su $\Hi_1':op:\Hi_2' \equiv \Hi_1:op :\Hi_2$ si ha $\Hi_1':\Hi_2' \equiv \Hi_1:\Hi_2$. Quindi costruisco l'albero:\\
+			Per l'ipotesi induttiva su $\Hi_1':op:\Hi_2' \equiv \Hi_1:op :\Hi_2$ si ha $\Hi_1':\Hi_2' \equiv \Hi_1:\Hi_2$. Quindi si costruisce l'albero:\\
 			
 			\begin{prooftree} 
 				\hypo[]{\Hi_1':\Hi_2' \equiv \Hi_1:\Hi_2}
@@ -1372,7 +1372,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 			\end{prooftree}
 			~\\~\\
 			
-			Per l'ipotesi induttiva su $\Hi_1:op:\Hi_2 \equiv \Hi_1'':op :\Hi_2''$ e\\ $\Hi_1'':op:\Hi_2'' \equiv \Hi_1':op :\Hi_2'$ si ha $\Hi_1:\Hi_2 \equiv \Hi_1'':\Hi_2''$ e $\Hi_1'':\Hi_2'' \equiv \Hi_1':\Hi_2'$. Quindi costruisco l'albero:\\
+			Per l'ipotesi induttiva su $\Hi_1:op:\Hi_2 \equiv \Hi_1'':op :\Hi_2''$ e\\ $\Hi_1'':op:\Hi_2'' \equiv \Hi_1':op :\Hi_2'$ si ha $\Hi_1:\Hi_2 \equiv \Hi_1'':\Hi_2''$ e $\Hi_1'':\Hi_2'' \equiv \Hi_1':\Hi_2'$. Quindi si costruisce l'albero:\\
 			
 			\begin{prooftree} 
 				\hypo[]{\Hi_1:\Hi_2 \equiv \Hi_1'':\Hi_2''}
@@ -1434,7 +1434,7 @@ Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti g
 		\begin{itemize}
 			\item nel caso l'operazione non sia sulla mappa è facile mostrare che  applicando a $s_1'$  la stessa transizione applicata a $s_1$, questo muova in uno stato $s_2'$ equivalente a $s_2$.  Se la modifica effettuata al sistema è la stessa, allora anche $\Gamma $ e $\Pi$ saranno uguali a quelli di $s_2$ e, non essendo stata modificata la mappa, allora anch'essa e la sua storia saranno equivalenti;
 			\item nel caso l'operazione sia sulla mappa invece per dimostrare l'equivalenza di $s_2$ e $s_2'$ bisognerà mostrare l'equivalenza fra le storie dei due sistemi.\\
-			In questo caso sappiamo che la storia di $s_1$ indicata con $\Hi_1$ è equivalente alla storia di $s_1'$ indicata con $\Hi_1'$. Inoltre, si sa anche che applicando a $s_1'$ la regola $r$ si muoverà in $s_2'$ con storia $\Hi_2'= \Hi_1' : op$. Applicando la regola a $s_1$ si muoverà in uno stato $s_2$ con storia $\Hi_2 = \Hi_1 : op$. È facile notare che $\Hi_2 \equiv \Hi_2'$ visto che $\Hi_1 \equiv \Hi_1'$ ed è stato aggiunto alla fine della storia lo stesso elemento;
+			In questo caso si sa che la storia di $s_1$ indicata con $\Hi_1$ è equivalente alla storia di $s_1'$ indicata con $\Hi_1'$. Inoltre, si sa anche che applicando a $s_1'$ la regola $r$ si muoverà in $s_2'$ con storia $\Hi_2'= \Hi_1' : op$. Applicando la regola a $s_1$ si muoverà in uno stato $s_2$ con storia $\Hi_2 = \Hi_1 : op$. È facile notare che $\Hi_2 \equiv \Hi_2'$ visto che $\Hi_1 \equiv \Hi_1'$ ed è stato aggiunto alla fine della storia lo stesso elemento;
 		\end{itemize}
 		\item se $r$ è backward la dimostrazione si divide in due casi:
 		\begin{itemize}
@@ -1528,8 +1528,8 @@ Il seguente lemma è la controparte del Lemma~\ref{lemma:square} per la semantica
 \end{lemma}
 
 \begin{proof}
-	Distinguiamo i seguenti casi a seconda delle regole applicate: \\ [1ex]
-	(1) Due transizioni forward. Quindi, abbiamo i seguenti casi:
+	Si distinguono i seguenti casi a seconda delle regole applicate: \\ [1ex]
+	(1) Due transizioni forward. Quindi, si hanno i seguenti casi:
 	\begin{itemize}
 		\item $r_1= \mathsf{End}$ e $r_2=\mathsf{RegisterF}$ nel caso in cui %(accedono a pid e atomi diversi) 
 		$a~\varepsilon~r_1$, $p_1~\varepsilon~r_1$, $a'~\varepsilon~r_2$ e $p'~\varepsilon~r_2$ dove $a$ e $a'$ sono atomi e $p'$ è un pid:
@@ -1621,7 +1621,7 @@ In questa sezione verrà introdotto un'operatore di rollback che avvia un calcolo
 L'operazione di annullamento (non deterministica) ha alcune somiglianze con l'operatore di rollback di \cite{LMSS11, GLM14}.
 I processi vengono messi in modalità di ``rollback'' utilizzando $\lfloor ~ \rfloor_\Psi$, dove $ \Psi $ è l'insieme di rollback. 
 Un tipico rollback si riferisce a un checkpoint che deve essere superato da una computazione backward del processo prima di riprendere una computazione forward.
-Per essere precisi, distinguiamo le seguenti tipologie di rollback:
+Per essere precisi, si distinguono le seguenti tipologie di rollback:
 
 \begin{itemize}
 	\item $\#_\mathsf{ch}^\mathtt{t}$, dove ``$\mathsf{ch}$'' sta per ``checkpoint'': un rollback per annullare le azioni di un processo fino a che non ha raggiunto il checkpoint con identificatore $\mathtt {t}$;
@@ -1656,7 +1656,7 @@ Di seguito, al fine di semplificare le regole di riduzione, si assume che la sem
 	}
 \end{array}
 \]
-Si può notare che solo il primo dei tipi di rollback sopra indicati è destinato a un ~checkpoint. Questo tipo di checkpoint è introdotto in modo non deterministico dalla regola seguente, dove indichiamo con $\lhh$ la nuova relazione di riduzione che modella i movimenti all'indietro della semantica di rollback:
+Si può notare che solo il primo dei tipi di rollback sopra indicati è destinato a un ~checkpoint. Questo tipo di checkpoint è introdotto in modo non deterministico dalla regola seguente, dove viene indicata con $\lhh$ la nuova relazione di riduzione che modella i movimenti all'indietro della semantica di rollback:
 \[
 \begin{array}{ll}
 	(\mathit{\ol{Undo}}) & {\displaystyle
