@@ -123,76 +123,78 @@
 \chapter{Introduzione}
 Erlang è un linguaggio di programmazione funzionale e concorrente basato sul paradigma ad attori (concorrenza basata sul \textit{message-passing}). \\
 BEAM è la macchina virtuale al centro di Erlang, fa parte dell'Erlang Run-Time System (ERTS), che compila il codice sorgente di Erlang in bytecode, che viene quindi eseguito su BEAM.
-Core Erlang \cite{CoreErlang} è uno dei linguaggi intermedi in cui Erlang viene compilato.
-
-In questa tesi si mostra un'estensione della semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} con delle feature imperative.
-
+Core~Erlang \cite{CoreErlang} è uno dei linguaggi intermedi in cui Erlang viene compilato.
+\\
+In questa tesi si mostra un'estensione della semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} con delle feature imperative. In questo articolo viene presentata una semantica reversibile per un sotto insieme di Core~Erlang.
+\\
 Nella Sezione \ref{sect:linguaggio} viene modificato il linguaggio presentato nell'articolo~\cite{Lanese} aggiungendo le operazione di registrazione di atomi e pid, di deregistrazione di pid e di lookup e un meccanismo per poter identificare quando un processo è arrivato in uno stato finale. 
-
+\\
 Nella Sezione \ref{sect:semantica} viene modificata la nozione di sistema data nell'articolo~\cite{Lanese} introducendo una mappa formata dalle coppie di atomi-pid che sono stati registrati. Rispetto all'articolo \cite{Lanese} sono state estese le regole per: la semantica del linguaggio, la valutazione delle nuove espressioni e per descrivere il fallimento di un'espressione. Inoltre, sono state aggiunte le regole di sistema per le nuove espressioni e per i casi di fallimento.
-
+\\
 Nella Sezione \ref{sect:semreversibile} viene descritta la semantica reversibile divisa in \textit{forward} e \textit{backward}. La prima è un'estensione delle regole introdotte precedentemente, a cui nell'articolo \cite{Lanese} viene aggiunta una storia dei processi;  in questo lavoro è stata aggiunta la storia della mappa. La semantica \textit{backward} invece descrive come viene fatto un passo all'indietro. In questo caso viene introdotta una nozione di operazione in lettura e scrittura per generalizzare le \textit{side-condition} delle regole inserite e per dare una nozione di operazione concorrente più generale. 
-
+\\
 Nella Sezione \ref{sect:semrollback} è stato esteso l'operatore di reversibilità che può essere utilizzato per annullare le azioni di un dato processo fino a raggiungere un determinato punto di controllo, introdotto dal programmatore. Per garantire la coerenza causale l'azione di rollback potrebbe essere propagata ad altri processi dipendenti. 
 
 \section{Reversibilità}
 Normalmente la computazione avviene in una direzione con le istruzioni che vengono eseguite in un determinato ordine; per computazione reversibile invece ci si riferisce alla possibilità di eseguire un programma sia in avanti (o anche computazione \textit{forward}) che indietro (o anche computazione \textit{backward}).\\
 Dato un programma non è ovvio che sia possibile eseguire una computazione backward, in quanto tutti i linguaggi di programmazione tradizionali consentono operazioni con perdita di informazione. \\
 Durante l'esecuzione di un programma, a meno che non sia reversibile o senza perdita di informazioni, i dati intermedi vengono persi mentre viene calcolato l'output finale.
-
 \begin{example}
 	L'assegnamento \texttt{$\mathtt{x}$ = 96}  elimina il vecchio valore di $\mathtt{x}$ che deve essere memorizzato se si vuole annullare questa assegnazione.
 \end{example}
-
+~\\
 Landauer \cite{Landauer} notò anche che ogni computazione irreversibile può essere trasformata in una computazione reversibile includendola in una computazione più ampia nella quale nessuna informazione viene persa, salvando ogni volta gli stati intermedi così da non avere perdita di informazione.\\
 L'idea alla base di questo lavoro \cite{Landauer}, chiamato incorporamento di Landauer, è che qualsiasi linguaggio di programmazione o formalismo può essere reso reversibile aggiungendo la cronologia del calcolo a ogni stato.
-
-Questa idea fu ulteriormente migliorata da Bennett \cite{Bennett} al fine di evitare la generazione di dati ``spazzatura'', applicando una serie di analisi al fine di limitare il più possibile le informazioni richieste nella storia.
-
+\\
+Questa idea fu ulteriormente migliorata da Bennett \cite{Bennett} allo scopo di evitare la generazione di dati ``spazzatura'', applicando una serie di analisi al fine di limitare il più possibile le informazioni richieste nella storia.
+\\
 La reversibilità in un contesto sequenziale è facilmente ottenibile annullando ricorsivamente l'ultima azione eseguita dal programma. La definizione di reversibilità in un contesto in cui vengono considerati anche i sistemi concorrenti è più complicata, poiché non esiste il concetto di ``ultima azione'', essendo molte azioni eseguite contemporaneamente.
-
+\\
 Una definizione adeguata di reversibilità in uno scenario concorrente è stata proposta da Danos e Krivine nel loro articolo \cite{Danos}. Intuitivamente, questa afferma che qualsiasi azione può essere annullata a condizione che tutte le sue eventuali conseguenze siano annullate preventivamente.
-
+\\
 Il calcolo reversibile potrebbe essere applicato per migliorare il modo in cui alcune attività vengono svolte, per esempio nel debug.
 
 \section{Debugger reversibile}
 
-I Debugger non sono altro che programmi che consento di analizzare se un programma è sintatticamente corretto, in modo da effettuare una ricerca del bug in modo più veloce e accurato possibile. 
-
-Generalmente il tipo più utilizzato è il debugger che consente a runtime la ricerca dei bug tramite funzionalità standard come \textit{breakpoint}, \textit{controlpoint} e \textit{viste da watch}, che consentono al programmatore di analizzare più accuratamente determinate parti di codice per identificare gli errori con una scansione in avanti del programma.
-
+I Debugger non sono altro che programmi che consentono di analizzare se un programma è sintatticamente corretto, in modo da effettuare una ricerca del bug in modo più veloce e accurato possibile. 
+\\
+Generalmente il tipo più utilizzato di debugger è quello che consente a runtime la ricerca dei bug tramite funzionalità standard come \textit{breakpoint}, \textit{controlpoint} e \textit{viste da watch}, che consentono al programmatore di analizzare più accuratamente determinate parti di codice per identificare gli errori con una scansione in avanti del programma.
+\\
 Di contro però, la maggior parte dei debugger fornisce un'assistenza limitata, per cui i programmatori devono spesso ricorrere alla simulazione dell'esecuzione del programma mentalmente per cercare di immaginare i flussi di istruzioni che vengono eseguiti. Infatti, con un debugger a \textit{runtime}, il programmatore può cercare il bug inserendo dei breakpoint all'interno dei thread e sperare di scovare il bug facendo dei tentativi, magari entrando in watch per osservare come vengono modificate le variabili durante l'esecuzione del programma. Per far fronte a questo problema sono nati anche debugger più complessi, definiti reversibili, che risultano più utili in scenari concorrenti. Questi, a differenza dei debugger tradizionali, consentono agli sviluppatori di registrare le attività del programma in esecuzione per poi riavvolgere e riprodurre tali istruzioni, compresi eventuali errori, per ispezionare lo stato del programma \cite{Engblom}.\\
 Riavvolgere le azioni di un particolare processo significa anche elimare ogni conseguenza dell'operazione, cioè  tutte le azioni ``collegate'' a quell'operazione, che si vuole annullare. Questa nozione è chiamata \textit{consistenza causale}~\cite{Danos}.
 
 \section{Background}
 
 In questa tesi, viene utilizzato ``A theory of reversibility for Erlang'' \cite{Lanese} come articolo di riferimento.
-In esso viene utilizzato come linguaggio un sottoinsieme di \emph{Core Erlang}~\cite{CoreErlang}. \\
+In esso viene utilizzato come linguaggio un sottoinsieme di \emph{Core~Erlang}~\cite{CoreErlang}. \\
 Inizialmente, al contrario di quelle utilizzate in altri lavori \cite{CMRT13tr}, viene introdotta una semantica modulare per il linguaggio, ciò permette di semplificare l'aggiornamento di quest'ultima ad una semantica reversibile.\\
-Sucessivamente, utilizzando l'incorporamento di Landauer, è stata definita una semantica reversibile per il linguaggio scelto che può andare avanti e indietro in modo non deterministico, chiamata semantica reversibile \emph {incontrollata}, per la quale è stato dimostrato che essa gode delle proprietà usuali (loop lemma, sqaure lemma e consistenza causale). \\
+Sucessivamente, utilizzando l'incorporamento di Landauer, è stata definita una semantica reversibile per il linguaggio scelto che può andare avanti e indietro in modo non deterministico, chiamata semantica reversibile \emph{non controllata}, per la quale è stato dimostrato che essa gode delle proprietà usuali (loop lemma, square lemma e consistenza causale). \\
 Infine, è stata introdotta una versione controllata della semantica a ritroso grazie all'utilizzo dell'operatore di rollback che annulla le azioni di un processo fino a un determinato punto di controllo; per garantire la coerenza causale, l'azione di rollback potrebbe essere propagata ad altri processi dipendenti. \\
 L'implementazione di CauDEr mostra che l'approccio utilizzato è effettivamente attuabile nella pratica.
 
-\section{CauDEr}
+\section{CauDEr}\label{Cauder}
 
-Un debugger casual-consistent è uno strumento che ci consente di eseguire il debug di un programma concorrente, garantendo la coerenza causale. 
-Non è semplice individuare un comportamento erroneo in un sistema concorrente, quindi è utile disporre di strumenti che ci aiutino. In \cite{paperCauder} viene introdotto CauDEr, ovverosia un debugger casual-consistent per un sottoinsieme funzionale e concorrente del linguaggio Core Erlang \cite{CoreErlang}.
-Il programma funziona come segue: l'utente carica un file sorgente Erlang che viene tradotto in Core Erlang. Successivamente egli specifica quale funzione è il punto di ingresso e, eventualmente, anche gli argomenti di input della funzione. Dopo aver premuto il pulsante di avvio il sistema verrà azionato e l'utente potrà eseguire il programma in modo automatico in avanti. Si potranno quindi specificare quanti passi avanti debbano essere eseguiti, o in alternativa si potrà selezionare un processo ed eseguire passi avanti su di esso. L'utente può anche selezionare un processo e se possibile potrà eseguire un calcolo a ritroso. 
-Inoltre, l'utente ha l'opportunità di eseguire il rollback del processo nel momento in cui viene eseguita un'azione osservabile con la garanzia che è stata assicurata la coerenza causale.
-Un debugger che permette all'utente di concentrarsi solo sul processo desiderato, ignorando quindi gli altri, riduce la quantità di informazioni che egli debba percepirare in un solo istante, riducendo così il carico cognitivo e consentendo al soggetto di doversi concentrare esclusivamente su ciò di cui ha più bisogno. 
+Un debugger casual-consistent è uno strumento che consente di eseguire il debug di un programma concorrente, garantendo la coerenza causale. 
+Non è semplice individuare un comportamento erroneo in un sistema concorrente, quindi è utile disporre di strumenti che possono aiutare lo sviluppatore. In~\cite{paperCauder} viene introdotto CauDEr, ovverosia un debugger casual-consistent per un sottoinsieme funzionale e concorrente del linguaggio Core~Erlang \cite{CoreErlang}.\\
+Il programma funziona come segue: l'utente carica un file sorgente Erlang che viene tradotto in Core~Erlang. Successivamente egli specifica quale funzione è il punto di ingresso e, eventualmente, anche gli argomenti di input della funzione. Dopo aver premuto il pulsante di avvio il sistema verrà azionato e l'utente potrà eseguire il programma in modo automatico in avanti. Si potranno quindi specificare quanti passi avanti debbano essere eseguiti, o in alternativa si potrà selezionare un processo ed eseguire passi avanti su di esso. L'utente può anche selezionare un processo e se possibile potrà eseguire un calcolo a ritroso. 
+Inoltre, l'utente ha l'opportunità di eseguire il rollback del processo nel momento in cui viene eseguita un'azione osservabile con la garanzia che è stata assicurata la coerenza causale.\\
+Un debugger che permette all'utente di concentrarsi solo sul processo desiderato, ignorando quindi gli altri, riduce la quantità di informazioni che egli debba percepirare in un solo istante, riducendo così il carico cognitivo e consentendo al soggetto di doversi concentrare esclusivamente su ciò di cui ha più bisogno.\\ 
 Contrariamente un debugger che tiene traccia dell'intero sistema e che può essere spostato avanti e indietro risulterebbe più problematico, infatti un tale strumento non consentirebbe di concentrarsi su un particolare processo ma costringerebbe l'utente a eseguire il rollback e riprodurre l'intero sistema, anche i processi che non sono legati a quello a cui siamo interessati.
  Un tale approccio sommergerebbe quindi l'utente di informazioni non utili, aumentando così le probabilità che il bug che causa il comportamento scorretto non venga trovato.
+ \\~\\
+ Lo sviluppo di CauDEr è presente in due versioni \cite{cauder,cauderV2} che entrambe implementano la semantica reversibile descritta nell'articolo~\cite{Lanese}. Le principali differenze fra le due versioni sono che nella seconda versione~\cite{cauderV2} non è presente la mailbox locale dei processi ma solo quella globale. Di conseguenza non è presente nemmeno lo scheduler che sposta i messaggi dalla mailbox globale a quella locale del destinatario. Nella seconda versione è stata aggiunta anche la definizione dei tipi delle strutture dati utilizzate e della sintassi, in questo modo viene aggiunto alle definizione delle funzioni il tipo dell'input e dell' output. Inoltre il linguaggio non è più tradotto in Core~Erlang ma nella sintassi definita.\\
+Infine un'altra differenza è che nella prima versione il codice visibile è il programma tradotto in Core~Erlang mentre nella seconda versione è il codice originale in Erlang.
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
 \chapter{Estensione con feature imperative}
 
-Si vuole estendere \cite{Lanese} con alcuni meccanismi imperativi presenti in Core-Erlang e ingorati in \cite{Lanese}: la possibilità di associare atomi a pid, tipicamente utilizzata per rendere pubblici i pid di server per servizi noti.
- 
+Si vuole estendere \cite{Lanese} con alcuni meccanismi imperativi presenti in Core~Erlang e ingorati in \cite{Lanese}: la possibilità di associare atomi a pid, tipicamente utilizzata per rendere pubblici i pid di server per servizi noti.
+ \\
 Nel seguito di questo capitolo, verrà presentata la sintassi del linguaggio esteso supportato, seguita dalla sua semantica (reversibile). In contrasto con la semantica descritta nell'articolo ``A theory of reversibility for Erlang'' \cite{Lanese} quella che verrà presentata qui includerà funzioni imperative.
 Le modifiche effettuate all'articolo \cite{Lanese} sono evidenziate in giallo.
 
 \section{Sintassi del linguaggio}\label{sect:linguaggio}
-In questa sezione verrà mostrata la sintassi di un linguaggio funzionale, concorrente, distribuito e basato sul paradigma ad attori. Questo linguaggio è un sotto insieme di Core Erlang \cite{CoreErlang}, che è uno dei linguaggi intermedi in cui un programma Erlang viene compilato.
+In questa sezione verrà mostrata la sintassi di un linguaggio funzionale, concorrente, distribuito e basato sul paradigma ad attori. Questo linguaggio è un sotto insieme di Core~Erlang \cite{CoreErlang}, che è uno dei linguaggi intermedi in cui un programma Erlang viene compilato.
 \begin{figure}[ht]
 	\begin{center}
 		$
@@ -239,37 +241,35 @@ sono anche state aggiunte le funzioni:
 	\item $\mathsf{register}$ che dati in input un atomo e un pid inserisce in una mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Se l'atomo o il pid sono già presenti nella mappa il processo fallisce;
 	\item $\mathsf{unregister}$ che dato in input un atomo toglie dalla mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Se l'atomo non è presente nella mappa il processo fallisce.
 \end{itemize}
-Inoltre è stato creato il non terminale \textit{end} che indica gli stati finali di un processo, in modo da determinare se un processo è fallito. In questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. \\
-
+Inoltre è stato creato il non terminale \textit{end} che indica gli stati finali di un processo, in modo da determinare se un processo è fallito. In questo modo si è riusciti ad avere un comportamento il più fedele possibile a quello di Erlang nel caso delle funzioni aggiunte. \\~\\
 Nelle regole che verranno descritte successivamente il simbolo $\epsilon$ rappresenterà un non terminale \textit{end}. 
 
 \section{Semantica del linguaggio}\label{sect:semantica}
 In questa sezione descriveremo formalmente la semantica del linguaggio presentato nella sezione \ref{sect:linguaggio}.
 
 \begin{definition} [Processo]
-	Un processo è indicato da una tupla $\tuple {p, (\theta, e), q}$ dove $p$ è il pid del processo (ed è unico), $(\theta, e)$ è il controllo, che consiste di un ambiente (una sostituzione) e di un'espressione da valutare, e $q$ è la casella di posta del processo, una coda FIFO con la sequenza di messaggi che sono stati inviati al processo.
-	
-	Si considera le seguenti operazioni sulle cassette postali locali. Dato un messaggio $v$ e una casella di posta locale $q$, $v:q$ denota una nuova casella di posta con il messaggio $v$ sopra (cioè $v$ è il messaggio più recente). Con $q \backslash\! \! \backslash v$ verrà indicata una nuova coda che risulta da $q$ rimuovendo l'occorrenza più vecchia del messaggio $v$ (che non è necessariamente il messaggio più vecchio nella coda). \qed
+	Un processo è indicato da una tupla $\tuple {p, (\theta, e), q}$ dove $p$ è il pid del processo (ed è unico), $(\theta, e)$ è il controllo, che consiste di un ambiente (una sostituzione) e di un'espressione da valutare, e $q$ è la mailbox del processo, una coda FIFO con la sequenza di messaggi che sono stati inviati al processo.
+	\\
+	Si considera le seguenti operazioni sulle mailbox locali. Dato un messaggio $v$ e una mailbox locale $q$, $v:q$ denota una nuova mailbox con il messaggio $v$ sopra (cioè $v$ è il messaggio più recente). Con $q \backslash\! \! \backslash v$ verrà indicata una nuova coda che risulta da $q$ rimuovendo l'occorrenza più vecchia del messaggio $v$ (che non è necessariamente il messaggio più vecchio nella coda). \qed
 \end{definition}
 %
 Un \emph{sistema} in esecuzione può quindi essere visto come un insieme di processi, che vengono definiti formalmente come segue:
 
 \begin{definition} [Sistema] \label{sistema}
-	Un sistema è indicato da $\Gamma;\Pi;\M$, dove $\Gamma$, la \emph{casella di posta globale}, è un insieme di coppie nella forma $(destinazione,$ $messaggio)$ e $\Pi$ è un insieme di processi, indicato da un'espressione della forma
+	Un sistema è indicato da $\Gamma;\Pi;\M$, dove $\Gamma$, la \emph{mailbox globale}, è un insieme di coppie nella forma $(destinazione,$ $messaggio)$ e $\Pi$ è un insieme di processi, indicato da un'espressione della forma
 	\[
 	\tuple{p_1, (\theta_1, e_1), q_1} ~ \comp \cdots
 	\comp ~ \tuple {p_n, (\theta_n, e_n), q_n}
 	\]
 	dove `` $\comp$ '' denota un operatore associativo e commutativo.
 	%
-	Data una casella di posta globale $\Gamma $, $\Gamma \cup \{(p, v) \} $ denota una nuova casella di posta che include anche la coppia $(p, v)$; si usa ``$\cup$'' come unione multiset.
+	Data una mailbox globale $\Gamma $, $\Gamma \cup \{(p, v) \} $ denota una nuova mailbox che include anche la coppia $(p, v)$; si usa ``$\cup$'' come unione multiset.
 	Spesso un sistema viene denotato con un'espressione nella forma $\Gamma;\tuple{p,(\theta, e),q}\comp \Pi;\M$ per far notare che $ \tuple {p, (\theta, e), q} $ è un processo arbitrario del pool (grazie al fatto che `` $\comp $ '' è associativo e commutativo).
 	Infine, $\M$ rappresenta l'insieme delle coppie $(atomo,pid)$ registrate; si indica con ``$\cup$'' l'aggiunta di una coppia alla mappa e con ``$\backslash\! \! \backslash$'' la rimozione di una coppia dalla mappa.\qed 
 \end{definition}
-%
-Intuitivamente, $\Gamma$ memorizza i messaggi dopo che sono stati inviati e prima che vengano inseriti nella casella di destinazione, quindi rappresenta i messaggi che si trovano nella rete.
+~\\
+Intuitivamente, $\Gamma$ memorizza i messaggi dopo che sono stati inviati e prima che vengano inseriti nella mailbox di destinazione, quindi rappresenta i messaggi che si trovano nella rete.
 \newline
-
 La semantica è definita tramite due relazione di transizione: $\too$ per le espressioni e $\hoo$ per il sistema. Verrà prima mostrata la relazione di transizione etichettata 
 \[
 \too\; : (Env,Exp)\times Label\times(Env,Exp)
@@ -377,12 +377,12 @@ Nella Figura~\ref{fig:seq-rules} sono presenti le regole di transizione per la v
 \newline
 Come in Erlang, si considera che l'ordine di valutazione degli argomenti in una tupla, lista, ecc. è fisso da sinistra a destra.
 \newline
-Per la valutazione dei case, si assume una funzione ausiliaria $\mathsf{match}$ che seleziona la prima clausola, $cl_i = (pat_i ~\mathsf{when} ~ e'_i \to e_i)$, in modo tale che $v$ corrisponda a $pat_i$, ovvero $ v = \theta_i (pat_i)$, e che la guardia sia soddisfatta, cioè, $\theta \theta_i, e'_i \too^\ast \theta ', true$. Come in Core Erlang, si assume che i patterns possano solo contenere nuove variabili (ma le guardie potrebbero avere variabili legate, quindi verrà passato l'ambiente corrente $ \theta $ alla funzione $ \mathsf {match} $).
+Per la valutazione dei case, si assume una funzione ausiliaria $\mathsf{match}$ che seleziona la prima clausola, $cl_i = (pat_i ~\mathsf{when} ~ e'_i \to e_i)$, in modo tale che $v$ corrisponda a $pat_i$, ovvero $ v = \theta_i (pat_i)$, e che la guardia sia soddisfatta, cioè, $\theta \theta_i, e'_i \too^\ast \theta ', true$. Come in Core~Erlang, si assume che i patterns possano solo contenere nuove variabili (ma le guardie potrebbero avere variabili legate, quindi verrà passato l'ambiente corrente $ \theta $ alla funzione $ \mathsf {match} $).
 \newline
 Le funzioni possono essere definite nel programma, in questo caso sono invocate da $\mathsf {apply}$, o essere un built-in, invocate da $\mathsf{call}$. In quest'ultimo caso vengono valutate utilizzando la funzione ausiliaria $\mathsf {eval}$.
 \newline
 Nella regola $\mathit {Apply2}$, si considera che la mappa $\mu$ memorizzi tutte le definizioni di funzione nel programma, cioè, mappi ogni nome di funzione $ a/n $ in una copia della sua definizione $\mathsf{fun} ~ (X_1, \ldots, X_n) \to e$, dove $ X_1, \ldots, X_n $ sono nuove variabili distinte e sono le uniche che possono essere libere in $e$.
-%
+\
 Per estendere la semantica utilizzata a considerare anche funzioni di ordine superiore, si dovrebbe ridurre il nome della funzione a una \emph {chiusura} della forma $ (\theta ', \mathsf {fun} ~ (X_1, \ldots, X_n) \to e) $. 
 \newline
 Alle regole della semantica standard delle espressi sequenziali è stata aggiunta la regola $Call3$ utilizzata per la valutazione delle funzioni built-in che devono accedere alla mappa. Le funzioni built-in, come si può vedere dalla regola $Call2$, vengono valutate tramite la funzione ausiliaria $\mathsf{eval}$; per questo motivo si è scelto di utilizzare la funzione ausiliaria $\mathsf{evalM}$ per valutare le funzioni built-in che utilizzano una mappa. Infatti per la valutazione, $\mathsf{evalM}$ non prende in input solo i parametri ma anche la mappa, indicata con $\M$.
@@ -452,7 +452,7 @@ Nella Figura~\ref{fig:seq-rules-fail} sono presenti le regole di transizione che
 La propagazione dell'errore è indicata dall'etichetta $\bot$; quindi, se una valutazione di un'espressione fallisce, allora il fallimento viene propagato. \\
 Con il simbolo $\emptyset$ si intende: 
 \begin{itemize}
-	\item nel caso dei match, che l'argomento $v$ non corrisponde a nessuna clausola\footnote {Più precisamente in un programma Erlang quando è tradotto nella rappresentazione intermedia Core Erlang, viene aggiunta una clausola catch-all; quindi il simbolo $\emptyset$ corrisponde al match della clausola aggiunta.};
+	\item nel caso dei match, che l'argomento $v$ non corrisponde a nessuna clausola\footnote {Più precisamente in un programma Erlang quando è tradotto nella rappresentazione intermedia Core~Erlang, viene aggiunta una clausola catch-all; quindi il simbolo $\emptyset$ corrisponde al match della clausola aggiunta.};
 	\item nei casi di eval, evalM e $\mu$, che le funzioni non sono definite sull'input dato.
 \end{itemize}
 \begin{figure}[h]
@@ -515,7 +515,6 @@ Con il simbolo $\emptyset$ si intende:
 	\]
 	\caption{Semantica standard: valutazione delle espressioni concorrenti} \label{fig:concurrent-rules}
 \end{figure}
-
 Si considera ora la valutazione di espressioni concorrenti che producono side-effects (Figura~\ref{fig:concurrent-rules}). Si hanno le regole $\mathit{Send1}$, $\mathit {Send2}$ e $\mathit{Send3}$ per ``$!$''. In questo caso si sa \emph{localmente} a cosa dovrebbe essere ridotta l'espressione (cioè $ v_2 $ nella regola $\mathit {Send3}$). Per le restanti regole questo non è noto localmente e, quindi, si restituisce un nuovo simbolo distinto, $\kappa $,  che viene trattato come una variabile, in modo che nelle regole di sistema nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map} $\kappa$ legherà al suo valore corretto:\footnote {Nota che $\kappa$ assume valori nel dominio $expr \cup Pid $, al contrario delle variabili ordinarie che possono essere associate solo a valori.} l'espressione selezionata nella regola $\mathit {Receive} $, un pid nelle regole $\mathit {Spawn}$ e $\mathit{Self}$ e \textbf{true} o \textbf{false} nelle regole $\mathit{Register}$ e $\mathit{Unregister}$. In questi casi, l'etichetta della transizione contiene tutte le informazioni necessarie alle regole di sistema per eseguire la valutazione a livello di sistema, incluso il simbolo $\kappa$. Questo \emph{trucco} permette di mantenere separate le regole per espressioni e sistemi (cioè, la semantica mostrata nelle Figura~\ref {fig:seq-rules} e \ref{fig:concurrent-rules} è per lo più indipendente dalle regole nelle Figure~\ref{fig:system-rules}, \ref{fig:system-rules-map}) in contrasto con altre semantiche di Erlang, ad esempio \cite{CMRT13tr}, dove sono combinate in una singola relazione di transizione.
 Nelle regole di valutazione delle espressioni concorrenti della semantica standard sono state aggiunte le regole per la valutazione della $\mathsf{register}$ e dell'$\mathsf{unregister}$.
 
@@ -555,7 +554,7 @@ Nelle regole di valutazione delle espressioni concorrenti della semantica standa
 ~\newline
 Anche nelle regole di valutazione delle espressioni concorrenti sono state aggiunte le regole che gestiscono il fallimento di un processo e che propagano il fallimento della valutazione di un'espressione.
 \newline
-Ora si possono presentare le regole di sistema che sono rappresentate nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}; in tutte queste viene considerato un sistema generale nella forma $\Gamma;\tuple{p,(\theta,e),q}\:\comp\: \Pi;\M$ dove $\Gamma$ è la casella di posta globale, $\tuple{p,(\theta,e),q}\:\comp\: \Pi$ è l'insieme dei processi che contiene almeno un processo e $\M$ è la mappa dei pid registrati. Rispetto all'articolo \cite{Lanese} in tutte le regole è stata aggiunta $\M$ visto che la definizione di sistema (Definizione~\ref{sistema}) è cambiata.\\
+Ora si possono presentare le regole di sistema che sono rappresentate nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}; in tutte queste viene considerato un sistema generale nella forma $\Gamma;\tuple{p,(\theta,e),q}\:\comp\: \Pi;\M$ dove $\Gamma$ è la mailbox globale, $\tuple{p,(\theta,e),q}\:\comp\: \Pi$ è l'insieme dei processi che contiene almeno un processo e $\M$ è la mappa dei pid registrati. Rispetto all'articolo \cite{Lanese} in tutte le regole è stata aggiunta $\M$ visto che la definizione di sistema (Definizione~\ref{sistema}) è cambiata.\\
 Ora verranno descritte brevemente tutte le regole di transizione del sistema. 
 \begin{figure}[th]
 	\footnotesize
@@ -623,23 +622,22 @@ Ora verranno descritte brevemente tutte le regole di transizione del sistema.
 	\]
 	\caption{Regole standard della semantica del sistema} \label{fig:system-rules}
 \end{figure}
-
+~\\
 La regola $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione.
-
+\\
 La regola $\mathit{Call3}$ come $\mathit{Seq}$ aggiorna semplicemente il controllo $(\theta, e)$ del processo considerato quando un'espressione sequenziale viene ridotta utilizzando le regole di espressione; accedendo però alla mappa, utilizza l'etichetta $\tau\M\M'$ invece di $\tau$.
-
-Le regole $\mathit{Send} $ e $\mathit{SendA} $ aggiungono la coppia $(p '', v)$ alla casella di posta globale $\Gamma$ invece di aggiungerla alla coda del processo $p ''$. Ciò è necessario per garantire che tutti i possibili intrecci di messaggi siano modellati correttamente.
+\\
+Le regole $\mathit{Send} $ e $\mathit{SendA} $ aggiungono la coppia $(p '', v)$ alla mailbox globale $\Gamma$ invece di aggiungerla alla coda del processo $p ''$. Ciò è necessario per garantire che tutti i possibili intrecci di messaggi siano modellati correttamente.
 È stata introdotta la funzione ausiliaria $\mathsf{isAtom}$ che viene utilizzata per capire se la regola debba accedere alla mappa; l'unica differenza fra le due regole è che la $\mathit{SendA}$ utilizza un atomo come destinatario. 
 Si noti che $e '$ è solitamente diverso da $v$ poiché $e$ può avere operatori annidati diversi. Ad esempio, se $e$ ha la forma `` $\mathsf{case} ~ \mathrm{p} \:! \: V ~ \mathsf {of} ~ \{\ldots \} $,'' allora $ e '$ sarà ``$ \mathsf {case} ~ v ~ \mathsf {of} ~ \{\ldots \} $'' con etichetta $ \mathsf {send} (\mathrm {p}, v) $ per un qualche $v$.
-
+\\
 La regola $\mathit{SendF}$ introduce un fallimento, visto che l'espressione da valutare successivamente nel processo sarà l'atromo $sendFail$ che corrisponde ad un fallimento. Questo avviene perchè l'atomo che si utilizza per inviare un messaggio non è associato nessun pid nella mappa, come comprensibile dalla funzione $\mathsf{matchPid}$.
-	
+	\\
 Nella regola $ \mathit {Receive} $ si usa la funzione ausiliaria $ \mathsf {matchrec} $ per valutare un'espressione di ricezione. La differenza principale con $\mathsf {match}$ è che $\mathsf{matchrec}$ prende anche una coda $q$ e restituisce il messaggio selezionato $v$. Più precisamente, la funzione $ \mathsf {matchrec} $ esegue la scansione della coda $ q $ cercando il \emph {primo} messaggio $ v $ che corrisponde a un modello dell'istruzione di ricezione. Quindi $ \kappa $ viene associato all'espressione nella clausola selezionata, $ e_i $, e l'ambiente viene esteso con la sostituzione corrispondente.
-		
+		\\
 Se nessun messaggio nella coda $ q $ corrisponde ad alcuna clausola, la regola non è applicabile e il processo selezionato non può essere ridotto (cioè viene sospeso). Come nelle espressioni case, si assume che i pattern possano contenere solo nuove variabili.
-		
-Le regole presentate finora consentono di memorizzare i messaggi nella casella di posta globale, ma non di rimuoverli. Questo è esattamente il compito dello scheduler, modellato dalla regola $ \mathit{Sched}$. Questa regola sceglie in modo non deterministico una coppia $ (p, v) $ nella cassetta postale globale $ \Gamma $ e consegna il messaggio $ v $ al processo di destinazione $ p $. Qui si ignora deliberatamente la restrizione: `` i messaggi inviati, direttamente, tra due processi dati arrivano nello stesso ordine in cui sono stati inviati", poiché le attuali implementazioni lo garantiscono solo all'interno dello stesso nodo. In pratica, ignorare questa restrizione equivale a considerare che ogni processo è potenzialmente eseguito in un nodo diverso. Una definizione alternativa che garantisce questa restrizione può essere trovata in \cite{NPV16b}.
-
+\\
+Le regole presentate finora consentono di memorizzare i messaggi nella mailbox globale, ma non di rimuoverli. Questo è esattamente il compito dello scheduler, modellato dalla regola $ \mathit{Sched}$. Questa regola sceglie in modo non deterministico una coppia $ (p, v) $ nella mailbox globale $ \Gamma $ e consegna il messaggio $ v $ al processo di destinazione $ p $. Qui si ignora deliberatamente la restrizione: `` i messaggi inviati, direttamente, tra due processi dati arrivano nello stesso ordine in cui sono stati inviati", poiché le attuali implementazioni lo garantiscono solo all'interno dello stesso nodo. In pratica, ignorare questa restrizione equivale a considerare che ogni processo è potenzialmente eseguito in un nodo diverso. Una definizione alternativa che garantisce questa restrizione può essere trovata in \cite{NPV16b}.
       \begin{figure}[th]
 	\footnotesize
 	\[
@@ -682,7 +680,6 @@ Le regole presentate finora consentono di memorizzare i messaggi nella casella d
 	\]
 	\caption{Regole standard della semantica del sistema che utilizzano la mappa} \label{fig:system-rules-map}
 \end{figure}
-
 Nella figura \ref{fig:system-rules-map} si può notare che sono state aggiunte anche le regole per la $\mathsf{register}$ e per l'$\mathsf{unregister}$.
 Queste regole sono divise in 2 casi:
 \begin{itemize}
@@ -690,19 +687,19 @@ Queste regole sono divise in 2 casi:
 	\item il caso di fallimento (che introduce come prossima espressione da valutare un atomo che descrive un fallimento).
 \end{itemize}
 Il caso di successo corrisponde alle regole $\mathit{RegisterT}$ e $\mathit{UnregisterT}$ che rispettivamente aggiunge la coppia $(a,p')$ alla mappa e tolgie la coppia $(a,p')$, mentre il caso di fallimento corrisponde alle regole $\mathit{RegisterF}$ e $\mathit{UnregisterF}$. 
-
+\\
 La regola $\mathit{Catch}$ serve per gestire il caso di fallimento di un processo che viene catturato al top-level.
-
-La regola $End$ serve per gestire il caso di terminazione di un processo. In caso di fallimento o terminazione di un processo se il processo è registrato viene deregistrato. Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang.
+\\
+La regola $End$ serve per gestire il caso di terminazione di un processo. In caso di fallimento o terminazione con successo se è registrato allora viene deregistrato. Questa scelta è stata fatta per essere il più possibili fedeli al comportamento di Erlang.
 
 \subsection*{Concorrenza in Erlang}
 
 Per definire una semantica reversibile per Erlang si ha bisogno non solo di una semantica come quella appena presentata, ma anche di una nozione di concorrenza (o, equivalentemente, della nozione opposta di conflitto). 
-
+\\
 Dati i sistemi $ s_1, s_2 $, si chiama $ s_1 \hoo ^ \ast s_2 $ una \emph {derivazione}.
-%
+\\
 Le derivazioni in un passaggio sono chiamate semplicemente \emph {transizioni}. Si usa $ d, d ', d_1, \ldots $ per indicare le derivazioni e $ t, t', t_1, \ldots $ per le transizioni.
-
+\\
 Le transizioni vengono etichettate con: $s_1 \hoo_{p,r} s_2$ dove:
 \begin{itemize}
 	\item $p$ è il pid del processo selezionato nella transizione o del processo a cui viene consegnato un messaggio (se la regola applicata è  $\mathit{Sched})$;
@@ -733,11 +730,12 @@ Due derivazioni, $ d_1 $ e $ d_2 $, sono dette \emph{coiniziali} se $\init(d_1) 
 			$\mathsf{UnregisterF}$ &       & \multicolumn{1}{l|}{}            &                                &                            &                            &                          &                                  &                                \\ \cline{1-3}
 			$\mathsf{Call3}$       &       &                                  &                                &                            &                            &                          &                                  &                                \\ \cline{1-2}
 		\end{tabular}
-		\caption{\label{tab:conflitti} Tabella dei conflitti}
+		\caption{\label{tab:conflitti} Tabella dei conflitti per le regole forward-forward}
 	\end{table}
 
 	Nella Tabella~\ref{tab:conflitti} sono presenti i casi in cui si verificano i conflitti; $a'$ e $p'$ rappresentano l'atomo e il pid coinvolti da $r_1$, mentre $a''$ e $p''$ rappresentano l'atomo e il pid coinvolto da $r_2$. $\mathsf{M'}$ rappresenta gli elementi letti nella mappa dalla regola $\mathsf{Call3}$. Le celle vuote rappresentano transizioni coiniziali che non vanno in conflitto.\\
-	Da notare che non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro, questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
+	Si nota che esistono coppie di operazini in scrittura che non sono in conflitto visto che nei casi in cui sarebbe presente il conflitto queste operazioni non possono essere coiniziali. 
+	%Da notare che non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro, questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
 \end{itemize}
 Due transizioni coiniziali sono \emph{concorrenti} se non sono in conflitto. \qed
 \end{definition}
@@ -781,7 +779,7 @@ Questa definizione è utile per la dimostrazione del prossimo lemma.
 		\item entrambe le operazioni $r$ sono eseguite sulla mappa, questo perché se andassero a modificare gli stessi elementi della mappa non potrebbero essere concorrenti per la definizione data: 
 		\begin{itemize}
 			\item se $r_1 = r_2 = \mathsf{UnregisterT}$ deregistrano gli atomi $a_1$ e $a_2$ e se le due operazioni sono concorrenti (quindi $a_1 \not= a_2$), deregistrare prima $a_1$ e poi $a_2$ o viceversa non cambia (in $s'$ la mappa sarà la stessa);
-			\item  questo ragionamento può essere applicato a tutte le regole sulla mappa. 
+			\item  questo ragionamento può essere applicato a tutte le regole sulla mappa. \qedhere
 		\end{itemize}
 	\end{itemize}
 \end{proof} 
@@ -791,9 +789,9 @@ Si noti che sono possibili altre definizioni di transizioni concorrenti. La modi
 \section{Semantica reversibile}\label{sect:semreversibile}
 
 In questa sezione, viene introdotta una semantica reversibile (non controllata) per il linguaggio considerato. Grazie al design modulare della semantica concreta, non è necessario modificare le regole di transizione per le espressioni del linguaggio per definire la semantica reversibile.
-
+\\
 Per essere precisi, in questa sezione verranno introdotte due relazioni di transizione: $ \rh $ e $ \lh $. La prima relazione, $ \rh $, è un'estensione conservativa della semantica standard $ \hoo $ (Figure~\ref {fig:system-rules} e \ref{fig:system-rules-map}) per includere anche alcune informazioni aggiuntive negli stati, seguendo un tipico incorporamento di Landauer. Verrà indicata con $ \rh $ la semantica reversibile \emph{forward} (o semplicemente alla semantica forward). Al contrario, la seconda relazione, $ \lh $, procede nella direzione all'indietro, ``annullando'' le azioni passo dopo passo. Ci si riferisce a $ \lh $ come semantica \emph{backward} (reversibile). Verrà indicata l'unione $ \rh \cup \lh $ con $ \rlh $.
-
+\\
 Per evitare di annullare tutte le azioni fino all'inizio del processo, lasceremo anche che il programmatore introduca \emph{checkpoints}. Sintatticamente, sono indicati con la funzione incorporata \textsf{check}, che accetta un identificatore $ \mathtt{t} $ come argomento. Tali identificatori dovrebbero essere univoci nel programma. Data un'espressione, $ expr $, si può introdurre un checkpoint sostituendo $ expr $ con `` $\mathsf {let} ~ X = \mathsf {check} (\mathtt {t}) ~ \mathsf {in} ~ expr $''. Una chiamata nella forma $ \mathsf {check} (\mathtt {t}) $ restituisce semplicemente $ \mathtt {t} $ (vedi sotto).
 Di seguito, si considera che le regole per valutare le espressioni del linguaggio (Figure~\ref {fig:seq-rules} e \ref{fig:concurrent-rules}) sono estese con la seguente regola:
 \[
@@ -804,7 +802,7 @@ Di seguito, si considera che le regole per valutare le espressioni del linguaggi
 
 Le principali modifiche effettuate sono state l'aggiunta di una storia al processo, di un identificatore per i messaggi (un timestamp $\lambda$)~\cite{Lanese} e di una storia della mappa. 
 L'aggiunta della storia del processo e della mappa è un tipico incorporamento di Laundered in cui viene aggiunta la cronologia delle operazioni eseguite dal processo (nel primo caso) e delle operazioni eseguite sulla mappa. Il sistema ora include una memoria (storia) che registra gli stati intermedi della mappa. Questo è stato fatto perché in questo modo è possibile tenere traccia delle operazioni che sono state eseguite sulla mappa e del loro ordine di esecuzione.
-
+\\
 Al messaggio è stato aggiunto un timestamp perché,  se si considera un processo $ \mathrm {p1} $ che invia due messaggi identici ad un altro processo $ \mathrm {p2} $ (il che non è insolito, ad esempio un ``ack'' dopo aver ricevuto una richiesta), per annullare la prima azione $ \mathrm {p2} \:! \: \mathrm {v} $ del processo $ \mathrm {p1} $ è necessario annullare tutte le azioni del processo $ \mathrm {p2 } $ fino alla ricezione del primo messaggio. Tuttavia, non si può distinguere il primo messaggio dal secondo a meno che non si tenga conto di alcune informazioni aggiuntive. Pertanto, è necessario introdurre un identificatore univoco per distinguere con precisione questo caso.
 
 \begin{figure}[htp]
@@ -1011,7 +1009,6 @@ Si assume che $\Pi$ non sia vuoto. \\
 \begin{proof}
 	La dimostrazione avviene mostrando che le regole della semantica standard nelle Figure~\ref{fig:forwardsem} e \ref{fig:forwardsem1} sono la versione con la storia delle regole corrispondenti presenti nelle Figure~\ref{fig:system-rules} e \ref{fig:system-rules-map}. L'unico punto complicato è capire che l'introduzione dell'identificatore univoco nel messaggio non cambia il comportamento della regola $\mathit{Receive}$ poiché la funzione $\mathsf{matchrec}$ ha come risultato sempre l'occorrenza più vecchia (in termini di posizione nella coda) del messaggio selezionato \cite{Lanese}.
 \end{proof}
-
 In alcune delle regole di transizione della semantica backward, nelle side condition si richiederà che non siano presenti alcune delle regole di lettura o scrittura. 
 
  \begin{definition}[$\varepsilon$ e $\cancel{\varepsilon}$]\label{def:coinvolgimento}
@@ -1041,7 +1038,7 @@ In alcune delle regole di transizione della semantica backward, nelle side condi
 	\begin{itemize}
 		\item le operazioni in scrittura sulla mappa sono $\ol{\mathsf{RegisterT}}$, $\ol{\mathsf{UnregisterT}}$ e $\ol{\mathsf{End}}$. Da notare che anche queste operazioni vanno a modificare la mappa nel modo opposto alla regola forward corrispondente; 
 		\item le operazioni in lettura sulla mappa nel caso della semantica backward sono $\ol{\mathsf{SendA}}$, $\ol{\mathsf{SendF}}$, $\ol{\mathsf{RegisterF}}$, $\ol{\mathsf{UnregisterF}}$ e $\ol{\mathsf{Call3}}$. 
-		Queste vengono considerate come operazioni che leggono gli stessi elementi dell'operazione forward corrispondenti.\\\qed
+		Queste vengono considerate come operazioni che leggono gli stessi elementi dell'operazione forward corrispondenti.\qed
 	\end{itemize}
 \end{definition}
 Scegliere di dire che un'operazione all'indietro sia un'operazione in lettura è una scelta insolita, ma è dovuta al fatto che si vuole evitare un ``annullamento'' di un'operazione di lettura sulla mappa quando questa è stata modificata.
@@ -1168,10 +1165,10 @@ Nelle Figure \ref{fig:backwardsem} e \ref{fig:backwardsem1} sono presenti le reg
 \end{figure}
 Ora verranno discusse brevemente alcune situazioni particolari:
 \begin{itemize}
-	\item Innanzitutto, si osserva che la regola $\ol{\mathit{Send}}$ può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale. Se questo non è il caso (cioè il messaggio è stato consegnato usando la regola $\mathit{Sched}$), allora si dovranno prima applicare i passaggi a ritroso al processo del destinatario fino a che l'applicazione della regola $\ol{\mathit{Sched}}$ rimette il messaggio nella casella di posta globale e la regola $\ol{\mathit{Send}}$ diventa applicabile. Ciò è necessario per garantire la coerenza causale. Nella sezione successiva, introdurremo una strategia particolare che ottiene questo effetto in modo controllato \cite{Lanese}.
+	\item Innanzitutto, si osserva che la regola $\ol{\mathit{Send}}$ può essere applicata solo quando il messaggio inviato si trova nella mailbox globale. Se questo non è il caso (cioè il messaggio è stato consegnato usando la regola $\mathit{Sched}$), allora si dovranno prima applicare i passaggi a ritroso al processo del destinatario fino a che l'applicazione della regola $\ol{\mathit{Sched}}$ rimette il messaggio nella mailbox globale e la regola $\ol{\mathit{Send}}$ diventa applicabile. Ciò è necessario per garantire la coerenza causale. Nella sezione successiva, introdurremo una strategia particolare che ottiene questo effetto in modo controllato \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
-	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella casella di posta globale, cioè il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$. Inoltre, essendo un'operazione sulla mappa in lettura, si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$; questo è necessario per rispettare la coerenza causale.
+	\item Si può notare che la regola $\ol{\mathit{SendA}}$ (come la regola $\ol{\mathit{Send}}$) può essere applicata solo quando il messaggio inviato si trova nella mailbox globale, cioè il messaggio non è stato ancora consegnato usando la regola $\mathit{Sched}$. Inoltre, essendo un'operazione sulla mappa in lettura, si richiede che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$ o il pid $p$; questo è necessario per rispettare la coerenza causale.
 \end{itemize}
 \begin{itemize}
 	\item La regola $\ol{\mathit{SendF}}$ è anch'essa in lettura sulla mappa, quindi per rispettare la consistenza causale verrà richiesto che non siano presenti operazioni in scrittura sulla mappa eseguite successivamente che coinvolgono l'atomo $a$.
@@ -1182,7 +1179,7 @@ Ora verranno discusse brevemente alcune situazioni particolari:
 	\begin{itemize}
 	\item Una situazione simile si verifica con la regola $\ol{\mathit{Spawn}}$. Dato un processo $ p $ con un elemento della cronologia $\mathsf{spawn}(\theta,e,p')$, la regola $ \ol{\mathit{Spawn}}$ non può essere applicata finché la cronologia e la coda del processo $ p '$ sono entrambi vuoti. Pertanto, si dovrebbe prima applicare una serie di passaggi all'indietro per elaborare $ p '$ in modo da poter annullare l'elemento $\mathsf{spawn}$.
 	%
-	Si noti che non è necessario richiedere che nessun messaggio indirizzato al processo $ p '$ (che diventerebbe un messaggio \emph{orfano}) sia nella casella di posta globale: per inviare un tale messaggio il pid $ p' $ è necessario, quindi l'invio del messaggio dipende da $\mathsf {spawn}$ e di conseguenza deve essere annullato in anticipo \cite{Lanese}.
+	Si noti che non è necessario richiedere che nessun messaggio indirizzato al processo $ p '$ (che diventerebbe un messaggio \emph{orfano}) sia nella mailbox globale: per inviare un tale messaggio il pid $ p' $ è necessario, quindi l'invio del messaggio dipende da $\mathsf {spawn}$ e di conseguenza deve essere annullato in anticipo \cite{Lanese}.
 \end{itemize}
 \begin{itemize}
 	\item si osserva anche che la regola $\ol{\mathit{Receive}}$ può essere applicata solo quando la coda del processo è esattamente la stessa che è stata ottenuta dopo aver applicato il corrispondente passaggio $\mathit{Receive}$. Ciò è necessario per garantire che la coda ripristinata sia effettivamente quella giusta (notare che l'aggiunta del messaggio a una coda arbitraria non funzionerebbe poiché non si conosce la sua posizione ``giusta'') \cite{Lanese}.
@@ -1287,7 +1284,6 @@ Di seguito si limita l'attenzione ai sistemi raggiungibili dall'esecuzione di un
 \begin{definition}[Sistema raggiungibile]\label{def:reachable}
 	Un sistema è \emph{iniziale} se è composto da un singolo processo che ha una cronologia e una coda vuote; inoltre, anche la mailbox globale è vuota. Un sistema $s$ è raggiungibile se esiste un sistema iniziale $s_0$ e una derivazione $s_0 \rlh^\ast s$ utilizzando le regole corrispondenti a un dato programma.\qed
 \end{definition}
-
 Le definizioni e i lemmi successivi sono utilizzati per dimostrare che ogni transizione in avanti (risp. indietro) può essere annullata da una transizione all'indietro (risp. avanti), come dimostrato nel Lemma~\ref{lemma:loop} .
 
 \begin{definition}[Equivalenza fra storie ($\equiv$)]\label{def:equivS}
@@ -1322,7 +1318,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 	~
 	\begin{itemize}
 		\item se $op\in \Hi_3$ la trasposizione di $op'$ con $\Hi_3$ senza $op$ è sempre possibile perché applicata su un sottoinsieme di $\Hi_3$ e quindi la Definizione~\ref{def:equivS} è sempre rispettata;  
-		\item se $op\notin \Hi_3$ la trasposizione di $op'$ con $\Hi_3$ è la medesima.
+		\item se $op\notin \Hi_3$ la trasposizione di $op'$ con $\Hi_3$ è la medesima. \qedhere
 	\end{itemize}
 \end{proof}
 
@@ -1333,7 +1329,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 	~
 	\begin{itemize}
 		\item se c'è trasposizione di $op$ per    Lemma~\ref{myCorollario0};  
-		\item se non c'è trasposizione di $op$ per Lemma~\ref{myCorollario1}. 
+		\item se non c'è trasposizione di $op$ per Lemma~\ref{myCorollario1}. \qedhere
 	\end{itemize}
 \end{proof}
 
@@ -1397,7 +1393,7 @@ Date due storie $\Hi= \Hi_1 : \Hi_2 : op :\Hi_3$ e $\Hi'= \Hi_1 : op : \Hi_2 : \
 				\hypo[]{\Hi_1'':\Hi_2'' \equiv \Hi_1':\Hi_2'}
 				% Conclusion
 				\Infer2[]{\Hi_1:\Hi_2 \equiv \Hi_1':\Hi_2'}           
-			\end{prooftree}
+			\end{prooftree} \qedhere
 		\end{itemize}
 			\end{itemize}
 \end{proof}
@@ -1474,7 +1470,7 @@ Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti g
 		\item se $r$ è backward la dimostrazione si divide in due casi:
 		\begin{itemize}
 			\item nel caso l'operazione non sia sulla mappa se si applica la stessa regola backward a due sistemi equivalenti, allora muoveranno in due sistemi equivalenti visto che le modifiche al sistema sono le stesse (la mappa e la sua storia non vengono modificate e per questo rimarranno equivalenti);
-			\item nel caso l'operazione sia sulla mappa per il Lemma~\ref{lemma:my3} è possibile applicare a $s_1'$ la regola backward $r$. L'equivalenza di $s_2$ e $s_2'$ si può vedere grazie al Lemma~\ref{lemma:my4}.
+			\item nel caso l'operazione sia sulla mappa per il Lemma~\ref{lemma:my3} è possibile applicare a $s_1'$ la regola backward $r$. L'equivalenza di $s_2$ e $s_2'$ si può vedere grazie al Lemma~\ref{lemma:my4}. \qedhere
 		\end{itemize}
 	\end{itemize}
 \end{proof}
@@ -1507,7 +1503,7 @@ Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti g
 		\begin{itemize}
 			\item se la regola di backward è in lettura, allora non sono presenti operazioni in scrittura che coinvolgono gli stessi atomi o pid coinvolti dalla regola forward, 
 		 
-		 	\item se la regola è in scrittura, allora nella storia non sono presenti operazioni in scrittura o lettura che coinvolgono gli stessi atomi o pid coinvolti dalla regola forward.
+		 	\item se la regola è in scrittura, allora nella storia non sono presenti operazioni in scrittura o lettura che coinvolgono gli stessi atomi o pid coinvolti dalla regola forward. \qedhere
 		\end{itemize}
 	\end{itemize}
 \end{proof}
@@ -1553,14 +1549,15 @@ Due processi nella forma $\tuple{p,\h,(\theta,e),q}$ sono equivalenti se tutti g
 				
 				$\mathsf{Call3}$       &     \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}  &                 \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                 &          \begin{tabular}[c]{@{}l@{}}$a'  \in \M' ~\lor$ \\ $ p' \in \M'$\end{tabular}                      &                            &                            &                          &                                  &                                \\ \hline
 			\end{tabular}
-			\caption{\label{tab:conflitti1} Tabella dei conflitti.}
+			\caption{\label{tab:conflitti1} Tabella dei conflitti per le regole forward-backward, nel caso delle regole backward-backward non è presente una tabella perchè non è presente il conflitto fra due operazioni backword.}
 		\end{table}
 		
 		Nella Tabella~\ref{tab:conflitti1} sono presenti i casi in cui si verificano i conflitti; $a'$ e $p'$ rappresentano l'atomo e il pid coinvolti da $r_1$, mentre $a''$ e $p''$ rappresentano l'atomo e il pid coinvolto da $r_2$. $\M'$ rappresenta gli elementi letti nella mappa dalla regola $\mathsf{Call3}$ o $\ol{\mathsf{Call3}}$. Le celle vuote rappresentano transizioni coiniziali che non vanno in conflitto.\\
-		Da notare che anche in questo caso, non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro; questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
+		Si nota che esistono coppie di operazini in scrittura che non sono in conflitto visto che nei casi in cui sarebbe presente il conflitto queste operazioni non possono essere coiniziali. 
+		%Da notare che anche in questo caso, non tutte le operazioni in scrittura sulla mappa sono in conflitto fra di loro; questo perché in quei casi le transizioni non possono essere coiniziali e in conflitto. 
 	\end{itemize}
 	%
-	Due transizioni coiniziali sono \emph{concorrenti} se non sono in conflitto. \qed
+	Due transizioni coiniziali sono \emph{concorrenti} se non sono in conflitto. Si può notare che due transizioni backward coiniziali non sono mai in conflitto. \qed
 \end{definition}
 %
 Il seguente lemma è la controparte del Lemma~\ref{lemma:square} per la semantica standard.
@@ -1614,7 +1611,7 @@ Il seguente lemma è la controparte del Lemma~\ref{lemma:square} per la semantica
 		\item Nel caso di due operazioni sulla mappa (o anche in cui solo una è sulla mappa), è sempre verificato: 
 		\begin{itemize}
 			\item nel caso in cui entrambe le operazioni backward sono sulla mappa, allora le condizioni di entrambe le regole sono rispettate, quindi sarà indifferente applicare prima una o l'altra (la storia della mappa sarà la stessa sia in $s'$ che in $s''$).
-			\item nel caso in cui una regola è sulla mappa e l'altra no, allora le condizioni di entrambe le regole sono rispettate; applicare prima la regola sulla mappa o prima la regola non sulla mappa non cambia il risultato (la storia della mappa sarà la stessa sia in $s'$ che in $s''$). 
+			\item nel caso in cui una regola è sulla mappa e l'altra no, allora le condizioni di entrambe le regole sono rispettate; applicare prima la regola sulla mappa o prima la regola non sulla mappa non cambia il risultato (la storia della mappa sarà la stessa sia in $s'$ che in $s''$). \qedhere
 		\end{itemize}
 	\end{itemize}
 \end{proof}
@@ -1670,8 +1667,7 @@ La dimostrazione è per induzione sul numero di passi:
 			s_2 \ar@<1pt>@^{->}[r]_{1} \ar@<1pt>@^{->}[u] & i_1'\equiv i_1''~~~ \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & \dots \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] \ar@<1pt>@^{->}[r]_{1} & s''\equiv s' ~~~~~\ar@<1pt>@^{->}[u] \ar@<1pt>@^{->}[l] 
 		}
 	\end{minipage}
-	\]
-	
+	\] \qedhere
 \end{itemize}
 \end{proof}
 \section{Semantica rollback}\label{sect:semrollback}
@@ -2062,7 +2058,7 @@ Le regole backward della semantica di rollback sono mostrate nelle Figure~\ref{f
 Si può notare che i rollback fino ai checkpoint vengono generati non deterministicamente dalla regola $\mathit{\ol{Undo}}$, mentre gli altri due tipi di rollback sono generati dalle regole di riduzione backward in un certo ordine per garantire la coerenza causale.\\
  Questo è chiarito dalla discussione seguente, dove si spiegano brevemente le principali differenze rispetto alla semantica backward descritta precedentemente:
 \begin{itemize}
-	\item Come nella semantica nella Figura~\ref{fig:backwardsem}, l'invio di un messaggio può essere annullato quando il messaggio è ancora nella casella di posta globale (regola $\ol{\mathit{Send1}}$). Altrimenti, potrebbe essere necessario applicare prima la regola $\ol{\mathit{Send2}}$ per ``propagare'' la modalità di rollback fino al destinatario del messaggio, in modo che le regole $\ol{\mathit{Sched}}$ e $\ol{\mathit{Send1}}$ possano essere eventualmente applicate.
+	\item Come nella semantica nella Figura~\ref{fig:backwardsem}, l'invio di un messaggio può essere annullato quando il messaggio è ancora nella mailbox globale (regola $\ol{\mathit{Send1}}$). Altrimenti, potrebbe essere necessario applicare prima la regola $\ol{\mathit{Send2}}$ per ``propagare'' la modalità di rollback fino al destinatario del messaggio, in modo che le regole $\ol{\mathit{Sched}}$ e $\ol{\mathit{Send1}}$ possano essere eventualmente applicate.
 	
 	\item Per l'annullamento della generazione di un processo $p''$, la regola $\ol{\mathit{Spawn1}}$ si applica quando sia la cronologia che le code del processo generato $p''$ sono vuote, eliminando sia l'elemento della cronologia in $p$ che il processo $p''$. Altrimenti, si applica la regola $\ol{\mathit{Spawn2}}$ che propaga la modalità di rollback in modo che, alla fine, la regola $\ol{\mathit{Spawn1}}$ si possa applicare a $p''$.
 	
@@ -2109,7 +2105,7 @@ Si estende anche la definizione di sistemi iniziali e raggiungibili alla semanti
 		\item Regola $ \mathit {\ol{Undo}} $: l'effetto viene rimosso da $ \rolldel $, quindi un'applicazione di questa regola corrisponde a un file derivazione a passo zero sotto la semantica incontrollata;
 		\item Regole $ \mathit {\ol{Seq}} $, $ \mathit {\ol{Check}} $, $ \mathit {\ol {Send1}} $, $ \mathit {\ol{Receive}} $, $ \mathit {\ol{Spawn1}} $, $ \mathit {\ol {Self}} $, $ \mathit {\ol{Sched}} $, $\mathit{\ol{SendA1}}$, $\mathit{\ol{SendF1}}$, $\mathit{\ol{Call3-1}}$, $\mathit{\ol{RegisterT1}}$, $\mathit{\ol{RegisterF1}}$, $\mathit{\ol{UnregisterT1}}$, $\mathit{\ol{UnregisterF1}}$,  $\mathit{\ol{Catch}}$ e $\mathit{\ol{End1}}$:
 		corrispondono, rispettivamente, alle regole $ \mathit {\ol{Seq}} $, $ \mathit {\ol{Check}} $, $ \mathit{\ol{Send}} $, $ \mathit {\ol{Receive}} $, $ \mathit {\ol{ Spawn}} $, $ \mathit {\ol{Self}} $, $ \mathit {\ol{Sched}} $, $\mathit{\ol{SendA}}$, $\mathit{\ol{SendF}}$, $\mathit{\ol{Call3}}$, $\mathit{\ol{RegisterT}}$, $\mathit{\ol{RegisterF}}$, $\mathit{\ol{UnregisterT}}$, $\mathit{\ol{UnregisterF}}$,  $\mathit{\ol{Catch}}$ e $\mathit{\ol{End}}$ della semantica incontrollata;
-		\item Regole $\mathit{\ol{Send2}}$, $\mathit{\ol{Spawn2}}$, $\mathit{\ol{SendA2}}$, $\mathit{\ol{SendA3}}$, $\mathit{\ol{SendF2}}$, $\mathit{\ol{Call3-2}}$,\\ $\mathit{\ol{RegisterT2}}$, $\mathit{\ol{RegisterF2}}$, $\mathit{\ol{UnregisterT2}}$, $\mathit{\ol{UnregisterF2}}$ e $\mathit{\ol{End2}}$: l'effetto viene rimosso da $ \rolldel $, quindi un'applicazione di una qualsiasi di queste regole corrisponde a una derivazione a passo zero sotto semantica incontrollata. 
+		\item Regole $\mathit{\ol{Send2}}$, $\mathit{\ol{Spawn2}}$, $\mathit{\ol{SendA2}}$, $\mathit{\ol{SendA3}}$, $\mathit{\ol{SendF2}}$, $\mathit{\ol{Call3-2}}$,\\ $\mathit{\ol{RegisterT2}}$, $\mathit{\ol{RegisterF2}}$, $\mathit{\ol{UnregisterT2}}$, $\mathit{\ol{UnregisterF2}}$ e $\mathit{\ol{End2}}$: l'effetto viene rimosso da $ \rolldel $, quindi un'applicazione di una qualsiasi di queste regole corrisponde a una derivazione a passo zero sotto semantica incontrollata. \qedhere 
 	\end{itemize}
 \end{proof}
 
@@ -2128,26 +2124,24 @@ Ora si può mostrare la completezza della semantica di rollback a condizione che 
 
 In questa tesi è stata estesa la semantica dell'articolo \cite{Lanese}, inizialmente è stata descritta l'estensione del linguaggio utilizzato con l'aggiunta delle funzioni: 
 \begin{itemize}
-	\item $\mathsf{register}$: dati in input un atomo e un pid, questa funzione inserisce nella mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Se l'atomo o il pid sono già presenti nella mappa il processo fallisce;
-	\item $\mathsf{unregister}$: dato in input un atomo, essa toglie dalla mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Se l'atomo non è presente nella mappa il processo fallisce.
-	\item $\mathsf{registered}$: restituisce una lista di tutti gli atomi nella mappa;
-	\item $\mathsf{whereis}$: dato in input un atomo restituisce il pid associato, se l'atomo non è registrato otterremo \textbf{undefined}.
+	\item \textbf{register}: dati in input atomo e pid, inserisce nella mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Altrimenti il processo fallisce;
+	\item \textbf{unregister}: dato in input un atomo, essa toglie dalla mappa la coppia (atomo,pid) e restituisce l'atomo \textbf{true}. Altrimenti il processo fallisce.
+	\item \textbf{registered}: restituisce una lista di tutti gli atomi nella mappa;
+	\item \textbf{whereis}: dato in input un atomo restituisce il pid associato, altrimenti otterremo \textbf{undefined}.
 \end{itemize}
 Inoltre al linguaggio viene aggiunto anche il non terminale $end$ utilizzato per la terminazione di un processo.\\
-Sucessivamente è stata mostrata sia la semantica del linguaggio presentato che quella del sistema. In queste semantiche sono presenti anche le valutazioni delle funzioni aggiunte e dei fallimenti, quest'ultimi sono stati aggiunti per avere un comportamento più simile a quello di Erlang. È stata estesa anche la definizione di transizioni concorrenti in accordo con le nuove regole.\\
+Successivamente è stata mostrata sia la semantica del linguaggio presentato che quella del sistema. In queste semantiche sono presenti anche le valutazioni delle funzioni aggiunte e dei fallimenti, quest'ultimi sono stati aggiunti per avere un comportamento più simile a quello di Erlang. È stata estesa anche la definizione di transizioni concorrenti in accordo con le nuove regole.\\
 Dopo di che è stata introdotta la nozione di semantica reversibile, ovvero una semantica non deterministica che permette di eseguire operazioni all'indietro, descrivendo anche le sue principali caratteristiche.\\ 
 Infine è stata descritta la semantica rollback in cui viene descritto un'operatore di rollback che serve per rendere deterministica la semantica reversibile introdotta precedentemente preservando le caratterestiche principali.\\
-Come abbiamo già accennato precedentemente, CauDEr supporta un sottoinsieme funzionale del linguaggio Core Erlang; lo scopo di questo lavoro è stato anche di estendere quel sottoinsieme con feature imperative descritte precedentemente. In altre parole, l'obiettivo è realizzare una nuova versione di CauDEr che sia anche in grado di eseguire il debug di programmi più complessi. I costrutti aggiunti sono: $\mathsf{register}$, $\mathsf{unregister}$, $\mathsf{whereis}$ e $\mathsf{registered}$.\\ 
+Come abbiamo già accennato prima nella sezione~\ref{Cauder}, CauDEr supporta un sottoinsieme funzionale del linguaggio Core~Erlang; lo scopo di questo lavoro è stato anche di estendere quel sottoinsieme con feature imperative descritte precedentemente. In altre parole, l'obiettivo è realizzare una nuova versione di CauDEr, partendo dalla versione~\cite{cauderV2}, che sia anche in grado di eseguire il debug di programmi più complessi. I costrutti aggiunti sono: $\mathsf{register}$, $\mathsf{unregister}$, $\mathsf{whereis}$ e $\mathsf{registered}$. L'aggiunta di questi costrutti è stata fedele alla descrizione fatta nella tesi, però sono presenti delle differenze; infatti nelle funzioni ausiliari $\mathsf{EvalM}$, $\mathsf{matchPid}$, $\mathsf{matchMapReg}$ e $\mathsf{matchMapUnreg}$ non è stata passata la mappa come input, per evitare di modificare il codice di tutte le funzioni che dovrebbero chiamare quelle ausiliarie, ma è stato deciso di implementare un attore che avesse accesso alla mappa e che sostituisse le funzioni ausiliarie. Inoltre la storia della mappa in CauDEr non è come quella presentata, per evitare di fare funzioni ad hoc per il confronto fra le varie storie si sono tutte estese con elementi, che non vengono considerati, per avere storie tutte della stessa lunghezza e con lo stesso tipo di elementi.
+ \\ 
 Riassumendo, seguendo l'approccio in \cite{Lanese} sono state definite le varie semantiche, inclusi i nuovi costrutti, prestando attenzione a preservare la consistenza causale, infine è stato realizzato il debugger.\\
 ~\\
-Possibili lavori futuri su questa tesi sono l'aggiunta delle 
+Possibili lavori futuri su questa tesi sono: l'ulteriore estensione del linguaggio con i costrutti di register globale che richiederebbero l'estensione con la semantica relativa ai nodi. Un'altra possibilità sarebbe quella di estendere la semantica con altre feature imperative come le funzioni legate a \textbf{mnesia}, un database distribuito molto utilizzato nelle applicazioni. La semantica può anche essere estesa tramite l'aggiunta delle eccezzioni, che sono operatori di controllo che non sfruttano il fallimento come side-condition per segnalare un errore come le funzioni aggiunte, e che vengono utilizzate per la gestione dei fallimenti.  \\
+Un altro possibile lavoro sarebbe quello di implementare una semantica alternativa a quella presentata in cui, al posto di creare una mappa globale imperativa, si utilizza un attore che la sostituisce. In questo modo non bisognerebbe estendere la semantica; le funzioni sarebbero considerate come dei messaggi inviati all'attore, che corrisponde alla mappa, e i risultati sarebbero dei messaggi inviati dall'attore-mappa al processo che ha invocato la funzione. Dopo di che sarebbe interessante dimostrare l'equivalenza delle due semantiche. Le maggiori difficoltà in questa dimostrazione sarebbero nella gestione dei processi terminati e dei fallimenti, ad esempio nel caso in cui viene deregistrato un processo terminato. Questa difficoltà è presente in quanto in questo lavoro è stata modificata la semantica per gestire la terminazione di processi. 
 
 
 
-
-%
-%In questa tesi sono state analizzate approfonditamente le fondamenta teoriche di Operational
-%Transformation e Change Tracking che sono state successivamente confrontate sia teoricamente sia tramite l'implementazione e la discussione dell'editor collaborativo DOTT (Document Operational Transformation Tracking). \\
 
 
 \clearpage{\pagestyle{empty}\cleardoublepage}
@@ -2163,7 +2157,6 @@ Possibili lavori futuri su questa tesi sono l'aggiunta delle
 	\newblock A theory of reversibility for {E}rlang.
 	\newblock {\em Journal of Logical and Algebraic Methods in Programming},
 	100:71--97, November 2018.
-	
 	
 	\bibitem{Landauer}
 	R.~Landauer.
@@ -2195,6 +2188,24 @@ Possibili lavori futuri su questa tesi sono l'aggiunta delle
 	\newblock A review of reverse debugging.
 	\newblock In System, Software, SoC and Silicon Debug Conference (S4D), 2012 (pp. 1-6). IEEE.
 	
+	\bibitem{paperCauder}
+	I.~Lanese, N.~Nishida, A.~Palacios, and G.~Vidal.
+	\newblock {CauDEr}: {A} causal-consistent reversible debugger for {E}rlang.
+	\newblock In J.~P. Gallagher and M.~Sulzmann, editors, {\em Proceedings of the
+		14th International Symposium on Functional and Logic Programming (FLOPS
+		2018)}, volume 10818 of {\em Lecture Notes in Computer Science}, pages
+	247--263. Springer-Verlag, Berlin, 2018.
+	
+		\bibitem{cauder}
+	I.~Lanese, N.~Nishida, A.~Palacios, and G.~Vidal.
+	\newblock {CauDEr} website.
+	\newblock URL: \url{https://github.com/mistupv/cauder}.
+	
+	\bibitem{cauderV2}
+	I.~Lanese, N.~Nishida, A.~Palacios, and G.~Vidal.
+	\newblock {CauDEr} website.
+	\newblock URL: \url{https://github.com/mistupv/cauder-v2}.
+	
 	\bibitem{NPV16b}
 	N.~Nishida, A.~Palacios, and G.~Vidal.
 	\newblock A reversible semantics for {E}rlang.
@@ -2204,7 +2215,7 @@ Possibili lavori futuri su questa tesi sono l'aggiunta delle
 	Springer, 2017.
 	\newblock Preliminary version available from
 	\texttt{https://arxiv.org/abs/1608.05521}.
-	
+
 	\bibitem{LMSS11}
 	I.~Lanese, C.~A. Mezzina, A.~Schmitt, and J.~Stefani.
 	\newblock Controlling reversibility in higher-order pi.
@@ -2222,18 +2233,8 @@ Possibili lavori futuri su questa tesi sono l'aggiunta delle
 	370--384. Springer, 2014.
 	
 
-	\bibitem{cauder}
-I.~Lanese, N.~Nishida, A.~Palacios, and G.~Vidal.
-\newblock {CauDEr} website.
-\newblock URL: \url{https://github.com/mistupv/cauder}.
 
-\bibitem{paperCauder}
-I.~Lanese, N.~Nishida, A.~Palacios, and G.~Vidal.
-\newblock {CauDEr}: {A} causal-consistent reversible debugger for {E}rlang.
-\newblock In J.~P. Gallagher and M.~Sulzmann, editors, {\em Proceedings of the
-	14th International Symposium on Functional and Logic Programming (FLOPS
-	2018)}, volume 10818 of {\em Lecture Notes in Computer Science}, pages
-247--263. Springer-Verlag, Berlin, 2018.
+
 
 
 \end{thebibliography}
